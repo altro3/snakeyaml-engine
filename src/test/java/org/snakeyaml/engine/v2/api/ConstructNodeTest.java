@@ -17,8 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -33,15 +34,9 @@ class ConstructNodeTest {
 
   @Test
   void failToConstructRecursive() {
-    ConstructNode constructNode = new ConstructNode() {
-
-      @Override
-      public Object construct(Node node) {
-        return null;
-      }
-    };
-    Node node = new SequenceNode(Tag.SEQ,
-        Lists.newArrayList(new ScalarNode(Tag.STR, "b", ScalarStyle.PLAIN)), FlowStyle.FLOW);
+    ConstructNode constructNode = node -> null;
+    var node = new SequenceNode(Tag.SEQ, List.of(new ScalarNode(Tag.STR, "b", ScalarStyle.PLAIN)),
+        FlowStyle.FLOW);
     node.setRecursive(true);
     IllegalStateException exception = assertThrows(IllegalStateException.class,
         () -> constructNode.constructRecursive(node, new ArrayList<>()));
@@ -58,8 +53,8 @@ class ConstructNodeTest {
         return null;
       }
     };
-    Node node = new SequenceNode(Tag.SEQ,
-        Lists.newArrayList(new ScalarNode(Tag.STR, "b", ScalarStyle.PLAIN)), FlowStyle.FLOW);
+    var node = new SequenceNode(Tag.SEQ, List.of(new ScalarNode(Tag.STR, "b", ScalarStyle.PLAIN)),
+        FlowStyle.FLOW);
     node.setRecursive(false);
     YamlEngineException exception = assertThrows(YamlEngineException.class,
         () -> constructNode.constructRecursive(node, new ArrayList<>()));

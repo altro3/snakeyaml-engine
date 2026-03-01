@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.composer.Composer;
 import org.snakeyaml.engine.v2.constructor.BaseConstructor;
 import org.snakeyaml.engine.v2.constructor.StandardConstructor;
@@ -107,7 +106,7 @@ public class Load {
    * @return deserialised YAML document
    */
   protected Object loadOne(Composer composer) {
-    Optional<Node> nodeOptional = composer.getSingleNode();
+    Node nodeOptional = composer.getSingleNode();
     return constructor.constructSingleDocument(nodeOptional);
   }
 
@@ -232,7 +231,7 @@ public class Load {
         hasNext();
       }
       Node node = composer.next();
-      return constructor.constructSingleDocument(Optional.of(node));
+      return constructor.constructSingleDocument(node);
     }
 
     @Override

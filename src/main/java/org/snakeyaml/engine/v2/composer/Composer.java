@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.comments.CommentEventsCollector;
@@ -113,27 +112,25 @@ public class Composer implements Iterator<Node> {
    * If the stream contains more than one document, an exception is thrown.
    * </p>
    *
-   * @return The root node of the document or <code>Optional.empty()</code> if no document is
-   *         available.
+   * @return The root node of the document or <code>null</code> if no document is available.
    */
-  public Optional<Node> getSingleNode() {
+  public Node getSingleNode() {
     // Drop the STREAM-START event.
     parser.next();
     // Compose a document if the stream is not empty.
-    Optional<Node> document = Optional.empty();
+    Node document = null;
     if (!parser.checkEvent(Event.ID.StreamEnd)) {
-      document = Optional.of(next());
+      document = next();
     }
-    if (document.isPresent()) {
+    if (document != null) {
       // is there a better place for this code? Should it be in the Node?
-      Node node = document.get();
-      node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
-      node.setBlockComments(blockCommentsCollector.collectEvents().consume());
+      document.setInLineComments(inlineCommentsCollector.collectEvents().consume());
+      document.setBlockComments(blockCommentsCollector.collectEvents().consume());
     }
     // Ensure that the stream contains no more documents.
     if (!parser.checkEvent(Event.ID.StreamEnd)) {
       Event event = parser.next();
-      Optional<Mark> previousDocMark = document.flatMap(Node::getStartMark);
+      Mark previousDocMark = document.getStartMark();
       throw new ComposerException("expected a single document in the stream", previousDocMark,
           "but found another document", event.getStartMark());
     }
@@ -152,17 +149,16 @@ public class Composer implements Iterator<Node> {
     blockCommentsCollector.collectEvents();
     if (parser.checkEvent(Event.ID.StreamEnd)) {
       List<CommentLine> commentLines = blockCommentsCollector.consume();
-      Optional<Mark> startMark = commentLines.get(0).getStartMark();
+      Mark startMark = commentLines.get(0).getStartMark();
       List<NodeTuple> children = Collections.emptyList();
-      Node node = new MappingNode(Tag.COMMENT, false, children, FlowStyle.BLOCK, startMark,
-          Optional.empty());
+      Node node = new MappingNode(Tag.COMMENT, false, children, FlowStyle.BLOCK, startMark, null);
       node.setBlockComments(commentLines);
       return node;
     }
     // Drop the DOCUMENT-START event.
     parser.next();
     // Compose the root node.
-    Node node = composeNode(Optional.empty());
+    Node node = composeNode(null);
     // Drop the DOCUMENT-END event.
     blockCommentsCollector.collectEvents();
     if (!blockCommentsCollector.isEmpty()) {
@@ -176,12 +172,14 @@ public class Composer implements Iterator<Node> {
   }
 
 
-  private Node composeNode(Optional<Node> parent) {
+  private Node composeNode(Node parent) {
     blockCommentsCollector.collectEvents();
-    parent.ifPresent(recursiveNodes::add);
+    if (parent != null) {
+      recursiveNodes.add(parent);
+    }
     final Node node;
     if (parser.checkEvent(Event.ID.Alias)) {
-      AliasEvent event = (AliasEvent) parser.next();
+      var event = (AliasEvent) parser.next();
       Anchor anchor = event.getAlias();
       if (!anchors.containsKey(anchor)) {
         throw new ComposerException("found undefined alias " + anchor, event.getStartMark());
@@ -202,8 +200,8 @@ public class Composer implements Iterator<Node> {
       blockCommentsCollector.consume();
       inlineCommentsCollector.collectEvents().consume();
     } else {
-      NodeEvent event = (NodeEvent) parser.peekEvent();
-      Optional<Anchor> anchor = event.getAnchor();
+      var event = (NodeEvent) parser.peekEvent();
+      Anchor anchor = event.getAnchor();
       // the check for duplicate anchors has been removed (issue 174)
       if (parser.checkEvent(Event.ID.Scalar)) {
         node = composeScalarNode(anchor, blockCommentsCollector.consume());
@@ -213,13 +211,15 @@ public class Composer implements Iterator<Node> {
         node = composeMappingNode(anchor);
       }
     }
-    parent.ifPresent(recursiveNodes::remove);
+    if (parent != null) {
+      recursiveNodes.remove(parent);
+    }
     return node;
   }
 
   private void registerAnchor(Anchor anchor, Node node) {
     anchors.put(anchor, node);
-    node.setAnchor(Optional.of(anchor));
+    node.setAnchor(anchor);
   }
 
   /**
@@ -229,20 +229,22 @@ public class Composer implements Iterator<Node> {
    * @param blockComments - comments before the Node
    * @return Node
    */
-  protected Node composeScalarNode(Optional<Anchor> anchor, List<CommentLine> blockComments) {
-    ScalarEvent ev = (ScalarEvent) parser.next();
-    Optional<String> tag = ev.getTag();
+  protected Node composeScalarNode(Anchor anchor, List<CommentLine> blockComments) {
+    var ev = (ScalarEvent) parser.next();
+    String tag = ev.getTag();
     boolean resolved = false;
     Tag nodeTag;
-    if (tag.isEmpty() || tag.get().equals("!")) {
+    if (tag == null || tag.equals("!")) {
       nodeTag = scalarResolver.resolve(ev.getValue(), ev.getImplicit().canOmitTagInPlainScalar());
       resolved = true;
     } else {
-      nodeTag = new Tag(tag.get());
+      nodeTag = new Tag(tag);
     }
     Node node = new ScalarNode(nodeTag, resolved, ev.getValue(), ev.getScalarStyle(),
         ev.getStartMark(), ev.getEndMark());
-    anchor.ifPresent(a -> registerAnchor(a, node));
+    if (anchor != null) {
+      registerAnchor(anchor, node);
+    }
     node.setBlockComments(blockComments);
     node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
     return node;
@@ -254,30 +256,32 @@ public class Composer implements Iterator<Node> {
    * @param anchor - anchor if present
    * @return parsed Node
    */
-  protected SequenceNode composeSequenceNode(Optional<Anchor> anchor) {
-    SequenceStartEvent startEvent = (SequenceStartEvent) parser.next();
-    Optional<String> tag = startEvent.getTag();
+  protected SequenceNode composeSequenceNode(Anchor anchor) {
+    var startEvent = (SequenceStartEvent) parser.next();
+    String tag = startEvent.getTag();
     Tag nodeTag;
     boolean resolved = false;
-    if (tag.isEmpty() || tag.get().equals("!")) {
+    if (tag == null || tag.equals("!")) {
       nodeTag = Tag.SEQ;
       resolved = true;
     } else {
-      nodeTag = new Tag(tag.get());
+      nodeTag = new Tag(tag);
     }
-    final ArrayList<Node> children = new ArrayList<>();
-    SequenceNode node = new SequenceNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
-        startEvent.getStartMark(), Optional.empty());
+    final var children = new ArrayList<Node>();
+    var node = new SequenceNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
+        startEvent.getStartMark(), null);
     if (startEvent.isFlow()) {
       node.setBlockComments(blockCommentsCollector.consume());
     }
-    anchor.ifPresent(a -> registerAnchor(a, node));
+    if (anchor != null) {
+      registerAnchor(anchor, node);
+    }
     while (!parser.checkEvent(Event.ID.SequenceEnd)) {
       blockCommentsCollector.collectEvents();
       if (parser.checkEvent(Event.ID.SequenceEnd)) {
         break;
       }
-      children.add(composeNode(Optional.of(node)));
+      children.add(composeNode(node));
     }
     if (startEvent.isFlow()) {
       node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
@@ -297,25 +301,27 @@ public class Composer implements Iterator<Node> {
    * @param anchor - anchor if present
    * @return Node
    */
-  protected Node composeMappingNode(Optional<Anchor> anchor) {
-    MappingStartEvent startEvent = (MappingStartEvent) parser.next();
-    Optional<String> tag = startEvent.getTag();
+  protected Node composeMappingNode(Anchor anchor) {
+    var startEvent = (MappingStartEvent) parser.next();
+    String tag = startEvent.getTag();
     Tag nodeTag;
     boolean resolved = false;
-    if (tag.isEmpty() || tag.get().equals("!")) {
+    if (tag == null || tag.equals("!")) {
       nodeTag = Tag.MAP;
       resolved = true;
     } else {
-      nodeTag = new Tag(tag.get());
+      nodeTag = new Tag(tag);
     }
 
-    final List<NodeTuple> children = new ArrayList<>();
-    MappingNode node = new MappingNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
-        startEvent.getStartMark(), Optional.empty());
+    final var children = new ArrayList<NodeTuple>();
+    var node = new MappingNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
+        startEvent.getStartMark(), null);
     if (startEvent.isFlow()) {
       node.setBlockComments(blockCommentsCollector.consume());
     }
-    anchor.ifPresent(a -> registerAnchor(a, node));
+    if (anchor != null) {
+      registerAnchor(anchor, node);
+    }
     while (!parser.checkEvent(Event.ID.MappingEnd)) {
       blockCommentsCollector.collectEvents();
       if (parser.checkEvent(Event.ID.MappingEnd)) {
@@ -363,9 +369,9 @@ public class Composer implements Iterator<Node> {
     if (node instanceof MappingNode) {
       return (MappingNode) node;
     } else {
-      Optional<Anchor> anchorOption = node.getAnchor();
-      if (anchorOption.isPresent()) {
-        Node ref = anchors.get(anchorOption.get());
+      Anchor anchor = node.getAnchor();
+      if (anchor != null) {
+        Node ref = anchors.get(anchor);
         if (ref instanceof MappingNode) {
           return (MappingNode) ref;
         }
@@ -383,7 +389,7 @@ public class Composer implements Iterator<Node> {
    * @return node
    */
   protected Node composeKeyNode(MappingNode node) {
-    return composeNode(Optional.of(node));
+    return composeNode(node);
   }
 
   /**
@@ -393,6 +399,6 @@ public class Composer implements Iterator<Node> {
    * @return node
    */
   protected Node composeValueNode(MappingNode node) {
-    return composeNode(Optional.of(node));
+    return composeNode(node);
   }
 }

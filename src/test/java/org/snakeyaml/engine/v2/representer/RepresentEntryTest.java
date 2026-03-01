@@ -73,13 +73,13 @@ public class RepresentEntryTest {
     protected NodeTuple representMappingEntry(Map.Entry<?, ?> entry) {
       NodeTuple tuple = super.representMappingEntry(entry);
       List<CommentLine> keyBlockComments = new ArrayList<>();
-      keyBlockComments.add(new CommentLine(Optional.empty(), Optional.empty(),
-          "Key node block comment", CommentType.BLOCK));
+      keyBlockComments
+          .add(new CommentLine(null, null, "Key node block comment", CommentType.BLOCK));
       tuple.getKeyNode().setBlockComments(keyBlockComments);
 
       List<CommentLine> valueEndComments = new ArrayList<>();
-      valueEndComments.add(new CommentLine(Optional.empty(), Optional.empty(),
-          "Value node inline comment", CommentType.IN_LINE));
+      valueEndComments
+          .add(new CommentLine(null, null, "Value node inline comment", CommentType.IN_LINE));
       tuple.getValueNode().setEndComments(valueEndComments);
 
       return tuple;

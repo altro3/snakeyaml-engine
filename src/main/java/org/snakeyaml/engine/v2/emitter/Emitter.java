@@ -20,9 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Queue;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -151,7 +149,7 @@ public final class Emitter implements Emitable {
   private Map<String, String> tagPrefixes;
 
   // Prepared anchor and tag.
-  private Optional<Anchor> preparedAnchor;
+  private Anchor preparedAnchor;
   private String preparedTag;
 
   // Scalar analysis and style.
@@ -222,7 +220,7 @@ public final class Emitter implements Emitable {
     this.tagPrefixes = new LinkedHashMap<>();
 
     // Prepared anchor and tag.
-    this.preparedAnchor = Optional.empty();
+    this.preparedAnchor = null;
     this.preparedTag = null;
 
     // Scalar analysis and style.
@@ -370,16 +368,18 @@ public final class Emitter implements Emitable {
     }
 
     private void handleDocumentStartEvent(DocumentStartEvent ev) {
-      if ((ev.getSpecVersion().isPresent() || !ev.getTags().isEmpty()) && openEnded) {
+      if ((ev.getSpecVersion() != null || !ev.getTags().isEmpty()) && openEnded) {
         writeIndicator("...", true, false, false);
         writeIndent();
       }
-      ev.getSpecVersion().ifPresent(version -> writeVersionDirective(prepareVersion(version)));
+      if (ev.getSpecVersion() != null) {
+        writeVersionDirective(prepareVersion(ev.getSpecVersion()));
+      }
       tagPrefixes = new LinkedHashMap<>(DEFAULT_TAG_PREFIXES);
       if (!ev.getTags().isEmpty()) {
         handleTagDirectives(ev.getTags());
       }
-      boolean implicit = first && !ev.isExplicit() && !canonical && ev.getSpecVersion().isEmpty()
+      boolean implicit = first && !ev.isExplicit() && !canonical && ev.getSpecVersion() == null
           && (ev.getTags().isEmpty()) && !checkEmptyDocument();
       if (!implicit) {
         writeIndent();
@@ -391,7 +391,7 @@ public final class Emitter implements Emitable {
     }
 
     private void handleTagDirectives(Map<String, String> tags) {
-      Set<String> handles = new TreeSet<>(tags.keySet());
+      var handles = new TreeSet<>(tags.keySet());
       for (String handle : handles) {
         String prefix = tags.get(handle);
         tagPrefixes.put(prefix, handle);
@@ -407,8 +407,8 @@ public final class Emitter implements Emitable {
       }
       Event nextEvent = events.peek();
       if (nextEvent.getEventId() == Event.ID.Scalar) {
-        ScalarEvent e = (ScalarEvent) nextEvent;
-        return e.getAnchor().isEmpty() && e.getTag().isEmpty() && e.getImplicit() != null
+        var e = (ScalarEvent) nextEvent;
+        return e.getAnchor() == null && e.getTag().isEmpty() && e.getImplicit() != null
             && e.getValue().isEmpty();
       }
       return false;
@@ -417,6 +417,7 @@ public final class Emitter implements Emitable {
 
   private class ExpectDocumentEnd implements EmitterState {
 
+    @Override
     public void expect() {
       event = blockCommentsCollector.collectEventsAndPoll(event);
       writeBlockComment();
@@ -435,7 +436,7 @@ public final class Emitter implements Emitable {
   }
 
   private class ExpectDocumentRoot implements EmitterState {
-
+    @Override
     public void expect() {
       event = blockCommentsCollector.collectEventsAndPoll(event);
       if (!blockCommentsCollector.isEmpty()) {
@@ -862,23 +863,23 @@ public final class Emitter implements Emitable {
   private boolean checkSimpleKey() {
     int length = 0;
     if (event instanceof NodeEvent) {
-      Optional<Anchor> anchorOpt = ((NodeEvent) event).getAnchor();
-      if (anchorOpt.isPresent()) {
-        if (preparedAnchor.isEmpty()) {
-          preparedAnchor = anchorOpt;
+      Anchor anchor = ((NodeEvent) event).getAnchor();
+      if (anchor != null) {
+        if (preparedAnchor == null) {
+          preparedAnchor = anchor;
         }
-        length += anchorOpt.get().getValue().length();
+        length += anchor.getValue().length();
       }
     }
-    Optional<String> tag = Optional.empty();
+    String tag = null;
     if (event.getEventId() == Event.ID.Scalar) {
       tag = ((ScalarEvent) event).getTag();
     } else if (event instanceof CollectionStartEvent) {
       tag = ((CollectionStartEvent) event).getTag();
     }
-    if (tag.isPresent()) {
+    if (tag != null) {
       if (preparedTag == null) {
-        preparedTag = prepareTag(tag.get());
+        preparedTag = prepareTag(tag);
       }
       length += preparedTag.length();
     }
@@ -897,15 +898,14 @@ public final class Emitter implements Emitable {
 
   private void processAnchorOrAlias(String indicator, boolean trailingWhitespace) {
     NodeEvent ev = (NodeEvent) event;
-    Optional<Anchor> anchorOption = ev.getAnchor();
-    if (anchorOption.isPresent()) {
-      Anchor anchor = anchorOption.get();
-      if (preparedAnchor.isEmpty()) {
-        preparedAnchor = anchorOption;
+    Anchor anchor = ev.getAnchor();
+    if (anchor != null) {
+      if (preparedAnchor == null) {
+        preparedAnchor = anchor;
       }
       writeIndicator(indicator + anchor, true, false, false);
     }
-    preparedAnchor = Optional.empty();
+    preparedAnchor = null;
     if (trailingWhitespace) {
       writeWhitespace(1); // needed to separate ':' from the alias (not used for anchor)
     }
@@ -925,7 +925,7 @@ public final class Emitter implements Emitable {
    * Emit the tag for the current event
    */
   private void processTag() {
-    Optional<String> tag;
+    String tag;
     if (event.getEventId() == Event.ID.Scalar) {
       ScalarEvent ev = (ScalarEvent) event;
       tag = ev.getTag();
@@ -940,7 +940,7 @@ public final class Emitter implements Emitable {
         return; // no tag required
       }
       if (ev.getImplicit().canOmitTagInPlainScalar() && tag.isEmpty()) {
-        tag = Optional.of("!");
+        tag = "!";
         preparedTag = null;
       }
     } else {
@@ -955,7 +955,7 @@ public final class Emitter implements Emitable {
       throw new EmitterException("tag is not specified");
     }
     if (preparedTag == null) {
-      preparedTag = prepareTag(tag.get());
+      preparedTag = prepareTag(tag);
     }
     writeIndicator(preparedTag, true, false, false);
     preparedTag = null;
@@ -974,7 +974,7 @@ public final class Emitter implements Emitable {
     if (!ev.isPlain() && ev.isDQuoted() || this.canonical) {
       return ScalarStyle.DOUBLE_QUOTED;
     }
-    if (ev.isJson() && Optional.of(Tag.STR.getValue()).equals(ev.getTag())) {
+    if (ev.isJson() && Tag.STR.getValue().equals(ev.getTag())) {
       // special case for strings which are always double-quoted in JSON
       return ScalarStyle.DOUBLE_QUOTED;
     }

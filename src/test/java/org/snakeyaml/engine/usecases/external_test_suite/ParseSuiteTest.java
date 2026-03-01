@@ -16,6 +16,7 @@ package org.snakeyaml.engine.usecases.external_test_suite;
 import com.google.common.collect.Streams;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.usecases.external_test_suite.SuiteUtils.ParseResult;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Parse;
 import org.snakeyaml.engine.v2.events.Event;
@@ -25,8 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @org.junit.jupiter.api.Tag("fast")
 class ParseSuiteTest {
@@ -36,14 +36,14 @@ class ParseSuiteTest {
       SuiteUtils.getAll().stream().filter(data -> !data.getName().equals("JEF9-02"))
           .collect(Collectors.toList());
 
-  @Test
-  @DisplayName("Parse: Run one test")
   /**
    * This test is used to debug one test (which is given explicitly)
    */
+  @Test
+  @DisplayName("Parse: Run one test")
   void runOne() {
-    SuiteData data = SuiteUtils.getOne("Y79Y-002");
-    LoadSettings settings = LoadSettings.builder().setLabel(data.getLabel()).build();
+    var data = SuiteUtils.getOne("Y79Y-002");
+    var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
     Iterable<Event> iterable = new Parse(settings).parseString(data.getInput());
     for (Event event : iterable) {
       assertNotNull(event);
@@ -62,43 +62,39 @@ class ParseSuiteTest {
         shouldFail = !shouldFail;
       }
       if (shouldFail) {
-        assertTrue(result.getError().isPresent(), "Expected error, but got none in file "
-            + data.getName() + ", " + data.getLabel() + "\n" + result.getEvents());
+        assertNotNull(result.getError(), "Expected error, but got none in file " + data.getName()
+            + ", " + data.getLabel() + "\n" + result.getEvents());
       } else {
-        if (result.getError().isPresent()) {
-          fail("Testcase: " + data.getName() + "; label: " + data.getLabel()
-              + "\nExpected NO error, but got: " + result.getError().get());
-        } else {
-          List<ParsePair> pairs =
-              Streams.zip(data.getEvents().stream(), result.getEvents().stream(), ParsePair::new)
-                  .collect(Collectors.toList());
-          for (ParsePair pair : pairs) {
-            EventRepresentation representation = new EventRepresentation(pair.getEvent());
-            assertEquals(pair.getExpected(), representation.getRepresentation(),
-                "Failure in " + data.getName());
-          }
+        assertNull(result.getError(), "Testcase: " + data.getName() + "; label: " + data.getLabel()
+            + "\nExpected NO error, but got: " + result.getError());
+        List<ParsePair> pairs =
+            Streams.zip(data.getEvents().stream(), result.getEvents().stream(), ParsePair::new)
+                .collect(Collectors.toList());
+        for (ParsePair pair : pairs) {
+          var representation = new EventRepresentation(pair.getEvent());
+          assertEquals(pair.getExpected(), representation.getRepresentation(),
+              "Failure in " + data.getName());
         }
       }
     }
   }
-}
 
+  static class ParsePair {
 
-class ParsePair {
+    private final String expected;
+    private final Event event;
 
-  private final String expected;
-  private final Event event;
+    public ParsePair(String expected, Event event) {
+      this.expected = expected;
+      this.event = event;
+    }
 
-  public ParsePair(String expected, Event event) {
-    this.expected = expected;
-    this.event = event;
-  }
+    public String getExpected() {
+      return expected;
+    }
 
-  public String getExpected() {
-    return expected;
-  }
-
-  public Event getEvent() {
-    return event;
+    public Event getEvent() {
+      return event;
+    }
   }
 }

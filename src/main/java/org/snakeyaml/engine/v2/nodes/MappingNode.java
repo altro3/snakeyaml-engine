@@ -15,7 +15,6 @@ package org.snakeyaml.engine.v2.nodes;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -41,7 +40,7 @@ public class MappingNode extends CollectionNode<NodeTuple> {
    * @param endMark - end
    */
   public MappingNode(Tag tag, boolean resolved, List<NodeTuple> value, FlowStyle flowStyle,
-      Optional<Mark> startMark, Optional<Mark> endMark) {
+      Mark startMark, Mark endMark) {
     super(tag, flowStyle, startMark, endMark);
     Objects.requireNonNull(value);
     this.value = value;
@@ -56,7 +55,7 @@ public class MappingNode extends CollectionNode<NodeTuple> {
    * @param flowStyle - the flow style of the node
    */
   public MappingNode(Tag tag, List<NodeTuple> value, FlowStyle flowStyle) {
-    this(tag, true, value, flowStyle, Optional.empty(), Optional.empty());
+    this(tag, true, value, flowStyle, null, null);
   }
 
   @Override
@@ -84,10 +83,24 @@ public class MappingNode extends CollectionNode<NodeTuple> {
     value = merged;
   }
 
+  /**
+   * @param mergeTag - true if map contains merge node
+   */
+  public void setHasMergeTag(boolean mergeTag) {
+    this.mergeTag = mergeTag;
+  }
+
+  /**
+   * @return true if map contains merge node
+   */
+  public boolean hasMergeTag() {
+    return mergeTag;
+  }
+
   @Override
   public String toString() {
     String values;
-    StringBuilder buf = new StringBuilder();
+    var buf = new StringBuilder();
     for (NodeTuple node : getValue()) {
       buf.append("{ key=");
       buf.append(node.getKeyNode());
@@ -102,19 +115,5 @@ public class MappingNode extends CollectionNode<NodeTuple> {
     }
     values = buf.toString();
     return "<" + this.getClass().getName() + " (tag=" + getTag() + ", values=" + values + ")>";
-  }
-
-  /**
-   * @param mergeTag - true if map contains merge node
-   */
-  public void setHasMergeTag(boolean mergeTag) {
-    this.mergeTag = mergeTag;
-  }
-
-  /**
-   * @return true if map contains merge node
-   */
-  public boolean hasMergeTag() {
-    return mergeTag;
   }
 }

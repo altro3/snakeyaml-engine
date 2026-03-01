@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.usecases.env;
 
 import java.util.Map;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.env.EnvConfig;
 
 /**
@@ -42,14 +41,14 @@ public class CustomEnvConfig implements EnvConfig {
    * @param environment - the value from environment for the provided variable or null if unset
    * @return the value to apply in the template or empty to follow the standard logic
    */
-  public Optional<String> getValueFor(String name, String separator, String value,
-      String environment) {
+  @Override
+  public String getValueFor(String name, String separator, String value, String environment) {
     if (provided.containsKey(name)) {
-      return Optional.of(provided.get(name));
+      return provided.get(name);
     } else if (System.getProperty(name) != null) {
-      return Optional.of(System.getProperty(name));
+      return System.getProperty(name);
     } else {
-      return Optional.empty();
+      return null;
     }
   }
 }

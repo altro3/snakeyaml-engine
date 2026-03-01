@@ -13,8 +13,6 @@
  */
 package org.snakeyaml.engine.v2.env;
 
-import java.util.Optional;
-
 /**
  * Configurator for ENV format
  *
@@ -33,8 +31,7 @@ public interface EnvConfig {
    * @param environment - the value from environment for the provided variable or null if unset
    * @return the value to apply in the template or empty to follow the standard logic
    */
-  default Optional<String> getValueFor(String name, String separator, String value,
-      String environment) {
-    return Optional.empty();
+  default String getValueFor(String name, String separator, String value, String environment) {
+    return null;
   }
 }

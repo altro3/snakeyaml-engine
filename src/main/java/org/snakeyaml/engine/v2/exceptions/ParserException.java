@@ -13,8 +13,6 @@
  */
 package org.snakeyaml.engine.v2.exceptions;
 
-
-import java.util.Optional;
 import org.snakeyaml.engine.v2.parser.Parser;
 
 /**
@@ -30,8 +28,7 @@ public class ParserException extends MarkedYamlEngineException { // NOSONAR
    * @param problem Part of the input document that caused the problem.
    * @param problemMark Position of the <code>problem</code>. within the document.
    */
-  public ParserException(String context, Optional<Mark> contextMark, String problem,
-      Optional<Mark> problemMark) {
+  public ParserException(String context, Mark contextMark, String problem, Mark problemMark) {
     super(context, contextMark, problem, problemMark, null);
   }
 
@@ -41,7 +38,7 @@ public class ParserException extends MarkedYamlEngineException { // NOSONAR
    * @param problem - the issue
    * @param problemMark - the position of the issue
    */
-  public ParserException(String problem, Optional<Mark> problemMark) {
-    super(null, Optional.empty(), problem, problemMark, null);
+  public ParserException(String problem, Mark problemMark) {
+    super(null, null, problem, problemMark, null);
   }
 }

@@ -57,20 +57,20 @@ public class BinaryRoundTripTest {
   @Test
   public void testBinaryNode() {
     String source = "\u0096";
-    StandardRepresenter standardRepresenter = new StandardRepresenter(
+    var standardRepresenter = new StandardRepresenter(
         DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.BINARY).build());
-    ScalarNode scalar = (ScalarNode) standardRepresenter.represent(source);
+    var scalar = (ScalarNode) standardRepresenter.represent(source);
     // check Node
     assertEquals(org.snakeyaml.engine.v2.nodes.Tag.BINARY, scalar.getTag());
     assertEquals(NodeType.SCALAR, scalar.getNodeType());
     assertEquals("wpY=", scalar.getValue());
     // check Event
     Serialize serialize = new Serialize(DumpSettings.builder().build());
-    Iterable<Event> eventsIter = serialize.serializeOne(scalar);
-    List<Event> events = ((List<Event>) eventsIter).subList(0, ((List<Event>) eventsIter).size());
+    List<Event> eventsIter = serialize.serializeOne(scalar);
+    List<Event> events = eventsIter.subList(0, eventsIter.size());
     assertEquals(5, events.size());
-    ScalarEvent data = (ScalarEvent) events.get(2);
-    assertEquals(Tag.BINARY.toString(), data.getTag().get());
+    var data = (ScalarEvent) events.get(2);
+    assertEquals(Tag.BINARY.toString(), data.getTag());
     assertEquals(ScalarStyle.LITERAL, data.getScalarStyle());
     assertEquals("wpY=", data.getValue());
     ImplicitTuple implicit = data.getImplicit();
@@ -80,10 +80,9 @@ public class BinaryRoundTripTest {
 
   @Test
   public void testStrNode() {
-    StandardRepresenter standardRepresenter =
-        new StandardRepresenter(DumpSettings.builder().build());
+    var standardRepresenter = new StandardRepresenter(DumpSettings.builder().build());
     String source = "\u0096";
-    ScalarNode scalar = (ScalarNode) standardRepresenter.represent(source);
+    var scalar = (ScalarNode) standardRepresenter.represent(source);
     Node node = standardRepresenter.represent(source);
     assertEquals(Tag.STR, node.getTag());
     assertEquals(NodeType.SCALAR, node.getNodeType());
@@ -92,14 +91,15 @@ public class BinaryRoundTripTest {
 
   @Test
   public void testRoundTripBinary() {
-    Dump dumper =
+    var dumper =
         new Dump(DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.ESCAPE).build());
-    Map<String, String> toSerialized = new HashMap<>();
+    var toSerialized = new HashMap<String, String>();
     toSerialized.put("key", "a\u0096b");
     String output = dumper.dumpToString(toSerialized);
     assertEquals("{key: \"a\\x96b\"}\n", output);
-    Load loader = new Load(LoadSettings.builder().build());
-    Map<String, String> parsed = (Map<String, String>) loader.loadFromString(output);
+    var loader = new Load(LoadSettings.builder().build());
+    @SuppressWarnings("unchecked")
+    var parsed = (Map<String, String>) loader.loadFromString(output);
     assertEquals(toSerialized.get("key"), parsed.get("key"));
     assertEquals(toSerialized, parsed);
   }

@@ -15,7 +15,6 @@ package org.snakeyaml.engine.v2.events;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -28,22 +27,21 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
 public final class DocumentStartEvent extends Event {
 
   private final boolean explicit;
-  private final Optional<SpecVersion> specVersion;
+  private final SpecVersion specVersion;
   private final Map<String, String> tags;
 
-  public DocumentStartEvent(boolean explicit, Optional<SpecVersion> specVersion,
-      Map<String, String> tags, Optional<Mark> startMark, Optional<Mark> endMark) {
+  public DocumentStartEvent(boolean explicit, SpecVersion specVersion, Map<String, String> tags,
+      Mark startMark, Mark endMark) {
     super(startMark, endMark);
-    this.explicit = explicit;
     Objects.requireNonNull(specVersion);
-    this.specVersion = specVersion;
     Objects.requireNonNull(tags);
+    this.explicit = explicit;
+    this.specVersion = specVersion;
     this.tags = tags;
   }
 
-  public DocumentStartEvent(boolean explicit, Optional<SpecVersion> specVersion,
-      Map<String, String> tags) {
-    this(explicit, specVersion, tags, Optional.empty(), Optional.empty());
+  public DocumentStartEvent(boolean explicit, SpecVersion specVersion, Map<String, String> tags) {
+    this(explicit, specVersion, tags, null, null);
   }
 
   public boolean isExplicit() {
@@ -53,7 +51,7 @@ public final class DocumentStartEvent extends Event {
   /**
    * @return YAML version the document conforms to.
    */
-  public Optional<SpecVersion> getSpecVersion() {
+  public SpecVersion getSpecVersion() {
     return specVersion;
   }
 

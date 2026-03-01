@@ -15,7 +15,6 @@ package org.snakeyaml.engine.v2.api;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -42,7 +41,7 @@ public final class LoadSettings {
   private final boolean parseComments;
   private final int maxAliasesForCollections;
   private final boolean useMarks;
-  private final Optional<EnvConfig> envConfig;
+  private final EnvConfig envConfig;
   private final int codePointLimit;
   private final Schema schema;
   private final boolean allowNonScalarKeys;
@@ -55,7 +54,7 @@ public final class LoadSettings {
       IntFunction<Map<Object, Object>> defaultMap, UnaryOperator<SpecVersion> versionFunction,
       Integer bufferSize, boolean allowDuplicateKeys, boolean allowRecursiveKeys,
       int maxAliasesForCollections, boolean useMarks, Map<SettingKey, Object> customProperties,
-      Optional<EnvConfig> envConfig, boolean parseComments, int codePointLimit, Schema schema,
+      EnvConfig envConfig, boolean parseComments, int codePointLimit, Schema schema,
       boolean allowNonScalarKeys) {
     this.label = label;
     this.tagConstructors = tagConstructors;
@@ -133,7 +132,7 @@ public final class LoadSettings {
     return maxAliasesForCollections;
   }
 
-  public Optional<EnvConfig> getEnvConfig() {
+  public EnvConfig getEnvConfig() {
     return envConfig;
   }
 

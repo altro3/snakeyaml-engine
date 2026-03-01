@@ -24,6 +24,7 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
+import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.events.DocumentStartEvent;
 import org.snakeyaml.engine.v2.events.ImplicitTuple;
 import org.snakeyaml.engine.v2.events.ScalarEvent;
@@ -143,11 +144,11 @@ public class EmitterTest {
     StreamDataWriter output = new MyDumperWriter();
     Emitter emitter = new Emitter(settings, output);
 
-    emitter.emit(new StreamStartEvent(Optional.empty(), Optional.empty()));
-    emitter.emit(new DocumentStartEvent(false, Optional.empty(), new HashMap<>(), Optional.empty(),
-        Optional.empty()));
-    emitter.emit(new ScalarEvent(Optional.empty(), Optional.empty(), new ImplicitTuple(true, false),
-        burger + halfBurger, ScalarStyle.DOUBLE_QUOTED, Optional.empty(), Optional.empty()));
+    emitter.emit(new StreamStartEvent(null, null));
+    emitter
+        .emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>(), null, null));
+    emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, false), burger + halfBurger,
+        ScalarStyle.DOUBLE_QUOTED, null, null));
     String expected = "! \"\\U0001f354\\ud83c\"";
     assertEquals(expected, output.toString());
   }

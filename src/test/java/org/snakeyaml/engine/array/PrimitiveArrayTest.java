@@ -51,9 +51,8 @@ public class PrimitiveArrayTest {
     byte[] bytes1 = new byte[] {1, 2, 3};
     byte[] bytes2 = new byte[] {11, 12, 13};
     byte[][] bytes3 = new byte[][] {bytes1, bytes2};
-    Dump dumper = new Dump(DumpSettings.builder().build());
-    assertEquals("- !!binary |-\n" + "  AQID\n" + "- !!binary |-\n" + "  CwwN\n",
-        dumper.dumpToString(bytes3));
+    var dumper = new Dump(DumpSettings.builder().build());
+    assertEquals("- !!binary |-\n" + "  AQID\n" + "- !!binary |-\n" + "  CwwN\n", dumper.dumpToString(bytes3));
   }
 
   @Test

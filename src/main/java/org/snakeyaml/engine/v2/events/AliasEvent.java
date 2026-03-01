@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import java.util.Optional;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -24,13 +23,13 @@ public final class AliasEvent extends NodeEvent {
 
   private final Anchor alias;
 
-  public AliasEvent(Optional<Anchor> anchor, Optional<Mark> startMark, Optional<Mark> endMark) {
+  public AliasEvent(Anchor anchor, Mark startMark, Mark endMark) {
     super(anchor, startMark, endMark);
-    alias = anchor.orElseThrow(() -> new NullPointerException("Anchor is required in AliasEvent"));
+    alias = anchor;
   }
 
-  public AliasEvent(Optional<Anchor> anchor) {
-    this(anchor, Optional.empty(), Optional.empty());
+  public AliasEvent(Anchor anchor) {
+    this(anchor, null, null);
   }
 
   @Override

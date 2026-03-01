@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.v2.api;
 
 import java.util.Map;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.NonPrintableStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -32,9 +31,9 @@ public final class DumpSettings {
   private final boolean explicitStart;
   private final boolean explicitEnd;
   private final NonPrintableStyle nonPrintableStyle;
-  private final Optional<Tag> explicitRootTag;
+  private final Tag explicitRootTag;
   private final AnchorGenerator anchorGenerator;
-  private final Optional<SpecVersion> yamlDirective;
+  private final SpecVersion yamlDirective;
   private final Map<String, String> tagDirective;
   private final FlowStyle defaultFlowStyle;
   private final ScalarStyle defaultScalarStyle;
@@ -58,9 +57,9 @@ public final class DumpSettings {
   // general
   private final Map<SettingKey, Object> customProperties;
 
-  DumpSettings(boolean explicitStart, boolean explicitEnd, Optional<Tag> explicitRootTag,
-      AnchorGenerator anchorGenerator, Optional<SpecVersion> yamlDirective,
-      Map<String, String> tagDirective, FlowStyle defaultFlowStyle, ScalarStyle defaultScalarStyle,
+  DumpSettings(boolean explicitStart, boolean explicitEnd, Tag explicitRootTag,
+      AnchorGenerator anchorGenerator, SpecVersion yamlDirective, Map<String, String> tagDirective,
+      FlowStyle defaultFlowStyle, ScalarStyle defaultScalarStyle,
       NonPrintableStyle nonPrintableStyle, Schema schema, Boolean dereferenceAliases,
       // emitter
       boolean canonical, boolean multiLineFlow, boolean useUnicodeEncoding, int indent,
@@ -116,11 +115,11 @@ public final class DumpSettings {
     return explicitEnd;
   }
 
-  public Optional<Tag> getExplicitRootTag() {
+  public Tag getExplicitRootTag() {
     return explicitRootTag;
   }
 
-  public Optional<SpecVersion> getYamlDirective() {
+  public SpecVersion getYamlDirective() {
     return yamlDirective;
   }
 

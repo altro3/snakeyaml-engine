@@ -13,9 +13,7 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -24,9 +22,9 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class NodeEvent extends Event {
 
-  private final Optional<Anchor> anchor;
+  protected final Anchor anchor;
 
-  public NodeEvent(Optional<Anchor> anchor, Optional<Mark> startMark, Optional<Mark> endMark) {
+  public NodeEvent(Anchor anchor, Mark startMark, Mark endMark) {
     super(startMark, endMark);
     Objects.requireNonNull(anchor);
     this.anchor = anchor;
@@ -40,7 +38,7 @@ public abstract class NodeEvent extends Event {
    *
    * @return Anchor of this node or <code>null</code> if no anchor is defined.
    */
-  public Optional<Anchor> getAnchor() {
+  public Anchor getAnchor() {
     return this.anchor;
   }
 }

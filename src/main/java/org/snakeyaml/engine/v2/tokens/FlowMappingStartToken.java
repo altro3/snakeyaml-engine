@@ -13,12 +13,11 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
-import java.util.Optional;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class FlowMappingStartToken extends Token {
 
-  public FlowMappingStartToken(Optional<Mark> startMark, Optional<Mark> endMark) {
+  public FlowMappingStartToken(Mark startMark, Mark endMark) {
     super(startMark, endMark);
   }
 

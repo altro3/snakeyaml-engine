@@ -30,7 +30,7 @@ public class SequenceNode extends CollectionNode<Node> {
   private final List<Node> value;
 
   public SequenceNode(Tag tag, boolean resolved, List<Node> value, FlowStyle flowStyle,
-      Optional<Mark> startMark, Optional<Mark> endMark) {
+      Mark startMark, Mark endMark) {
     super(tag, flowStyle, startMark, endMark);
     Objects.requireNonNull(value, "value in a Node is required.");
     this.value = value;
@@ -38,7 +38,7 @@ public class SequenceNode extends CollectionNode<Node> {
   }
 
   public SequenceNode(Tag tag, List<Node> value, FlowStyle flowStyle) {
-    this(tag, true, value, flowStyle, Optional.empty(), Optional.empty());
+    this(tag, true, value, flowStyle, null, null);
   }
 
   @Override
@@ -51,25 +51,27 @@ public class SequenceNode extends CollectionNode<Node> {
    *
    * @return Nodes in the specified order.
    */
+  @Override
   public List<Node> getValue() {
     return value;
   }
 
+  @Override
   public String toString() {
-    StringBuilder buf = new StringBuilder();
-    for (Node node : getValue()) {
+    var buf = new StringBuilder();
+    var isFirst = true;
+    for (Node node : value) {
+      if (isFirst) {
+        buf.append(',');
+      }
       if (node instanceof CollectionNode) {
         // to avoid overflow in case of recursive structures
         buf.append(System.identityHashCode(node));
       } else {
         buf.append(node.toString());
       }
-      buf.append(",");
+      isFirst = false;
     }
-    // delete last comma
-    if (buf.length() > 0) {
-      buf.deleteCharAt(buf.length() - 1);
-    }
-    return "<" + this.getClass().getName() + " (tag=" + getTag() + ", value=[" + buf + "])>";
+    return "<SequenceNode (tag=" + tag + ", value=[" + buf + "])>";
   }
 }

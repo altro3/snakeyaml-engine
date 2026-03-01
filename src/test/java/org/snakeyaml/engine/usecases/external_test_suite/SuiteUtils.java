@@ -13,8 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.external_test_suite;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Parse;
@@ -23,17 +21,18 @@ import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SuiteUtils {
 
   // all 4 similar parsers fail (go-yaml/yaml, libyaml, PyYAML, Ruamel) if not specified
 
-  public static final List<String> deviationsWithSuccess = Lists.newArrayList( // should have failed
+  public static final List<String> deviationsWithSuccess = List.of( // should have failed
       "9JBA", // Comment must be separated from other tokens by white space characters
       "CVW2", // Comments must be separated from other tokens by white space characters
       "9C9N", // Wrong indented flow sequence
@@ -41,7 +40,7 @@ public class SuiteUtils {
       "QB6E", // Wrong indented multiline quoted scalar
       "Y79Y-003" // TODO Tabs in various contexts (go-yaml/yaml, libyaml), see issue 55
   );
-  public static final List<String> deviationsWithError = Lists.newArrayList( // just keep it
+  public static final List<String> deviationsWithError = List.of( // just keep it
       "HWV9", // Document-end marker
       "NB6Z", // TODO Multiline plain value with tabs on empty lines
       "VJP3-01", // Flow collections over many lines
@@ -88,7 +87,6 @@ public class SuiteUtils {
       "7Z25" // TODO Bare document after document end marker (Go, libyaml, PyYAML)
   );
 
-
   public static final String FOLDER_NAME = "src/test/resources/comprehensive-test-suite-data";
 
   public static List<File> getAllFoldersIn(String folder) {
@@ -99,17 +97,17 @@ public class SuiteUtils {
     if (!file.isDirectory()) {
       throw new RuntimeException("Must be folder: " + file.getAbsolutePath());
     }
-    return Arrays.stream(file.listFiles()).filter(f -> f.isDirectory())
+    return Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(File::isDirectory)
         .collect(Collectors.toList());
   }
 
   public static SuiteData readData(File file) {
     try {
       String name = file.getName();
-      String label = Files.asCharSource(new File(file, "==="), Charsets.UTF_8).read();
-      String input = Files.asCharSource(new File(file, "in.yaml"), Charsets.UTF_8).read();
-      List<String> events = Files.readLines(new File(file, "test.event"), Charsets.UTF_8).stream()
-          .filter(line -> !line.isEmpty()).collect(Collectors.toList());
+      String label = Files.asCharSource(new File(file, "==="), StandardCharsets.UTF_8).read();
+      String input = Files.asCharSource(new File(file, "in.yaml"), StandardCharsets.UTF_8).read();
+      List<String> events = Files.readLines(new File(file, "test.event"), StandardCharsets.UTF_8)
+          .stream().filter(line -> !line.isEmpty()).collect(Collectors.toList());
       boolean error = new File(file, "error").exists();
       return new SuiteData(name, label, input, events, error);
     } catch (IOException e) {
@@ -119,7 +117,7 @@ public class SuiteUtils {
 
   public static List<SuiteData> getAll() {
     List<File> allSuiteFiles = getAllFoldersIn(FOLDER_NAME);
-    return allSuiteFiles.stream().map(file -> readData(file)).collect(Collectors.toList());
+    return allSuiteFiles.stream().map(SuiteUtils::readData).collect(Collectors.toList());
   }
 
   public static SuiteData getOne(String name) {
@@ -127,35 +125,34 @@ public class SuiteUtils {
   }
 
   public static ParseResult parseData(SuiteData data) {
-    Optional<Exception> error = Optional.empty();
-    List<Event> list = new ArrayList();
+    Exception error = null;
+    var list = new ArrayList<Event>();
     try {
-      LoadSettings settings = LoadSettings.builder().setLabel(data.getLabel()).build();
+      var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
       Iterable<Event> iterable = new Parse(settings).parseString(data.getInput());
-      iterable.forEach(event -> list.add(event));
+      iterable.forEach(list::add);
     } catch (YamlEngineException e) {
-      error = Optional.of(e);
+      error = e;
     }
     return new ParseResult(list, error);
   }
-}
 
+  public static class ParseResult {
 
-class ParseResult {
+    private final List<Event> events;
+    private final Exception error;
 
-  private final List<Event> events;
-  private final Optional<Exception> error;
+    public ParseResult(List<Event> events, Exception error) {
+      this.events = events;
+      this.error = error;
+    }
 
-  public ParseResult(List<Event> events, Optional<Exception> error) {
-    this.events = events;
-    this.error = error;
-  }
+    public List<Event> getEvents() {
+      return events;
+    }
 
-  public List<Event> getEvents() {
-    return events;
-  }
-
-  public Optional<Exception> getError() {
-    return error;
+    public Exception getError() {
+      return error;
+    }
   }
 }

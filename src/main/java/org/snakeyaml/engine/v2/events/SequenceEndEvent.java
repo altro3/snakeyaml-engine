@@ -13,8 +13,6 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-
-import java.util.Optional;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -24,7 +22,7 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class SequenceEndEvent extends CollectionEndEvent {
 
-  public SequenceEndEvent(Optional<Mark> startMark, Optional<Mark> endMark) {
+  public SequenceEndEvent(Mark startMark, Mark endMark) {
     super(startMark, endMark);
   }
 
@@ -36,7 +34,6 @@ public final class SequenceEndEvent extends CollectionEndEvent {
   public ID getEventId() {
     return ID.SequenceEnd;
   }
-
 
   @Override
   public String toString() {

@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.v2.exceptions;
 
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Parsing exception when the marks are available
@@ -22,9 +21,9 @@ import java.util.Optional;
 public class MarkedYamlEngineException extends YamlEngineException {
 
   private final String context;
-  private final Optional<Mark> contextMark;
+  private final Mark contextMark;
   private final String problem;
-  private final Optional<Mark> problemMark;
+  private final Mark problemMark;
 
   /**
    * Create
@@ -35,8 +34,8 @@ public class MarkedYamlEngineException extends YamlEngineException {
    * @param problemMark - position of the issue
    * @param cause - exception which was thrown
    */
-  protected MarkedYamlEngineException(String context, Optional<Mark> contextMark, String problem,
-      Optional<Mark> problemMark, Throwable cause) {
+  protected MarkedYamlEngineException(String context, Mark contextMark, String problem,
+      Mark problemMark, Throwable cause) {
     super(context + "; " + problem + "; " + problemMark, cause);
     Objects.requireNonNull(contextMark, "contextMark must be provided");
     Objects.requireNonNull(problemMark, "problemMark must be provided");
@@ -54,8 +53,8 @@ public class MarkedYamlEngineException extends YamlEngineException {
    * @param problem - the issue
    * @param problemMark - position of the issue
    */
-  protected MarkedYamlEngineException(String context, Optional<Mark> contextMark, String problem,
-      Optional<Mark> problemMark) {
+  protected MarkedYamlEngineException(String context, Mark contextMark, String problem,
+      Mark problemMark) {
     this(context, contextMark, problem, problemMark, null);
   }
 
@@ -76,25 +75,25 @@ public class MarkedYamlEngineException extends YamlEngineException {
    */
   @Override
   public String toString() {
-    StringBuilder lines = new StringBuilder();
+    var lines = new StringBuilder();
     if (context != null) {
       lines.append(context);
-      lines.append("\n");
+      lines.append('\n');
     }
-    if (contextMark.isPresent() && (problem == null || problemMark.isEmpty()
-        || contextMark.get().getName().equals(problemMark.get().getName())
-        || (contextMark.get().getLine() != problemMark.get().getLine())
-        || (contextMark.get().getColumn() != problemMark.get().getColumn()))) {
-      lines.append(contextMark.get());
-      lines.append("\n");
+    if (contextMark != null && (problem == null || problemMark == null
+        || contextMark.getName().equals(problemMark.getName())
+        || (contextMark.getLine() != problemMark.getLine())
+        || (contextMark.getColumn() != problemMark.getColumn()))) {
+      lines.append(contextMark);
+      lines.append('\n');
     }
     if (problem != null) {
       lines.append(problem);
-      lines.append("\n");
+      lines.append('\n');
     }
-    if (problemMark.isPresent()) {
-      lines.append(problemMark.get());
-      lines.append("\n");
+    if (problemMark != null) {
+      lines.append(problemMark);
+      lines.append('\n');
     }
     return lines.toString();
   }
@@ -113,7 +112,7 @@ public class MarkedYamlEngineException extends YamlEngineException {
    *
    * @return position of the context of the error
    */
-  public Optional<Mark> getContextMark() {
+  public Mark getContextMark() {
     return contextMark;
   }
 
@@ -131,7 +130,7 @@ public class MarkedYamlEngineException extends YamlEngineException {
    *
    * @return position of the issue
    */
-  public Optional<Mark> getProblemMark() {
+  public Mark getProblemMark() {
     return problemMark;
   }
 }

@@ -50,7 +50,7 @@ public class DumpCommentInFlowStyleTest {
       // System.out.println(event);
     }
 
-    Node node = loader.composeReader(new StringReader(content)).get();
+    Node node = loader.composeReader(new StringReader(content));
     assertEquals(" comment breaks it", extractInlineComment(node));
 
     DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(true).build();
@@ -70,7 +70,7 @@ public class DumpCommentInFlowStyleTest {
   public void testBlockWithComments() {
     Compose loader = new Compose(LoadSettings.builder().setParseComments(true).build());
     String content = "url: text # comment breaks it\n";
-    Node node = loader.composeReader(new StringReader(content)).get();
+    Node node = loader.composeReader(new StringReader(content));
 
     assertEquals(" comment breaks it", extractInlineComment(node));
 

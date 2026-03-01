@@ -13,11 +13,6 @@
  */
 package org.snakeyaml.engine.v2.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -27,6 +22,11 @@ import org.snakeyaml.engine.v2.api.lowlevel.Compose;
 import org.snakeyaml.engine.v2.exceptions.ParserException;
 import org.snakeyaml.engine.v2.nodes.Node;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @Tag("fast")
 class OptionalMarksTest {
 
@@ -34,19 +34,17 @@ class OptionalMarksTest {
   @DisplayName("Compose: no marks")
   void composeWithoutMarks() {
     SuiteData data = SuiteUtils.getOne("2AUY");
-    LoadSettings settings =
-        LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
-    Optional<Node> node = new Compose(settings).composeString("{a: 4}");
-    assertTrue(node.isPresent());
+    var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
+    Node node = new Compose(settings).composeString("{a: 4}");
+    assertNotNull(node);
   }
 
   @Test
   @DisplayName("Compose: failure with marks")
   void composeErrorWithoutMarks2() {
     SuiteData data = SuiteUtils.getOne("2AUY");
-    LoadSettings settings =
-        LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(true).build();
-    ParserException exception =
+    var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(true).build();
+    var exception =
         assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
     assertTrue(exception.getMessage().contains("line 1, column 7:"),
         "The error must contain Mark data.");
@@ -57,9 +55,8 @@ class OptionalMarksTest {
   @DisplayName("Compose: failure without marks")
   void composeErrorWithoutMarks() {
     SuiteData data = SuiteUtils.getOne("2AUY");
-    LoadSettings settings =
-        LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
-    ParserException exception =
+    var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
+    var exception =
         assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
     assertEquals("expected '<document start>', but found '}'\n", exception.getMessage());
   }

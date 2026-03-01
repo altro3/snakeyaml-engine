@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -71,12 +70,12 @@ public abstract class BaseConstructor {
    * @param optionalNode - composed Node
    * @return constructed instance
    */
-  public Object constructSingleDocument(Optional<Node> optionalNode) {
-    if (optionalNode.isEmpty() || Tag.NULL.equals(optionalNode.get().getTag())) {
+  public Object constructSingleDocument(Node optionalNode) {
+    if (optionalNode == null || Tag.NULL.equals(optionalNode.getTag())) {
       ConstructNode construct = tagConstructors.get(Tag.NULL);
-      return construct.construct(optionalNode.orElse(null));
+      return construct.construct(optionalNode);
     } else {
-      return construct(optionalNode.get());
+      return construct(optionalNode);
     }
   }
 
@@ -142,13 +141,15 @@ public abstract class BaseConstructor {
    */
   protected Object constructObjectNoCheck(Node node) {
     if (recursiveObjects.contains(node)) {
-      throw new ConstructorException(null, Optional.empty(), "found unconstructable recursive node",
+      throw new ConstructorException(null, null, "found unconstructable recursive node",
           node.getStartMark());
     }
     recursiveObjects.add(node);
-    ConstructNode constructor =
-        findConstructorFor(node).orElseThrow(() -> new ConstructorException(null, Optional.empty(),
-            "could not determine a constructor for the tag " + node.getTag(), node.getStartMark()));
+    ConstructNode constructor = findConstructorFor(node);
+    if (constructor == null) {
+      throw new ConstructorException(null, null,
+          "could not determine a constructor for the tag " + node.getTag(), node.getStartMark());
+    }
     Object data = (constructedObjects.containsKey(node)) ? constructedObjects.get(node)
         : constructor.construct(node);
 
@@ -167,15 +168,15 @@ public abstract class BaseConstructor {
    * @param node {@link Node} to construct an instance from
    * @return {@link ConstructNode} implementation for the specified node
    */
-  protected Optional<ConstructNode> findConstructorFor(Node node) {
+  protected ConstructNode findConstructorFor(Node node) {
     Tag tag = node.getTag();
     if (settings.getTagConstructors().containsKey(tag)) {
-      return Optional.of(settings.getTagConstructors().get(tag));
+      return settings.getTagConstructors().get(tag);
     } else {
       if (tagConstructors.containsKey(tag)) {
-        return Optional.of(tagConstructors.get(tag));
+        return tagConstructors.get(tag);
       } else {
-        return Optional.empty();
+        return null;
       }
     }
   }

@@ -14,9 +14,7 @@
 package org.snakeyaml.engine.issues.issue68;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -33,33 +31,30 @@ class CommentAfterAliasTest {
   @Test
   @DisplayName("Issue 68: inline")
   void testCommentAfterAlias3() {
-    Compose compose = new Compose(loadSettings);
+    var compose = new Compose(loadSettings);
     String input = "field_with_alias: &alias_name # inline comment 1\n  555";
-    Optional<Node> node = compose.composeString(input);
+    Node node = compose.composeString(input);
     assertNotNull(node);
-    assertTrue(node.isPresent());
   }
 
   @Test
   @DisplayName("Issue 68: block comment and flat after")
   void testCommentAfterAlias1() {
-    Compose compose = new Compose(loadSettings);
-    String input = "field_with_alias: &alias_name\n"
-        + "# separate line comment following the alias\n" + "    555";
-    Optional<Node> node = compose.composeString(input);
+    var compose = new Compose(loadSettings);
+    String input =
+        "field_with_alias: &alias_name\n# separate line comment following the alias\n    555";
+    Node node = compose.composeString(input);
     assertNotNull(node);
-    assertTrue(node.isPresent());
   }
 
   @Test
   @DisplayName("Issue 68: block comment and nested after")
   void testCommentAfterAlias() {
     Compose compose = new Compose(loadSettings);
-    String input = "field_with_alias: &alias_name\n"
-        + "# separate line comment following the alias\n" + "    nested_field: nested_value";
-    Optional<Node> node = compose.composeString(input);
+    String input =
+        "field_with_alias: &alias_name\n# separate line comment following the alias\n    nested_field: nested_value";
+    Node node = compose.composeString(input);
     assertNotNull(node);
-    assertTrue(node.isPresent());
   }
 
   @Test
@@ -67,9 +62,8 @@ class CommentAfterAliasTest {
   void testCommentAfterTag() {
     Compose compose = new Compose(loadSettings);
     String input = "key: !!str # comment\n  value";
-    Optional<Node> node = compose.composeString(input);
+    Node node = compose.composeString(input);
     assertNotNull(node);
-    assertTrue(node.isPresent());
   }
 
   @Test
@@ -77,8 +71,7 @@ class CommentAfterAliasTest {
   void testCommentAfterAnchorAndTag() {
     Compose compose = new Compose(loadSettings);
     String input = "key: &anchor !!str # comment\n  value";
-    Optional<Node> node = compose.composeString(input);
+    Node node = compose.composeString(input);
     assertNotNull(node);
-    assertTrue(node.isPresent());
   }
 }

@@ -23,7 +23,7 @@ import org.snakeyaml.engine.v2.nodes.Node;
  */
 public class NumberAnchorGenerator implements AnchorGenerator {
 
-  private int lastAnchorId = 0;
+  private int lastAnchorId;
 
   /**
    * Create
@@ -41,13 +41,14 @@ public class NumberAnchorGenerator implements AnchorGenerator {
    * @param node - the data to anchor
    * @return unique anchor name or existing anchor name
    */
+  @Override
   public Anchor nextAnchor(Node node) {
-    if (node.getAnchor().isPresent()) {
+    if (node.getAnchor() != null) {
       // keep the anchor when it is set explicitly
-      return node.getAnchor().get();
+      return node.getAnchor();
     }
     this.lastAnchorId++;
-    NumberFormat format = NumberFormat.getNumberInstance(Locale.ROOT);
+    var format = NumberFormat.getNumberInstance(Locale.ROOT);
     format.setMinimumIntegerDigits(3);
     format.setMaximumFractionDigits(0);// issue 172
     format.setGroupingUsed(false);

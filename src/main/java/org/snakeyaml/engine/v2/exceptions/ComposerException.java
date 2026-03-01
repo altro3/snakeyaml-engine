@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.v2.exceptions;
 
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * General exception during composition step
@@ -29,8 +28,7 @@ public class ComposerException extends MarkedYamlEngineException { // NOSONAR
    * @param problem - the issue
    * @param problemMark - the problem location
    */
-  public ComposerException(String context, Optional<Mark> contextMark, String problem,
-      Optional<Mark> problemMark) {
+  public ComposerException(String context, Mark contextMark, String problem, Mark problemMark) {
     super(context, contextMark, problem, problemMark);
     Objects.requireNonNull(context);
   }
@@ -41,7 +39,7 @@ public class ComposerException extends MarkedYamlEngineException { // NOSONAR
    * @param problem - the issue
    * @param problemMark - the problem location
    */
-  public ComposerException(String problem, Optional<Mark> problemMark) {
-    super("", Optional.empty(), problem, problemMark);
+  public ComposerException(String problem, Mark problemMark) {
+    super("", null, problem, problemMark);
   }
 }

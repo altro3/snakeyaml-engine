@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.scanner;
 
-import java.util.Optional;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -29,10 +28,9 @@ final class SimpleKey {
   private final int index;
   private final int line;
   private final int column;
-  private final Optional<Mark> mark;
+  private final Mark mark;
 
-  public SimpleKey(int tokenNumber, boolean required, int index, int line, int column,
-      Optional<Mark> mark) {
+  public SimpleKey(int tokenNumber, boolean required, int index, int line, int column, Mark mark) {
     this.tokenNumber = tokenNumber;
     this.required = required;
     this.index = index;
@@ -49,7 +47,7 @@ final class SimpleKey {
     return this.column;
   }
 
-  public Optional<Mark> getMark() {
+  public Mark getMark() {
     return mark;
   }
 

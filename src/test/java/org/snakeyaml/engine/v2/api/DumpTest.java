@@ -13,20 +13,21 @@
  */
 package org.snakeyaml.engine.v2.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("fast")
 class DumpTest {
@@ -34,8 +35,8 @@ class DumpTest {
   @Test
   @DisplayName("Dump string")
   void dumpString() {
-    DumpSettings settings = DumpSettings.builder().build();
-    Dump dump = new Dump(settings);
+    var settings = DumpSettings.builder().build();
+    var dump = new Dump(settings);
     String str = dump.dumpToString("a");
     assertEquals("a\n", str);
   }
@@ -52,8 +53,8 @@ class DumpTest {
   @Test
   @DisplayName("Dump boolean")
   void dumpBoolean() {
-    DumpSettings settings = DumpSettings.builder().build();
-    Dump dump = new Dump(settings);
+    var settings = DumpSettings.builder().build();
+    var dump = new Dump(settings);
     String str = dump.dumpToString(Boolean.TRUE);
     assertEquals("true\n", str);
   }
@@ -61,33 +62,39 @@ class DumpTest {
   @Test
   @DisplayName("Dump seq")
   void dumpSequence() {
-    DumpSettings settings = DumpSettings.builder().build();
-    Dump dump = new Dump(settings);
-    String str = dump.dumpToString(Lists.newArrayList(2, "a", Boolean.TRUE));
+    var settings = DumpSettings.builder().build();
+    var dump = new Dump(settings);
+    String str = dump.dumpToString(List.of(2, "a", Boolean.TRUE));
     assertEquals("[2, a, true]\n", str);
   }
 
   @Test
   @DisplayName("Dump map")
   void dumpMapping() {
-    DumpSettings settings = DumpSettings.builder().build();
-    Dump dump = new Dump(settings);
-    String output = dump.dumpToString(ImmutableMap.of("x", 1, "y", 2, "z", 3));
+    var settings = DumpSettings.builder().build();
+    var dump = new Dump(settings);
+    String output = dump.dumpToString(Map.of("x", 1, "y", 2, "z", 3));
     assertEquals("{x: 1, y: 2, z: 3}\n", output);
   }
 
   @Test
   @DisplayName("Dump all instances")
   void dumpAll() {
-    DumpSettings settings = DumpSettings.builder().build();
-    Dump dump = new Dump(settings);
-    StreamToStringWriter streamToStringWriter = new StreamToStringWriter();
-    List<Object> list = Lists.newArrayList("a", null, Boolean.TRUE);
+    var settings = DumpSettings.builder().build();
+    var dump = new Dump(settings);
+    var streamToStringWriter = new StreamToStringWriter();
+    var list = new ArrayList<>() {
+      {
+        add("a");
+        add(null);
+        add(Boolean.TRUE);
+      }
+    };
     dump.dumpAll(list.iterator(), streamToStringWriter);
     assertEquals("a\n" + "--- null\n" + "--- true\n", streamToStringWriter.toString());
     // load back
-    LoadSettings loadSettings = LoadSettings.builder().build();
-    Load load = new Load(loadSettings);
+    var loadSettings = LoadSettings.builder().build();
+    var load = new Load(loadSettings);
     for (Object obj : load.loadAllFromString(streamToStringWriter.toString())) {
       assertEquals(list.remove(0), obj);
     }
@@ -96,14 +103,20 @@ class DumpTest {
   @Test
   @DisplayName("Dump all instances")
   void dumpAllToString() {
-    DumpSettings settings = DumpSettings.builder().build();
-    Dump dump = new Dump(settings);
-    List<Object> list = Lists.newArrayList("a", null, Boolean.TRUE);
+    var settings = DumpSettings.builder().build();
+    var dump = new Dump(settings);
+    var list = new ArrayList<>() {
+      {
+        add("a");
+        add(null);
+        add(Boolean.TRUE);
+      }
+    };
     String output = dump.dumpAllToString(list.iterator());
     assertEquals("a\n" + "--- null\n" + "--- true\n", output);
     // load back
-    LoadSettings loadSettings = LoadSettings.builder().build();
-    Load load = new Load(loadSettings);
+    var loadSettings = LoadSettings.builder().build();
+    var load = new Load(loadSettings);
     for (Object obj : load.loadAllFromString(output)) {
       assertEquals(list.remove(0), obj);
     }
@@ -112,20 +125,19 @@ class DumpTest {
   @Test
   @DisplayName("Dump to File")
   void dumpToFile() throws IOException {
-    DumpSettings settings = DumpSettings.builder().build();
-    Dump dump = new Dump(settings);
-    File file = new File("target/temp.yaml");
+    var settings = DumpSettings.builder().build();
+    var dump = new Dump(settings);
+    var file = new File("target/temp.yaml");
     file.delete();
     assertFalse(file.exists());
     file.createNewFile();
-    StreamDataWriter writer =
-        new YamlOutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8) {
-          @Override
-          public void processIOException(IOException e) {
-            throw new RuntimeException(e);
-          }
-        };
-    dump.dump(ImmutableMap.of("x", 1, "y", 2, "z", 3), writer);
+    var writer = new YamlOutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8) {
+      @Override
+      public void processIOException(IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
+    dump.dump(Map.of("x", 1, "y", 2, "z", 3), writer);
     assertTrue(file.exists());
     file.delete();// on Windows the file is not deleted
   }

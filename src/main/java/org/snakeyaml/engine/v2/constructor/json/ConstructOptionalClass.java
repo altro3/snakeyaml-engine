@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.constructor.json;
 
-import java.util.Optional;
 import org.snakeyaml.engine.v2.constructor.ConstructScalar;
 import org.snakeyaml.engine.v2.exceptions.ConstructorException;
 import org.snakeyaml.engine.v2.nodes.Node;
@@ -35,15 +34,11 @@ public class ConstructOptionalClass extends ConstructScalar {
   @Override
   public Object construct(Node node) {
     if (node.getNodeType() != NodeType.SCALAR) {
-      throw new ConstructorException("while constructing Optional", Optional.empty(),
-          "found non scalar node", node.getStartMark());
+      throw new ConstructorException("while constructing Optional", null, "found non scalar node",
+          null);
     }
     String value = constructScalar(node);
     Tag implicitTag = scalarResolver.resolve(value, true);
-    if (implicitTag.equals(Tag.NULL)) {
-      return Optional.empty();
-    } else {
-      return Optional.of(value);
-    }
+    return !implicitTag.equals(Tag.NULL) ? value : null;
   }
 }

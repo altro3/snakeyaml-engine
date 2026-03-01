@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.v2.events;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.common.CharConstants;
@@ -26,7 +25,7 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class ScalarEvent extends NodeEvent {
 
-  private final Optional<String> tag;
+  private final String tag;
   // style flag of a scalar event indicates the style of the scalar.
   private final ScalarStyle style;
   private final String value;
@@ -35,8 +34,8 @@ public final class ScalarEvent extends NodeEvent {
   // and non-plain style correspondingly.
   private final ImplicitTuple implicit;
 
-  public ScalarEvent(Optional<Anchor> anchor, Optional<String> tag, ImplicitTuple implicit,
-      String value, ScalarStyle style, Optional<Mark> startMark, Optional<Mark> endMark) {
+  public ScalarEvent(Anchor anchor, String tag, ImplicitTuple implicit, String value,
+      ScalarStyle style, Mark startMark, Mark endMark) {
     super(anchor, startMark, endMark);
     Objects.requireNonNull(tag);
     this.tag = tag;
@@ -47,9 +46,9 @@ public final class ScalarEvent extends NodeEvent {
     this.style = style;
   }
 
-  public ScalarEvent(Optional<Anchor> anchor, Optional<String> tag, ImplicitTuple implicit,
-      String value, ScalarStyle style) {
-    this(anchor, tag, implicit, value, style, Optional.empty(), Optional.empty());
+  public ScalarEvent(Anchor anchor, String tag, ImplicitTuple implicit, String value,
+      ScalarStyle style) {
+    this(anchor, tag, implicit, value, style, null, null);
   }
 
   /**
@@ -57,7 +56,7 @@ public final class ScalarEvent extends NodeEvent {
    *
    * @return The tag of this scalar, or <code>null</code> if no explicit tag is available.
    */
-  public Optional<String> getTag() {
+  public String getTag() {
     return this.tag;
   }
 
@@ -130,18 +129,19 @@ public final class ScalarEvent extends NodeEvent {
   @Override
   public String toString() {
     var builder = new StringBuilder("=VAL");
-    getAnchor().ifPresent(a -> builder.append(" &").append(a));
-    if (implicit.bothFalse()) {
-      getTag().ifPresent(theTag -> builder.append(" <").append(theTag).append('>'));
+    if (anchor != null) {
+      builder.append(" &").append(anchor);
     }
-    return builder.append(' ').append(getScalarStyle().toString()).append(escapedValue())
-        .toString();
+    if (implicit.bothFalse() && tag != null) {
+      builder.append(" <").append(tag).append('>');
+    }
+    return builder.append(' ').append(style.toString()).append(escapedValue()).toString();
   }
 
   // escape
   public String escapedValue() {
     return value.codePoints().filter(i -> i < Character.MAX_VALUE)
-        .mapToObj(ch -> CharConstants.escapeChar(String.valueOf(Character.toChars(ch))))
+        .mapToObj(ch -> CharConstants.escapeChar(new String(Character.toChars(ch))))
         .collect(Collectors.joining(""));
   }
 }

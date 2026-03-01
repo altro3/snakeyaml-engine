@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import java.util.Optional;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -26,13 +25,13 @@ public final class DocumentEndEvent extends Event {
 
   private final boolean explicit;
 
-  public DocumentEndEvent(boolean explicit, Optional<Mark> startMark, Optional<Mark> endMark) {
+  public DocumentEndEvent(boolean explicit, Mark startMark, Mark endMark) {
     super(startMark, endMark);
     this.explicit = explicit;
   }
 
   public DocumentEndEvent(boolean explicit) {
-    this(explicit, Optional.empty(), Optional.empty());
+    this(explicit, null, null);
   }
 
   public boolean isExplicit() {
@@ -46,8 +45,8 @@ public final class DocumentEndEvent extends Event {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder("-DOC");
-    if (isExplicit()) {
+    var builder = new StringBuilder("-DOC");
+    if (explicit) {
       builder.append(" ...");
     }
     return builder.toString();

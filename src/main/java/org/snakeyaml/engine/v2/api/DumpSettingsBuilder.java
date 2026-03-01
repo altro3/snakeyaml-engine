@@ -16,7 +16,6 @@ package org.snakeyaml.engine.v2.api;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.NonPrintableStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -39,9 +38,9 @@ public final class DumpSettingsBuilder {
   private boolean explicitStart;
   private boolean explicitEnd;
   private NonPrintableStyle nonPrintableStyle;
-  private Optional<Tag> explicitRootTag;
+  private Tag explicitRootTag;
   private AnchorGenerator anchorGenerator;
-  private Optional<SpecVersion> yamlDirective;
+  private SpecVersion yamlDirective;
   private Map<String, String> tagDirective;
   private FlowStyle defaultFlowStyle;
   private ScalarStyle defaultScalarStyle;
@@ -64,7 +63,7 @@ public final class DumpSettingsBuilder {
    * Create builder
    */
   DumpSettingsBuilder() {
-    this.explicitRootTag = Optional.empty();
+    this.explicitRootTag = null;
     this.tagDirective = new HashMap<>();
     this.anchorGenerator = new NumberAnchorGenerator(0);
     this.bestLineBreak = "\n";
@@ -76,7 +75,7 @@ public final class DumpSettingsBuilder {
     this.splitLines = true;
     this.explicitStart = false;
     this.explicitEnd = false;
-    this.yamlDirective = Optional.empty();
+    this.yamlDirective = null;
     this.defaultFlowStyle = FlowStyle.AUTO;
     this.defaultScalarStyle = ScalarStyle.PLAIN;
     this.nonPrintableStyle = NonPrintableStyle.ESCAPE;
@@ -138,7 +137,7 @@ public final class DumpSettingsBuilder {
    * @param explicitRootTag - specify the root tag
    * @return the builder with the provided value
    */
-  public DumpSettingsBuilder setExplicitRootTag(Optional<Tag> explicitRootTag) {
+  public DumpSettingsBuilder setExplicitRootTag(Tag explicitRootTag) {
     Objects.requireNonNull(explicitRootTag, "explicitRootTag cannot be null");
     this.explicitRootTag = explicitRootTag;
     return this;
@@ -161,7 +160,7 @@ public final class DumpSettingsBuilder {
    * @param yamlDirective - the version to be used in the directive
    * @return the builder with the provided value
    */
-  public DumpSettingsBuilder setYamlDirective(Optional<SpecVersion> yamlDirective) {
+  public DumpSettingsBuilder setYamlDirective(SpecVersion yamlDirective) {
     Objects.requireNonNull(yamlDirective, "yamlDirective cannot be null");
     this.yamlDirective = yamlDirective;
     return this;

@@ -13,8 +13,6 @@
  */
 package org.snakeyaml.engine.v2.common;
 
-import java.util.Optional;
-
 /**
  * YAML provides a rich set of scalar styles. Block scalar styles include the literal style and the
  * folded style; flow scalar styles include the plain style and two quoted styles, the single-quoted
@@ -25,39 +23,39 @@ public enum ScalarStyle {
   /**
    * Double quoted scalar
    */
-  DOUBLE_QUOTED(Optional.of('"')),
+  DOUBLE_QUOTED('"'),
   /**
    * Single quoted scalar
    */
-  SINGLE_QUOTED(Optional.of('\'')),
+  SINGLE_QUOTED('\''),
   /**
    * Literal scalar
    */
-  LITERAL(Optional.of('|')),
+  LITERAL('|'),
   /**
    * Folded scalar
    */
-  FOLDED(Optional.of('>')),
+  FOLDED('>'),
   /**
    * Mixture of scalar styles to dump JSON format. Double-quoted style for !!str, !!binary,
    * !!timestamp. Plain style - for !!bool, !!float, !!int, !!null
    *
    * These are never dumped - !!merge, !!value, !!yaml
    */
-  JSON_SCALAR_STYLE(Optional.of('J')),
+  JSON_SCALAR_STYLE('J'),
   /**
    * Plain scalar
    */
-  PLAIN(Optional.empty());
+  PLAIN(null);
 
-  private final Optional<Character> styleOpt;
+  private final Character styleOpt;
 
-  ScalarStyle(Optional<Character> style) {
+  ScalarStyle(Character style) {
     this.styleOpt = style;
   }
 
   @Override
   public String toString() {
-    return String.valueOf(styleOpt.orElse(':'));
+    return styleOpt != null ? styleOpt.toString() : ":";
   }
 }

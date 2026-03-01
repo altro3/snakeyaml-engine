@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import java.util.Optional;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -28,14 +27,13 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class SequenceStartEvent extends CollectionStartEvent {
 
-  public SequenceStartEvent(Optional<Anchor> anchor, Optional<String> tag, boolean implicit,
-      FlowStyle flowStyle, Optional<Mark> startMark, Optional<Mark> endMark) {
+  public SequenceStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
+      Mark startMark, Mark endMark) {
     super(anchor, tag, implicit, flowStyle, startMark, endMark);
   }
 
-  public SequenceStartEvent(Optional<Anchor> anchor, Optional<String> tag, boolean implicit,
-      FlowStyle flowStyle) {
-    this(anchor, tag, implicit, flowStyle, Optional.empty(), Optional.empty());
+  public SequenceStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle) {
+    this(anchor, tag, implicit, flowStyle, null, null);
   }
 
   @Override
@@ -45,8 +43,8 @@ public final class SequenceStartEvent extends CollectionStartEvent {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder("+SEQ");
-    if (getFlowStyle() == FlowStyle.FLOW) {
+    var builder = new StringBuilder("+SEQ");
+    if (flowStyle == FlowStyle.FLOW) {
       builder.append(" []");
     }
     builder.append(super.toString());

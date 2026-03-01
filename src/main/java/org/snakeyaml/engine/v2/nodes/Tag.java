@@ -62,11 +62,6 @@ public final class Tag {
   }
 
   @Override
-  public String toString() {
-    return value;
-  }
-
-  @Override
   public boolean equals(Object obj) {
     if (obj instanceof Tag) {
       return value.equals(((Tag) obj).getValue());
@@ -79,5 +74,9 @@ public final class Tag {
   public int hashCode() {
     return value.hashCode();
   }
-}
 
+  @Override
+  public String toString() {
+    return value;
+  }
+}

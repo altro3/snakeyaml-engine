@@ -13,15 +13,10 @@
  */
 package org.snakeyaml.engine.v2.api.lowlevel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import com.google.common.collect.Lists;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
+import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.events.DocumentEndEvent;
 import org.snakeyaml.engine.v2.events.DocumentStartEvent;
 import org.snakeyaml.engine.v2.events.Event;
@@ -33,23 +28,26 @@ import org.snakeyaml.engine.v2.nodes.ScalarNode;
 import org.snakeyaml.engine.v2.nodes.Tag;
 import org.snakeyaml.engine.v2.util.TestUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @org.junit.jupiter.api.Tag("fast")
 class SerializeTest {
 
   @Test
   void serializeOneScalar() {
-    Serialize serialize = new Serialize(DumpSettings.builder().build());
+    var serialize = new Serialize(DumpSettings.builder().build());
     Iterable<Event> events =
         serialize.serializeOne(new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN));
-    List<Event> list = Lists.newArrayList(events);
+    var list = new ArrayList<Event>();
+    events.forEach(list::add);
     assertEquals(5, list.size());
-    TestUtils
-        .compareEvents(
-            Lists.newArrayList(new StreamStartEvent(),
-                new DocumentStartEvent(false, Optional.empty(), new HashMap<>()),
-                new ScalarEvent(Optional.empty(), Optional.empty(), new ImplicitTuple(false, false),
-                    "a", ScalarStyle.PLAIN),
-                new DocumentEndEvent(false), new StreamEndEvent()),
-            list);
+    TestUtils.compareEvents(List.of(new StreamStartEvent(),
+        new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>()),
+        new ScalarEvent(null, null, new ImplicitTuple(false, false), "a", ScalarStyle.PLAIN),
+        new DocumentEndEvent(false), new StreamEndEvent()), list);
   }
 }

@@ -19,7 +19,6 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.api.RepresentToNode;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -92,20 +91,20 @@ public abstract class BaseRepresenter {
    * @param data - the data to be serialized
    * @return RepresentToNode to call to create a Node
    */
-  protected Optional<RepresentToNode> findRepresenterFor(Object data) {
+  protected RepresentToNode findRepresenterFor(Object data) {
     Class<?> clazz = data.getClass();
     // check the same class
     if (representers.containsKey(clazz)) {
-      return Optional.of(representers.get(clazz));
+      return representers.get(clazz);
     } else {
       // check the parents
       for (Map.Entry<Class<?>, RepresentToNode> parentRepresenterEntry : parentClassRepresenters
           .entrySet()) {
         if (parentRepresenterEntry.getKey().isInstance(data)) {
-          return Optional.of(parentRepresenterEntry.getValue());
+          return parentRepresenterEntry.getValue();
         }
       }
-      return Optional.empty();
+      return null;
     }
   }
 
@@ -125,8 +124,10 @@ public abstract class BaseRepresenter {
     if (data == null) {
       return nullRepresenter.representData(null);
     }
-    RepresentToNode representer = findRepresenterFor(data).orElseThrow(
-        () -> new YamlEngineException("Representer is not defined for " + data.getClass()));
+    RepresentToNode representer = findRepresenterFor(data);
+    if (representer == null) {
+      throw new YamlEngineException("Representer is not defined for " + data.getClass());
+    }
     return representer.representData(data);
   }
 

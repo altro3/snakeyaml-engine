@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
+import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.events.DocumentStartEvent;
 import org.snakeyaml.engine.v2.events.ImplicitTuple;
@@ -61,9 +61,9 @@ public class EmptyStringOutputTest {
     MyWriter writer = new MyWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, Optional.empty(), new HashMap<>()));
-    emitter.emit(new ScalarEvent(Optional.empty(), Optional.empty(), new ImplicitTuple(true, false),
-        value, ScalarStyle.PLAIN, Optional.empty(), Optional.empty()));
+    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>()));
+    emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, false), value,
+        ScalarStyle.PLAIN, null, null));
     return writer.toString();
   }
 }

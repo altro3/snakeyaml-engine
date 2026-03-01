@@ -13,12 +13,10 @@
  */
 package org.snakeyaml.engine.v2.nodes;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.comments.CommentLine;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -36,15 +34,15 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class Node {
 
-  private final Optional<Mark> startMark;
-  protected Optional<Mark> endMark;
+  private final Mark startMark;
+  protected Mark endMark;
   /**
    * true when the tag is assigned by the resolver
    */
   protected boolean resolved;
-  private Tag tag;
+  protected Tag tag;
   private boolean recursive;
-  private Optional<Anchor> anchor;
+  private Anchor anchor;
   private List<CommentLine> inLineComments;
   private List<CommentLine> blockComments;
   // End Comments are only on the last node in a document
@@ -58,13 +56,13 @@ public abstract class Node {
    * @param startMark - start mark when available
    * @param endMark - end mark when available
    */
-  public Node(Tag tag, Optional<Mark> startMark, Optional<Mark> endMark) {
+  public Node(Tag tag, Mark startMark, Mark endMark) {
     setTag(tag);
     this.startMark = startMark;
     this.endMark = endMark;
     this.recursive = false;
     this.resolved = true;
-    this.anchor = Optional.empty();
+    this.anchor = null;
     this.inLineComments = null;
     this.blockComments = null;
     this.endComments = null;
@@ -87,7 +85,7 @@ public abstract class Node {
     this.tag = tag;
   }
 
-  public Optional<Mark> getEndMark() {
+  public Mark getEndMark() {
     return endMark;
   }
 
@@ -96,16 +94,8 @@ public abstract class Node {
    */
   public abstract NodeType getNodeType();
 
-  public Optional<Mark> getStartMark() {
+  public Mark getStartMark() {
     return startMark;
-  }
-
-  /**
-   * Node is only equal to itself
-   */
-  @Override
-  public final boolean equals(Object obj) {
-    return super.equals(obj);
   }
 
   /**
@@ -131,18 +121,13 @@ public abstract class Node {
     this.recursive = recursive;
   }
 
-  @Override
-  public final int hashCode() {
-    return super.hashCode();
-  }
-
   /**
    * Get the anchor if it was defined for this Node
    *
    * @return the Anchor if available
    * @see <a href="https://yaml.org/spec/1.2/spec.html#id2765878">3.2.2.2. Anchors and Aliases</a>
    */
-  public Optional<Anchor> getAnchor() {
+  public Anchor getAnchor() {
     return anchor;
   }
 
@@ -152,7 +137,7 @@ public abstract class Node {
    * @param anchor - the Anchor for this Node
    * @see <a href="https://yaml.org/spec/1.2/spec.html#id2765878">3.2.2.2. Anchors and Aliases</a>
    */
-  public void setAnchor(Optional<Anchor> anchor) {
+  public void setAnchor(Anchor anchor) {
     this.anchor = anchor;
   }
 
@@ -227,5 +212,18 @@ public abstract class Node {
 
   public void setEndComments(List<CommentLine> endComments) {
     this.endComments = endComments;
+  }
+
+  /**
+   * Node is only equal to itself
+   */
+  @Override
+  public final boolean equals(Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  public final int hashCode() {
+    return super.hashCode();
   }
 }

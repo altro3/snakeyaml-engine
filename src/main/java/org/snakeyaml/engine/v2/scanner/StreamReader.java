@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.common.CharConstants;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -121,14 +120,14 @@ public final class StreamReader {
   /**
    * Generate {@link Mark} if it is configured
    *
-   * @return {@link Mark} of the current position or empty {@link Optional} otherwise
+   * @return {@link Mark} of the current position or null otherwise
    */
-  public Optional<Mark> getMark() {
+  public Mark getMark() {
     if (useMarks) {
-      return Optional.of(
-          new Mark(name, this.index, this.line, this.column, this.codePointsWindow, this.pointer));
+      return new Mark(name, this.index, this.line, this.column, this.codePointsWindow,
+          this.pointer);
     } else {
-      return Optional.empty();
+      return null;
     }
   }
 

@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.merge;
 
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -27,21 +26,18 @@ import org.snakeyaml.engine.v2.util.TestUtils;
 
 import java.io.StringReader;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
 
 @org.junit.jupiter.api.Tag("fast")
 public class MergeOnComposeTest {
 
   private String merge(String inputName, LoadSettings loadSettings) {
     String input = TestUtils.getResource(inputName);
-    Compose loader = new Compose(loadSettings);
-    Optional<Node> loaded = loader.composeReader(new StringReader(input));
-    Node sourceTree = loaded.get();
+    var loader = new Compose(loadSettings);
+    Node sourceTree = loader.composeReader(new StringReader(input));
     Serialize serialize = new Serialize(DumpSettings.builder().setDereferenceAliases(true).build());
     List<Event> events = serialize.serializeOne(sourceTree);
     Present present = new Present(DumpSettings.builder().build());
@@ -78,7 +74,7 @@ public class MergeOnComposeTest {
     String str =
         "test-list:\n" + " - &1\n" + "   a: 1\n" + "   b: 2\n" + " - &2 <<: *1\n" + " - <<: *2";
 
-    Compose loader = new Compose(
+    var loader = new Compose(
         LoadSettings.builder().setSchema(new CoreSchema()).setParseComments(false).build());
     try {
       loader.composeReader(new StringReader(str));

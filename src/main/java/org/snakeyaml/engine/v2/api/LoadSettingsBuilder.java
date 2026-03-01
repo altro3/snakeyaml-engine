@@ -20,7 +20,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
@@ -49,7 +48,7 @@ public final class LoadSettingsBuilder {
   private boolean parseComments;
   private int maxAliasesForCollections;
   private boolean useMarks;
-  private Optional<EnvConfig> envConfig;
+  private EnvConfig envConfig;
   private int codePointLimit;
   private Schema schema;
   private boolean allowNonScalarKeys;
@@ -77,7 +76,7 @@ public final class LoadSettingsBuilder {
     // to prevent YAML at https://en.wikipedia.org/wiki/Billion_laughs_attack
     this.maxAliasesForCollections = 50;
     this.useMarks = true;
-    this.envConfig = Optional.empty(); // no ENV substitution by default
+    this.envConfig = null; // no ENV substitution by default
     this.codePointLimit = 3 * 1024 * 1024; // 3 MB
     this.schema = new JsonSchema();
     this.allowNonScalarKeys = false;
@@ -236,7 +235,7 @@ public final class LoadSettingsBuilder {
    *      "https://bitbucket.org/snakeyaml/snakeyaml-engine/wiki/Documentation#markdown-header-env-variable-substitution">Variable
    *      substitution</a>
    */
-  public LoadSettingsBuilder setEnvConfig(Optional<EnvConfig> envConfig) {
+  public LoadSettingsBuilder setEnvConfig(EnvConfig envConfig) {
     this.envConfig = envConfig;
     return this;
   }

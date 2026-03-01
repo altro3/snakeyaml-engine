@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.external_test_suite;
 
-import com.google.common.collect.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -26,11 +25,11 @@ import org.snakeyaml.engine.v2.nodes.Node;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @org.junit.jupiter.api.Tag("fast")
@@ -39,7 +38,7 @@ class ComposeSuiteTest {
   /**
    * Use cases which result in an empty Node
    */
-  public static final List<String> emptyNodes = Lists.newArrayList("AVM7", "8G76", "98YD");
+  public static final List<String> emptyNodes = List.of("AVM7", "8G76", "98YD");
 
   private final List<SuiteData> allValid =
       SuiteUtils.getAll().stream().filter(data -> !data.hasError())
@@ -57,12 +56,12 @@ class ComposeSuiteTest {
 
   public static ComposeResult composeData(SuiteData data) {
     Exception error = null;
-    List<Node> list = new ArrayList<>();
+    var list = new ArrayList<Node>();
     try {
-      LoadSettings settings =
+      var settings =
           LoadSettings.builder().setLabel(data.getLabel()).setAllowNonScalarKeys(true).build();
       Iterable<Node> iterable = new Compose(settings).composeAllFromString(data.getInput());
-      iterable.forEach(event -> list.add(event));
+      iterable.forEach(list::add);
     } catch (YamlEngineException e) {
       error = e;
     }
@@ -72,10 +71,10 @@ class ComposeSuiteTest {
   @Test
   @DisplayName("Compose: run one test")
   void runOne() {
-    SuiteData data = SuiteUtils.getOne("C4HZ");
-    LoadSettings settings = LoadSettings.builder().setLabel(data.getLabel()).build();
-    Optional<Node> node = new Compose(settings).composeString(data.getInput());
-    assertTrue(node.isPresent());
+    var data = SuiteUtils.getOne("C4HZ");
+    var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
+    Node node = new Compose(settings).composeString(data.getInput());
+    assertNotNull(node);
     // System.out.println(node);
   }
 
@@ -87,15 +86,14 @@ class ComposeSuiteTest {
       List<Node> nodes = result.getNode();
       assertFalse(nodes.isEmpty(),
           data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
-      DumpSettings settings =
-          DumpSettings.builder().setExplicitStart(true).setExplicitEnd(true).build();
-      Serialize serialize = new Serialize(settings);
+      var settings = DumpSettings.builder().setExplicitStart(true).setExplicitEnd(true).build();
+      var serialize = new Serialize(settings);
       List<Event> events = serialize.serializeAll(nodes);
       assertEquals(data.getEvents().size(), events.size(),
           data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
       for (int i = 0; i < events.size(); i++) {
         Event event = events.get(i);
-        EventRepresentation representation = new EventRepresentation(event);
+        var representation = new EventRepresentation(event);
         String expectation = data.getEvents().get(i);
         boolean theSame = representation.isSameAs(expectation);
         assertTrue(theSame, data.getName() + " -> " + data.getLabel() + "\n" + data.getInput()
@@ -114,25 +112,24 @@ class ComposeSuiteTest {
           data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
     }
   }
+
+  static class ComposeResult {
+
+    private final List<Node> node;
+    private final Exception error;
+
+    public ComposeResult(List<Node> node, Exception error) {
+      this.node = node;
+      this.error = error;
+    }
+
+    public List<Node> getNode() {
+      return node;
+    }
+
+    public Exception getError() {
+      return error;
+    }
+  }
+
 }
-
-
-class ComposeResult {
-
-  private final List<Node> node;
-  private final Exception error;
-
-  public ComposeResult(List<Node> node, Exception error) {
-    this.node = node;
-    this.error = error;
-  }
-
-  public List<Node> getNode() {
-    return node;
-  }
-
-  public Exception getError() {
-    return error;
-  }
-}
-

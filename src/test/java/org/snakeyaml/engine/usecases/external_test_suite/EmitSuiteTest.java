@@ -15,6 +15,7 @@ package org.snakeyaml.engine.usecases.external_test_suite;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.usecases.external_test_suite.SuiteUtils.ParseResult;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Compose;
@@ -23,7 +24,7 @@ import org.snakeyaml.engine.v2.api.lowlevel.Present;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @org.junit.jupiter.api.Tag("fast")
 class EmitSuiteTest {
@@ -39,10 +40,10 @@ class EmitSuiteTest {
     for (SuiteData data : all) {
       ParseResult result = SuiteUtils.parseData(data);
       if (data.hasError()) {
-        assertTrue(result.getError().isPresent(), "Expected error, but got none in file "
-            + data.getName() + ", " + data.getLabel() + "\n" + result.getEvents());
+        assertNotNull(result.getError(), "Expected error, but got none in file " + data.getName()
+            + ", " + data.getLabel() + "\n" + result.getEvents());
       } else {
-        Present emit = new Present(DumpSettings.builder().build());
+        var emit = new Present(DumpSettings.builder().build());
         // emit without errors
         String yaml = emit.emitToString(result.getEvents().iterator());
         // eat your own dog food

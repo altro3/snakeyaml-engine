@@ -13,10 +13,10 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
-import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
+
+import java.util.Objects;
 
 public final class ScalarToken extends Token {
 
@@ -24,18 +24,16 @@ public final class ScalarToken extends Token {
   private final boolean plain;
   private final ScalarStyle style;
 
-  public ScalarToken(String value, boolean plain, Optional<Mark> startMark,
-      Optional<Mark> endMark) {
+  public ScalarToken(String value, boolean plain, Mark startMark, Mark endMark) {
     this(value, plain, ScalarStyle.PLAIN, startMark, endMark);
   }
 
-  public ScalarToken(String value, boolean plain, ScalarStyle style, Optional<Mark> startMark,
-      Optional<Mark> endMark) {
+  public ScalarToken(String value, boolean plain, ScalarStyle style, Mark startMark, Mark endMark) {
     super(startMark, endMark);
     Objects.requireNonNull(value);
+    Objects.requireNonNull(style);
     this.value = value;
     this.plain = plain;
-    Objects.requireNonNull(style);
     this.style = style;
   }
 

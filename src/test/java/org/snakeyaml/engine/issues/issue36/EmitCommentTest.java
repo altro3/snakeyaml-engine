@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
+import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.events.CommentEvent;
 import org.snakeyaml.engine.v2.events.DocumentEndEvent;
@@ -43,11 +43,10 @@ public class EmitCommentTest {
     StreamDataWriter writer = new StreamToStringWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, Optional.empty(), new HashMap<>()));
-    emitter.emit(
-        new CommentEvent(CommentType.BLOCK, "Hello world!", Optional.empty(), Optional.empty()));
-    emitter.emit(new ScalarEvent(Optional.empty(), Optional.empty(), new ImplicitTuple(true, true),
-        "This is the scalar", ScalarStyle.DOUBLE_QUOTED));
+    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>()));
+    emitter.emit(new CommentEvent(CommentType.BLOCK, "Hello world!", null, null));
+    emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), "This is the scalar",
+        ScalarStyle.DOUBLE_QUOTED));
     emitter.emit(new DocumentEndEvent(false));
     emitter.emit(new StreamEndEvent());
 
@@ -61,9 +60,8 @@ public class EmitCommentTest {
     StreamDataWriter writer = new StreamToStringWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, Optional.empty(), new HashMap<>()));
-    emitter.emit(
-        new CommentEvent(CommentType.BLOCK, "Hello world!", Optional.empty(), Optional.empty()));
+    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>()));
+    emitter.emit(new CommentEvent(CommentType.BLOCK, "Hello world!", null, null));
     emitter.emit(new DocumentEndEvent(false));
     emitter.emit(new StreamEndEvent());
 

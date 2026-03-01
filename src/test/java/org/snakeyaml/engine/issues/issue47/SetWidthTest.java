@@ -21,6 +21,7 @@ import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
+import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.events.DocumentEndEvent;
 import org.snakeyaml.engine.v2.events.DocumentStartEvent;
@@ -30,7 +31,6 @@ import org.snakeyaml.engine.v2.events.StreamEndEvent;
 import org.snakeyaml.engine.v2.events.StreamStartEvent;
 
 import java.io.StringWriter;
-import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,10 +72,10 @@ public class SetWidthTest {
     StreamDataWriter writer = new StreamToStringWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, Optional.empty(), emptyMap()));
+    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), emptyMap()));
 
-    emitter.emit(new ScalarEvent(Optional.empty(), Optional.empty(), new ImplicitTuple(true, true),
-        stringToSerialize, ScalarStyle.PLAIN));
+    emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
+        ScalarStyle.PLAIN));
 
     emitter.emit(new DocumentEndEvent(false));
     emitter.emit(new StreamEndEvent());
@@ -94,10 +94,10 @@ public class SetWidthTest {
     StreamDataWriter writer = new StreamToStringWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, Optional.empty(), emptyMap()));
+    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), emptyMap()));
 
-    emitter.emit(new ScalarEvent(Optional.empty(), Optional.empty(), new ImplicitTuple(true, true),
-        stringToSerialize, ScalarStyle.PLAIN));
+    emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
+        ScalarStyle.PLAIN));
 
     emitter.emit(new DocumentEndEvent(false));
     emitter.emit(new StreamEndEvent());
@@ -121,8 +121,7 @@ public class SetWidthTest {
     assertEquals(expected, yaml);
     assertEquals(stringToSerialize, parseBack(yaml));
   }
-}
 
-
-class StreamToStringWriter extends StringWriter implements StreamDataWriter {
+  static class StreamToStringWriter extends StringWriter implements StreamDataWriter {
+  }
 }

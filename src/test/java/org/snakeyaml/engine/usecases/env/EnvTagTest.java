@@ -15,7 +15,6 @@ package org.snakeyaml.engine.usecases.env;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Compose;
@@ -29,8 +28,8 @@ public class EnvTagTest {
 
   @Test
   public void testImplicitResolverForEnvConstructor() {
-    Compose loader = new Compose(LoadSettings.builder().build());
-    Optional<Node> loaded = loader.composeString("${PATH}");
-    assertEquals(Tag.ENV_TAG, loaded.get().getTag());
+    var loader = new Compose(LoadSettings.builder().build());
+    Node loaded = loader.composeString("${PATH}");
+    assertEquals(Tag.ENV_TAG, loaded.getTag());
   }
 }

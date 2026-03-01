@@ -13,8 +13,6 @@
  */
 package org.snakeyaml.engine.v2.exceptions;
 
-import java.util.Optional;
-
 /**
  * General exception during construction step
  */
@@ -29,8 +27,8 @@ public class ConstructorException extends MarkedYamlEngineException { // NOSONAR
    * @param problemMark - problem position
    * @param cause - the reason
    */
-  public ConstructorException(String context, Optional<Mark> contextMark, String problem,
-      Optional<Mark> problemMark, Throwable cause) {
+  public ConstructorException(String context, Mark contextMark, String problem, Mark problemMark,
+      Throwable cause) {
     super(context, contextMark, problem, problemMark, cause);
   }
 
@@ -42,8 +40,7 @@ public class ConstructorException extends MarkedYamlEngineException { // NOSONAR
    * @param problem - the issue
    * @param problemMark - problem position
    */
-  public ConstructorException(String context, Optional<Mark> contextMark, String problem,
-      Optional<Mark> problemMark) {
+  public ConstructorException(String context, Mark contextMark, String problem, Mark problemMark) {
     this(context, contextMark, problem, problemMark, null);
   }
 }

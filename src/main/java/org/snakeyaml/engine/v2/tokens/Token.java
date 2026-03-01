@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.v2.tokens;
 
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -22,21 +21,21 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class Token {
 
-  private final Optional<Mark> startMark;
-  private final Optional<Mark> endMark;
+  private final Mark startMark;
+  private final Mark endMark;
 
-  public Token(Optional<Mark> startMark, Optional<Mark> endMark) {
+  public Token(Mark startMark, Mark endMark) {
     Objects.requireNonNull(startMark);
     Objects.requireNonNull(endMark);
     this.startMark = startMark;
     this.endMark = endMark;
   }
 
-  public Optional<Mark> getStartMark() {
+  public Mark getStartMark() {
     return startMark;
   }
 
-  public Optional<Mark> getEndMark() {
+  public Mark getEndMark() {
     return endMark;
   }
 

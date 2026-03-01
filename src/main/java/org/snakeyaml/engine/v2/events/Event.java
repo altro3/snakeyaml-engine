@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import java.util.Optional;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -22,12 +21,11 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class Event {
 
-  private final Optional<Mark> startMark;
-  private final Optional<Mark> endMark;
+  private final Mark startMark;
+  private final Mark endMark;
 
-  public Event(Optional<Mark> startMark, Optional<Mark> endMark) {
-    if ((startMark.isPresent() && endMark.isEmpty())
-        || (startMark.isEmpty() && endMark.isPresent())) {
+  public Event(Mark startMark, Mark endMark) {
+    if ((startMark != null && endMark == null) || (startMark == null && endMark != null)) {
       throw new NullPointerException("Both marks must be either present or absent.");
     }
     this.startMark = startMark;
@@ -38,14 +36,14 @@ public abstract class Event {
    * Create Node for emitter
    */
   public Event() {
-    this(Optional.empty(), Optional.empty());
+    this(null, null);
   }
 
-  public Optional<Mark> getStartMark() {
+  public Mark getStartMark() {
     return startMark;
   }
 
-  public Optional<Mark> getEndMark() {
+  public Mark getEndMark() {
     return endMark;
   }
 

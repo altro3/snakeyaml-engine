@@ -14,10 +14,9 @@
 package org.snakeyaml.engine.usecases.inherited;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 import org.snakeyaml.engine.v2.nodes.Tag;
@@ -41,54 +40,54 @@ import org.snakeyaml.engine.v2.tokens.TagTuple;
 import org.snakeyaml.engine.v2.tokens.Token;
 import org.snakeyaml.engine.v2.tokens.ValueToken;
 
+import static java.util.Map.entry;
+
 public class CanonicalScanner implements Scanner {
 
-  public static final Map<Character, String> ESCAPE_REPLACEMENTS = new HashMap();
   private static final String DIRECTIVE = "%YAML 1.2";
-  private static final Map<Character, Integer> ESCAPE_CODES = new HashMap();
+  public static final Map<Character, String> ESCAPE_REPLACEMENTS;
+  private static final Map<Character, Integer> ESCAPE_CODES;
 
   static {
     // ASCII null
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('0'), "\0");
-    // ASCII bell
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('a'), "\u0007");
-    // ASCII backspace
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('b'), "\u0008");
-    // ASCII horizontal tab
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('t'), "\u0009");
-    // ASCII newline (line feed; &#92;n maps to 0x0A)
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('n'), "\n");
-    // ASCII vertical tab
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('v'), "\u000B");
-    // ASCII form-feed
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('f'), "\u000C");
-    // carriage-return (&#92;r maps to 0x0D)
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('r'), "\r");
-    // ASCII escape character (Esc)
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('e'), "\u001B");
-    // ASCII space
-    ESCAPE_REPLACEMENTS.put(Character.valueOf(' '), "\u0020");
-    // ASCII double-quote
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('"'), "\"");
-    // ASCII backslash
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('\\'), "\\");
-    // Unicode next line
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('N'), "\u0085");
-    // Unicode non-breaking-space
-    ESCAPE_REPLACEMENTS.put(Character.valueOf('_'), "\u00A0");
+    ESCAPE_REPLACEMENTS = Map.ofEntries(entry('0', "\0"),
+        // ASCII bell
+        entry('a', "\u0007"),
+        // ASCII backspace
+        entry('b', "\u0008"),
+        // ASCII horizontal tab
+        entry('t', "\u0009"),
+        // ASCII newline (line feed; &#92;n maps to 0x0A)
+        entry('n', "\n"),
+        // ASCII vertical tab
+        entry('v', "\u000B"),
+        // ASCII form-feed
+        entry('f', "\u000C"),
+        // carriage-return (&#92;r maps to 0x0D)
+        entry('r', "\r"),
+        // ASCII escape character (Esc)
+        entry('e', "\u001B"),
+        // ASCII space
+        entry(' ', "\u0020"),
+        // ASCII double-quote
+        entry('"', "\""),
+        // ASCII backslash
+        entry('\\', "\\"),
+        // Unicode next line
+        entry('N', "\u0085"),
+        // Unicode non-breaking-space
+        entry('_', "\u00A0"));
 
-    // 8-bit Unicode
-    ESCAPE_CODES.put(Character.valueOf('x'), 2);
-    // 16-bit Unicode
-    ESCAPE_CODES.put(Character.valueOf('u'), 4);
-    // 32-bit Unicode (Supplementary characters are supported)
-    ESCAPE_CODES.put(Character.valueOf('U'), 8);
+    ESCAPE_CODES = Map.of('x', 2, // 8-bit Unicode
+        'u', 4, // 16-bit Unicode
+        'U', 8 // 32-bit Unicode (Supplementary characters are supported)
+    );
   }
 
   private final String data;
   private final String label;
-  private final Optional<Mark> mark;
-  public ArrayList<Token> tokens;
+  private final Mark mark;
+  public List<Token> tokens;
   private int index;
   private boolean scanned;
 
@@ -96,11 +95,12 @@ public class CanonicalScanner implements Scanner {
     this.data = data + "\0";
     this.label = label;
     this.index = 0;
-    this.tokens = new ArrayList<Token>();
+    this.tokens = new ArrayList<>();
     this.scanned = false;
-    this.mark = Optional.of(new Mark("test", 0, 0, 0, data.toCharArray(), 0));
+    this.mark = new Mark("test", 0, 0, 0, data.toCharArray(), 0);
   }
 
+  @Override
   public boolean checkToken(Token.ID... choices) {
     if (!scanned) {
       scan();
@@ -119,6 +119,7 @@ public class CanonicalScanner implements Scanner {
     return false;
   }
 
+  @Override
   public Token peekToken() {
     if (!scanned) {
       scan();
@@ -236,8 +237,7 @@ public class CanonicalScanner implements Scanner {
           break;
 
         default:
-          throw new CanonicalException(
-              "invalid token: " + Character.valueOf((char) c) + " in " + label);
+          throw new CanonicalException("invalid token: " + (char) c + " in " + label);
       }
     }
     scanned = true;
@@ -248,11 +248,10 @@ public class CanonicalScanner implements Scanner {
     char chunk2 = data.charAt(index + DIRECTIVE.length());
     if (DIRECTIVE.equals(chunk1) && "\n\0".indexOf(chunk2) != -1) {
       index += DIRECTIVE.length();
-      List<Integer> implicit = new ArrayList<Integer>(2);
+      var implicit = new ArrayList<Integer>(2);
       implicit.add(1);
       implicit.add(1);
-      return new DirectiveToken<Integer>(DirectiveToken.YAML_DIRECTIVE, Optional.of(implicit), mark,
-          mark);
+      return new DirectiveToken<>(DirectiveToken.YAML_DIRECTIVE, implicit, mark, mark);
     } else {
       throw new CanonicalException("invalid directive: " + chunk1 + " " + chunk2 + " in " + label);
     }
@@ -293,7 +292,7 @@ public class CanonicalScanner implements Scanner {
     } else {
       value = "!" + value;
     }
-    return new TagToken(new TagTuple(Optional.of(""), value), mark, mark);
+    return new TagToken(new TagTuple("", value), mark, mark);
   }
 
   private Token scanScalar() {

@@ -16,7 +16,6 @@ package org.snakeyaml.engine.usecases.recursive;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -39,8 +38,8 @@ class RecursiveMapTest {
     Map<String, String> map = (Map<String, String>) load
         .loadFromString("First occurrence: &anchor Foo\n" + "Second occurrence: *anchor\n"
             + "Override anchor: &anchor Bar\n" + "Reuse anchor: *anchor\n");
-    Map<String, String> expected = ImmutableMap.of("First occurrence", "Foo", "Second occurrence",
-        "Foo", "Override anchor", "Bar", "Reuse anchor", "Bar");
+    Map<String, String> expected = Map.of("First occurrence", "Foo", "Second occurrence", "Foo",
+        "Override anchor", "Bar", "Reuse anchor", "Bar");
     assertEquals(expected, map);
   }
 

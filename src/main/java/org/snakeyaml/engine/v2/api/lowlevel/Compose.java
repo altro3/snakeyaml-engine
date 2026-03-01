@@ -18,7 +18,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.YamlUnicodeReader;
 import org.snakeyaml.engine.v2.composer.Composer;
@@ -51,7 +50,7 @@ public class Compose {
    * @return parsed {@link Node} if available
    * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
    */
-  public Optional<Node> composeReader(Reader yaml) {
+  public Node composeReader(Reader yaml) {
     Objects.requireNonNull(yaml, "Reader cannot be null");
     return new Composer(settings, new ParserImpl(settings, new StreamReader(settings, yaml)))
         .getSingleNode();
@@ -65,7 +64,7 @@ public class Compose {
    * @return parsed {@link Node} if available
    * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
    */
-  public Optional<Node> composeInputStream(InputStream yaml) {
+  public Node composeInputStream(InputStream yaml) {
     Objects.requireNonNull(yaml, "InputStream cannot be null");
     return new Composer(settings,
         new ParserImpl(settings, new StreamReader(settings, new YamlUnicodeReader(yaml))))
@@ -79,7 +78,7 @@ public class Compose {
    * @return parsed {@link Node} if available
    * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
    */
-  public Optional<Node> composeString(String yaml) {
+  public Node composeString(String yaml) {
     Objects.requireNonNull(yaml, "String cannot be null");
     return new Composer(settings,
         new ParserImpl(settings, new StreamReader(settings, new StringReader(yaml))))

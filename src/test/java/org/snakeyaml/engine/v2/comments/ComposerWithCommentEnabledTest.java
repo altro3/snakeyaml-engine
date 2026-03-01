@@ -13,15 +13,6 @@
  */
 package org.snakeyaml.engine.v2.comments;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.composer.Composer;
@@ -33,6 +24,16 @@ import org.snakeyaml.engine.v2.nodes.ScalarNode;
 import org.snakeyaml.engine.v2.nodes.SequenceNode;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ComposerWithCommentEnabledTest {
 
@@ -510,7 +511,7 @@ public class ComposerWithCommentEnabledTest {
     };
 
     Composer sut = newComposerWithCommentsEnabled(data);
-    List<Node> result = Collections.singletonList(sut.getSingleNode().get());
+    List<Node> result = Collections.singletonList(sut.getSingleNode());
 
     printNodeList(result);
     assertNodesEqual(expected, result);
@@ -539,7 +540,7 @@ public class ComposerWithCommentEnabledTest {
     };
 
     Composer sut = newComposerWithCommentsEnabled(data);
-    List<Node> result = Collections.singletonList(sut.getSingleNode().get());
+    List<Node> result = Collections.singletonList(sut.getSingleNode());
 
     printNodeList(result);
     assertNodesEqual(expected, result);
@@ -580,7 +581,7 @@ public class ComposerWithCommentEnabledTest {
     };
 
     Composer sut = newComposerWithCommentsEnabled(data);
-    List<Node> result = Collections.singletonList(sut.getSingleNode().get());
+    List<Node> result = Collections.singletonList(sut.getSingleNode());
 
     printNodeList(result);
     assertNodesEqual(expected, result);

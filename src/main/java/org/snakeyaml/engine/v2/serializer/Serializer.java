@@ -47,7 +47,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -79,6 +78,7 @@ public class Serializer {
     this.dereferenceAliases = settings.isDereferenceAliases();
     this.recursive = Collections.newSetFromMap(new IdentityHashMap<>());
     this.mergeUtils = new MergeUtils() {
+      @Override
       public MappingNode asMappingNode(Node node) {
         if (node instanceof MappingNode) {
           return (MappingNode) node;
@@ -96,10 +96,11 @@ public class Serializer {
    * @param node - the document root
    */
   public void serializeDocument(Node node) {
-    this.emitable.emit(new DocumentStartEvent(settings.isExplicitStart(),
-        settings.getYamlDirective(), settings.getTagDirective()));
+    this.emitable.emit(new DocumentStartEvent(settings.isExplicitStart(), settings.getYamlDirective(), settings.getTagDirective()));
     anchorNode(node);
-    settings.getExplicitRootTag().ifPresent(node::setTag);
+    if (settings.getExplicitRootTag() != null) {
+      node.setTag(settings.getExplicitRootTag());
+    }
     serializeNode(node);
     this.emitable.emit(new DocumentEndEvent(settings.isExplicitEnd()));
     this.serializedNodes.clear();
@@ -135,18 +136,17 @@ public class Serializer {
           a -> settings.getAnchorGenerator().nextAnchor(realNode));
     } else {
       this.anchors.put(realNode,
-          realNode.getAnchor().isPresent() ? settings.getAnchorGenerator().nextAnchor(realNode)
-              : null);
+          realNode.getAnchor() != null ? settings.getAnchorGenerator().nextAnchor(realNode) : null);
       switch (realNode.getNodeType()) {
         case SEQUENCE:
-          SequenceNode seqNode = (SequenceNode) realNode;
+          var seqNode = (SequenceNode) realNode;
           List<Node> list = seqNode.getValue();
           for (Node item : list) {
             anchorNode(item);
           }
           break;
         case MAPPING:
-          MappingNode mappingNode = (MappingNode) realNode;
+          var mappingNode = (MappingNode) realNode;
           List<NodeTuple> map = mappingNode.getValue();
           for (NodeTuple object : map) {
             Node key = object.getKeyNode();
@@ -173,11 +173,11 @@ public class Serializer {
       throw new YamlEngineException("Cannot dereferenceAliases for recursive structures.");
     }
     recursive.add(node);
-    Optional<Anchor> tAlias;
+    Anchor tAlias;
     if (!dereferenceAliases) {
-      tAlias = Optional.ofNullable(this.anchors.get(node));
+      tAlias = this.anchors.get(node);
     } else {
-      tAlias = Optional.empty();
+      tAlias = null;
     }
     if (!dereferenceAliases && this.serializedNodes.contains(node)) {
       this.emitable.emit(new AliasEvent(tAlias));
@@ -185,7 +185,7 @@ public class Serializer {
       this.serializedNodes.add(node);
       switch (node.getNodeType()) {
         case SCALAR:
-          ScalarNode scalarNode = (ScalarNode) node;
+          var scalarNode = (ScalarNode) node;
           serializeComments(node.getBlockComments());
           Tag detectedTag =
               settings.getSchema().getScalarResolver().resolve(scalarNode.getValue(), true);
@@ -193,18 +193,18 @@ public class Serializer {
               settings.getSchema().getScalarResolver().resolve(scalarNode.getValue(), false);
           ImplicitTuple tuple = new ImplicitTuple(node.getTag().equals(detectedTag),
               node.getTag().equals(defaultTag));
-          ScalarEvent event = new ScalarEvent(tAlias, Optional.of(node.getTag().getValue()), tuple,
+          ScalarEvent event = new ScalarEvent(tAlias, node.getTag().getValue(), tuple,
               scalarNode.getValue(), scalarNode.getScalarStyle());
           this.emitable.emit(event);
           serializeComments(node.getInLineComments());
           serializeComments(node.getEndComments());
           break;
         case SEQUENCE:
-          SequenceNode seqNode = (SequenceNode) node;
+          var seqNode = (SequenceNode) node;
           serializeComments(node.getBlockComments());
           boolean implicitS = node.getTag().equals(Tag.SEQ);
-          this.emitable.emit(new SequenceStartEvent(tAlias, Optional.of(node.getTag().getValue()),
-              implicitS, seqNode.getFlowStyle()));
+          this.emitable.emit(new SequenceStartEvent(tAlias, node.getTag().getValue(), implicitS,
+              seqNode.getFlowStyle()));
           List<Node> list = seqNode.getValue();
           for (Node item : list) {
             serializeNode(item);
@@ -217,14 +217,13 @@ public class Serializer {
           serializeComments(node.getBlockComments());
           if (node.getTag() != Tag.COMMENT) {
             boolean implicitM = node.getTag().equals(Tag.MAP);
-            MappingNode mappingNode = (MappingNode) node;
+            var mappingNode = (MappingNode) node;
             List<NodeTuple> map = mappingNode.getValue();
             if (this.dereferenceAliases && mappingNode.hasMergeTag()) {
               map = mergeUtils.flatten(mappingNode);
             }
-            this.emitable
-                .emit(new MappingStartEvent(tAlias, Optional.of(mappingNode.getTag().getValue()),
-                    implicitM, mappingNode.getFlowStyle(), Optional.empty(), Optional.empty()));
+            this.emitable.emit(new MappingStartEvent(tAlias, mappingNode.getTag().getValue(),
+                implicitM, mappingNode.getFlowStyle(), null, null));
             for (NodeTuple entry : map) {
               Node key = entry.getKeyNode();
               Node value = entry.getValueNode();
@@ -243,7 +242,7 @@ public class Serializer {
   private void serializeComments(List<CommentLine> comments) {
     if (settings.getDumpComments() && comments != null) {
       for (CommentLine line : comments) {
-        CommentEvent commentEvent = new CommentEvent(line.getCommentType(), line.getValue(),
+        var commentEvent = new CommentEvent(line.getCommentType(), line.getValue(),
             line.getStartMark(), line.getEndMark());
         this.emitable.emit(commentEvent);
       }

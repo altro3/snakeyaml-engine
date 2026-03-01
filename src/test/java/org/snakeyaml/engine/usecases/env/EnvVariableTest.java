@@ -13,12 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.env;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
@@ -26,6 +20,13 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.env.EnvConfig;
 import org.snakeyaml.engine.v2.exceptions.MissingEnvironmentVariableException;
 import org.snakeyaml.engine.v2.util.TestUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @org.junit.jupiter.api.Tag("fast")
 class EnvVariableTest {
@@ -38,10 +39,9 @@ class EnvVariableTest {
   @Test
   @DisplayName("Parse docker-compose.yaml example")
   public void testDockerCompose() {
-    Load loader =
-        new Load(LoadSettings.builder().setEnvConfig(Optional.of(new EnvConfig() {})).build());
+    var loader = new Load(LoadSettings.builder().setEnvConfig(new EnvConfig() {}).build());
     String resource = TestUtils.getResource("env/docker-compose.yaml");
-    Map<String, Object> compose = (Map<String, Object>) loader.loadFromString(resource);
+    var compose = (Map<String, Object>) loader.loadFromString(resource);
     String output = compose.toString();
     assertTrue(output.endsWith(
         "environment={URL1=EnvironmentValue1, URL2=, URL3=server3, URL4=, URL5=server5, URL6=server6}}}}"),
@@ -51,13 +51,13 @@ class EnvVariableTest {
   @Test
   @DisplayName("Custom EVN config example")
   public void testCustomEnvConfig() {
-    HashMap<String, String> provided = new HashMap();
+    var provided = new HashMap<String, String>();
     provided.put(KEY1, "VVVAAA111");
     System.setProperty(EMPTY, "VVVAAA222");
-    Load loader = new Load(
-        LoadSettings.builder().setEnvConfig(Optional.of(new CustomEnvConfig(provided))).build());
+    var loader =
+        new Load(LoadSettings.builder().setEnvConfig(new CustomEnvConfig(provided)).build());
     String resource = TestUtils.getResource("env/docker-compose.yaml");
-    Map<String, Object> compose = (Map<String, Object>) loader.loadFromString(resource);
+    var compose = (Map<String, Object>) loader.loadFromString(resource);
     String output = compose.toString();
     assertTrue(output.endsWith(
         "environment={URL1=VVVAAA111, URL2=VVVAAA222, URL3=VVVAAA222, URL4=VVVAAA222, URL5=server5, URL6=server6}}}}"),
@@ -65,9 +65,8 @@ class EnvVariableTest {
   }
 
   private String load(String template) {
-    Load loader =
-        new Load(LoadSettings.builder().setEnvConfig(Optional.of(new EnvConfig() {})).build());
-    String loaded = (String) loader.loadFromString(template);
+    var loader = new Load(LoadSettings.builder().setEnvConfig(new EnvConfig() {}).build());
+    var loaded = (String) loader.loadFromString(template);
     return loaded;
   }
 
@@ -80,7 +79,7 @@ class EnvVariableTest {
   @Test
   @DisplayName("Parsing ENV variables must be explicitly enabled")
   public void testNoEnvConstructor() {
-    Load loader = new Load(LoadSettings.builder().build());
+    var loader = new Load(LoadSettings.builder().build());
     String loaded = (String) loader.loadFromString("${EnvironmentKey1}");
     assertEquals("${EnvironmentKey1}", loaded);
   }

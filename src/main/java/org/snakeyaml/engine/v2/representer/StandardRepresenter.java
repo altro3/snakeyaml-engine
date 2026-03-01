@@ -72,7 +72,7 @@ public class StandardRepresenter extends BaseRepresenter {
     this.representers.put(Optional.class, new RepresentOptional());
     this.representers.put(byte[].class, new RepresentByteArray());
 
-    RepresentToNode primitiveArray = new RepresentPrimitiveArray();
+    var primitiveArray = new RepresentPrimitiveArray();
     representers.put(short[].class, primitiveArray);
     representers.put(int[].class, primitiveArray);
     representers.put(long[].class, primitiveArray);
@@ -128,6 +128,7 @@ public class StandardRepresenter extends BaseRepresenter {
       this.iter = iter;
     }
 
+    @Override
     public Iterator<Object> iterator() {
       return iter;
     }
@@ -138,6 +139,7 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   protected class RepresentNull implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
       return representScalar(Tag.NULL, "null");
     }
@@ -148,9 +150,10 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentString implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
       Tag tag = Tag.STR;
-      ScalarStyle style = ScalarStyle.PLAIN;
+      var style = ScalarStyle.PLAIN;
       String value = data.toString();
       if (settings.getNonPrintableStyle() == NonPrintableStyle.BINARY
           && !StreamReader.isPrintable(value)) {
@@ -180,6 +183,7 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentBoolean implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
       String value;
       if (Boolean.TRUE.equals(data)) {
@@ -196,6 +200,7 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentNumber implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
       Tag tag;
       String value;
@@ -228,6 +233,7 @@ public class StandardRepresenter extends BaseRepresenter {
   public class RepresentList implements RepresentToNode {
 
     @SuppressWarnings("unchecked")
+    @Override
     public Node representData(Object data) {
       return representSequence(getTag(data.getClass(), Tag.SEQ), (List<Object>) data,
           settings.getDefaultFlowStyle());
@@ -240,8 +246,9 @@ public class StandardRepresenter extends BaseRepresenter {
   public class RepresentIterator implements RepresentToNode {
 
     @SuppressWarnings("unchecked")
+    @Override
     public Node representData(Object data) {
-      Iterator<Object> iter = (Iterator<Object>) data;
+      var iter = (Iterator<Object>) data;
       return representSequence(getTag(data.getClass(), Tag.SEQ), new IteratorWrapper(iter),
           settings.getDefaultFlowStyle());
     }
@@ -252,9 +259,10 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentArray implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
-      Object[] array = (Object[]) data;
-      List<Object> list = Arrays.asList(array);
+      var array = (Object[]) data;
+      var list = Arrays.asList(array);
       return representSequence(Tag.SEQ, list, settings.getDefaultFlowStyle());
     }
   }
@@ -265,32 +273,36 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentPrimitiveArray implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
       Class<?> type = data.getClass().getComponentType();
 
       FlowStyle style = settings.getDefaultFlowStyle();
+      List<?> list;
       if (short.class == type) {
-        return representSequence(Tag.SEQ, asShortList(data), style);
+        list = asShortList(data);
       } else if (int.class == type) {
-        return representSequence(Tag.SEQ, asIntList(data), style);
+        list = asIntList(data);
       } else if (long.class == type) {
-        return representSequence(Tag.SEQ, asLongList(data), style);
+        list = asLongList(data);
       } else if (float.class == type) {
-        return representSequence(Tag.SEQ, asFloatList(data), style);
+        list = asFloatList(data);
       } else if (double.class == type) {
-        return representSequence(Tag.SEQ, asDoubleList(data), style);
+        list = asDoubleList(data);
       } else if (char.class == type) {
-        return representSequence(Tag.SEQ, asCharList(data), style);
+        list = asCharList(data);
       } else if (boolean.class == type) {
-        return representSequence(Tag.SEQ, asBooleanList(data), style);
+        list = asBooleanList(data);
+      } else {
+        throw new YamlEngineException("Unexpected primitive '" + type.getCanonicalName() + "'");
       }
 
-      throw new YamlEngineException("Unexpected primitive '" + type.getCanonicalName() + "'");
+      return representSequence(Tag.SEQ, list, style);
     }
 
     private List<Short> asShortList(Object in) {
-      short[] array = (short[]) in;
-      List<Short> list = new ArrayList<>(array.length);
+      var array = (short[]) in;
+      var list = new ArrayList<Short>(array.length);
       for (short value : array) {
         list.add(value);
       }
@@ -298,8 +310,8 @@ public class StandardRepresenter extends BaseRepresenter {
     }
 
     private List<Integer> asIntList(Object in) {
-      int[] array = (int[]) in;
-      List<Integer> list = new ArrayList<>(array.length);
+      var array = (int[]) in;
+      var list = new ArrayList<Integer>(array.length);
       for (int j : array) {
         list.add(j);
       }
@@ -307,8 +319,8 @@ public class StandardRepresenter extends BaseRepresenter {
     }
 
     private List<Long> asLongList(Object in) {
-      long[] array = (long[]) in;
-      List<Long> list = new ArrayList<>(array.length);
+      var array = (long[]) in;
+      var list = new ArrayList<Long>(array.length);
       for (long l : array) {
         list.add(l);
       }
@@ -316,8 +328,8 @@ public class StandardRepresenter extends BaseRepresenter {
     }
 
     private List<Float> asFloatList(Object in) {
-      float[] array = (float[]) in;
-      List<Float> list = new ArrayList<>(array.length);
+      var array = (float[]) in;
+      var list = new ArrayList<Float>(array.length);
       for (float v : array) {
         list.add(v);
       }
@@ -325,8 +337,8 @@ public class StandardRepresenter extends BaseRepresenter {
     }
 
     private List<Double> asDoubleList(Object in) {
-      double[] array = (double[]) in;
-      List<Double> list = new ArrayList<>(array.length);
+      var array = (double[]) in;
+      var list = new ArrayList<Double>(array.length);
       for (double v : array) {
         list.add(v);
       }
@@ -334,8 +346,8 @@ public class StandardRepresenter extends BaseRepresenter {
     }
 
     private List<Character> asCharList(Object in) {
-      char[] array = (char[]) in;
-      List<Character> list = new ArrayList<>(array.length);
+      var array = (char[]) in;
+      var list = new ArrayList<Character>(array.length);
       for (char c : array) {
         list.add(c);
       }
@@ -343,8 +355,8 @@ public class StandardRepresenter extends BaseRepresenter {
     }
 
     private List<Boolean> asBooleanList(Object in) {
-      boolean[] array = (boolean[]) in;
-      List<Boolean> list = new ArrayList<>(array.length);
+      var array = (boolean[]) in;
+      var list = new ArrayList<Boolean>(array.length);
       for (boolean b : array) {
         list.add(b);
       }
@@ -358,6 +370,7 @@ public class StandardRepresenter extends BaseRepresenter {
   public class RepresentMap implements RepresentToNode {
 
     @SuppressWarnings("unchecked")
+    @Override
     public Node representData(Object data) {
       return representMapping(getTag(data.getClass(), Tag.MAP), (Map<Object, Object>) data,
           settings.getDefaultFlowStyle());
@@ -369,10 +382,11 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentSet implements RepresentToNode {
 
-    @SuppressWarnings("unchecked")
+    @Override
     public Node representData(Object data) {
-      Map<Object, Object> value = new LinkedHashMap<>();
-      Set<Object> set = (Set<Object>) data;
+      var value = new LinkedHashMap<>();
+      @SuppressWarnings("unchecked")
+      var set = (Set<Object>) data;
       for (Object key : set) {
         value.put(key, null);
       }
@@ -386,8 +400,9 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentEnum implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
-      Tag tag = new Tag(data.getClass());
+      var tag = new Tag(data.getClass());
       return representScalar(getTag(data.getClass(), tag), ((Enum<?>) data).name());
     }
   }
@@ -397,6 +412,7 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentByteArray implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
       return representScalar(Tag.BINARY, Base64.getEncoder().encodeToString((byte[]) data),
           ScalarStyle.LITERAL);
@@ -408,6 +424,7 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentUuid implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
       return representScalar(getTag(data.getClass(), new Tag(UUID.class)), data.toString());
     }
@@ -418,8 +435,9 @@ public class StandardRepresenter extends BaseRepresenter {
    */
   public class RepresentOptional implements RepresentToNode {
 
+    @Override
     public Node representData(Object data) {
-      Optional<?> opt = (Optional<?>) data;
+      var opt = (Optional<?>) data;
       if (opt.isPresent()) {
         Node node = represent(opt.get());
         node.setTag(new Tag(Optional.class));

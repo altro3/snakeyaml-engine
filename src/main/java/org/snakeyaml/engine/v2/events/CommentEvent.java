@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.v2.events;
 
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -26,12 +25,12 @@ public final class CommentEvent extends Event {
   private final CommentType type;
   private final String value;
 
-  public CommentEvent(CommentType type, String value, Optional<Mark> startMark,
-      Optional<Mark> endMark) {
+  public CommentEvent(CommentType type, String value, Mark startMark, Mark endMark) {
     super(startMark, endMark);
     Objects.requireNonNull(type);
-    this.type = type;
     Objects.requireNonNull(value);
+
+    this.type = type;
     this.value = value;
   }
 

@@ -23,7 +23,6 @@ import org.snakeyaml.engine.v2.composer.Composer;
 import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.events.Event;
 import org.snakeyaml.engine.v2.nodes.Node;
-import org.snakeyaml.engine.v2.parser.Parser;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
 import org.snakeyaml.engine.v2.serializer.Serializer;
@@ -45,12 +44,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class DumpWithoutCommentsTest {
 
   public Node createNodeWithComments(String source) {
-    LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
-    Parser parser =
+    var loadSettings = LoadSettings.builder().setParseComments(true).build();
+    var parser =
         new ParserImpl(loadSettings, new StreamReader(loadSettings, new StringReader(source)));
-    Composer composer = new Composer(loadSettings, parser);
-    Node node =
-        composer.getSingleNode().orElseThrow(() -> new IllegalStateException("No node found."));
+    var composer = new Composer(loadSettings, parser);
+    Node node = composer.getSingleNode();
     assertNotNull(node);
     return node;
   }

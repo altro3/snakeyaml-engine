@@ -13,15 +13,14 @@
  */
 package org.snakeyaml.engine.usecases.tags;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.nodes.Tag;
+
+import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Example of serializing a root tag
@@ -31,11 +30,10 @@ public class ExplicitRootTagTest {
 
   @Test
   public void testLocalTag() {
-    DumpSettings settings =
-        DumpSettings.builder().setExplicitRootTag(Optional.of(new Tag("!my-data"))).build();
-    Map<String, String> map = new HashMap();
+    var settings = DumpSettings.builder().setExplicitRootTag(new Tag("!my-data")).build();
+    var map = new HashMap<String, String>();
     map.put("foo", "bar");
-    Dump dump = new Dump(settings);
+    var dump = new Dump(settings);
     String output = dump.dumpToString(map);
     assertEquals("!my-data {foo: bar}\n", output);
   }

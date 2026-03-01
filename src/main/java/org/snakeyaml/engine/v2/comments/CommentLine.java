@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.v2.comments;
 
 import java.util.Objects;
-import java.util.Optional;
 import org.snakeyaml.engine.v2.events.CommentEvent;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -23,8 +22,8 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public class CommentLine {
 
-  private final Optional<Mark> startMark;
-  private final Optional<Mark> endMark;
+  private final Mark startMark;
+  private final Mark endMark;
   private final String value;
   private final CommentType commentType;
 
@@ -45,8 +44,7 @@ public class CommentLine {
    * @param value - the comment
    * @param commentType - the type
    */
-  public CommentLine(Optional<Mark> startMark, Optional<Mark> endMark, String value,
-      CommentType commentType) {
+  public CommentLine(Mark startMark, Mark endMark, String value, CommentType commentType) {
     Objects.requireNonNull(startMark);
     this.startMark = startMark;
     Objects.requireNonNull(endMark);
@@ -62,7 +60,7 @@ public class CommentLine {
    *
    * @return end position
    */
-  public Optional<Mark> getEndMark() {
+  public Mark getEndMark() {
     return endMark;
   }
 
@@ -71,7 +69,7 @@ public class CommentLine {
    *
    * @return start position
    */
-  public Optional<Mark> getStartMark() {
+  public Mark getStartMark() {
     return startMark;
   }
 

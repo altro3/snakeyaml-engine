@@ -13,20 +13,6 @@
  */
 package org.snakeyaml.engine.v2.api.dump;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.TreeMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -38,6 +24,18 @@ import org.snakeyaml.engine.v2.common.NonPrintableStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.exceptions.EmitterException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.TreeMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("fast")
 class DumpSettingsTest {
@@ -51,7 +49,7 @@ class DumpSettingsTest {
     assertEquals(2, settings.getIndent());
     assertEquals(FlowStyle.AUTO, settings.getDefaultFlowStyle());
     assertEquals(ScalarStyle.PLAIN, settings.getDefaultScalarStyle());
-    assertEquals(Optional.empty(), settings.getExplicitRootTag());
+    assertNull(settings.getExplicitRootTag());
     assertFalse(settings.getIndentWithIndicator());
     assertFalse(settings.isExplicitEnd());
     assertFalse(settings.isExplicitStart());
@@ -63,7 +61,7 @@ class DumpSettingsTest {
     assertEquals(128, settings.getMaxSimpleKeyLength());
     assertEquals(NonPrintableStyle.ESCAPE, settings.getNonPrintableStyle());
     assertEquals(80, settings.getWidth());
-    assertEquals(Optional.empty(), settings.getYamlDirective());
+    assertNull(settings.getYamlDirective());
     assertEquals(new HashMap<>(), settings.getTagDirective());
     assertNotNull(settings.getAnchorGenerator());
   }
@@ -71,9 +69,9 @@ class DumpSettingsTest {
   @Test
   @DisplayName("Canonical output")
   void setCanonical() {
-    DumpSettings settings = DumpSettings.builder().setCanonical(true).build();
-    Dump dump = new Dump(settings);
-    List<Integer> data = new ArrayList<>();
+    var settings = DumpSettings.builder().setCanonical(true).build();
+    var dump = new Dump(settings);
+    var data = new ArrayList<Integer>();
     for (int i = 0; i < 2; i++) {
       data.add(i);
     }
@@ -84,9 +82,9 @@ class DumpSettingsTest {
   @Test
   @DisplayName("Use Windows line break")
   void setBestLineBreak() {
-    DumpSettings settings = DumpSettings.builder().setBestLineBreak("\r\n").build();
-    Dump dump = new Dump(settings);
-    List<Integer> data = new ArrayList<>();
+    var settings = DumpSettings.builder().setBestLineBreak("\r\n").build();
+    var dump = new Dump(settings);
+    var data = new ArrayList<Integer>();
     for (int i = 0; i < 2; i++) {
       data.add(i);
     }
@@ -96,9 +94,9 @@ class DumpSettingsTest {
 
   @Test
   void setMultiLineFlow() {
-    DumpSettings settings = DumpSettings.builder().setMultiLineFlow(true).build();
-    Dump dump = new Dump(settings);
-    List<Integer> data = new ArrayList<>();
+    var settings = DumpSettings.builder().setMultiLineFlow(true).build();
+    var dump = new Dump(settings);
+    var data = new ArrayList<Integer>();
     for (int i = 0; i < 3; i++) {
       data.add(i);
     }
@@ -109,11 +107,11 @@ class DumpSettingsTest {
   @Test
   @DisplayName("Show tag directives")
   void setTagDirective() {
-    Map<String, String> tagDirectives = new TreeMap<>();
+    var tagDirectives = new TreeMap<String, String>();
     tagDirectives.put("!yaml!", "tag:yaml.org,2002:");
     tagDirectives.put("!python!", "!python");
-    DumpSettings settings = DumpSettings.builder().setTagDirective(tagDirectives).build();
-    Dump dump = new Dump(settings);
+    var settings = DumpSettings.builder().setTagDirective(tagDirectives).build();
+    var dump = new Dump(settings);
     String str = dump.dumpToString("data");
     assertEquals("%TAG !python! !python\n" + "%TAG !yaml! tag:yaml.org,2002:\n" + "--- data\n",
         str);
@@ -122,11 +120,11 @@ class DumpSettingsTest {
   @Test
   @DisplayName("Check corner cases for indent")
   void setIndent() {
-    Exception exception1 =
+    var exception1 =
         assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndent(0));
     assertEquals("Indent must be at least 1", exception1.getMessage());
 
-    Exception exception2 =
+    var exception2 =
         assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndent(12));
     assertEquals("Indent must be at most 10", exception2.getMessage());
   }
@@ -134,11 +132,11 @@ class DumpSettingsTest {
   @Test
   @DisplayName("Check corner cases for Indicator Indent")
   void setIndicatorIndent() {
-    Exception exception1 =
+    var exception1 =
         assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndicatorIndent(-1));
     assertEquals("Indicator indent must be non-negative", exception1.getMessage());
 
-    Exception exception2 =
+    var exception2 =
         assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndicatorIndent(10));
     assertEquals("Indicator indent must be at most Emitter.MAX_INDENT-1: 9",
         exception2.getMessage());
@@ -147,17 +145,15 @@ class DumpSettingsTest {
   @Test
   @DisplayName("Dump explicit version")
   void dumpVersion() {
-    DumpSettings settings =
-        DumpSettings.builder().setYamlDirective(Optional.of(new SpecVersion(1, 2))).build();
-    Dump dump = new Dump(settings);
+    var settings = DumpSettings.builder().setYamlDirective(new SpecVersion(1, 2)).build();
+    var dump = new Dump(settings);
     String str = dump.dumpToString("a");
     assertEquals("%YAML 1.2\n" + "--- a\n", str);
   }
 
   @Test
   void dumpCustomProperty() {
-    DumpSettings settings =
-        DumpSettings.builder().setCustomProperty(new KeyName("key"), "value").build();
+    var settings = DumpSettings.builder().setCustomProperty(new KeyName("key"), "value").build();
     assertEquals("value", settings.getCustomProperty(new KeyName("key")));
     assertNull(settings.getCustomProperty(new KeyName("None")));
   }

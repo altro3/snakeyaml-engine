@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -95,8 +94,7 @@ public class StandardConstructor extends BaseConstructor {
     }
   }
 
-  private Object constructKey(Node keyNode, Optional<Mark> contextMark,
-      Optional<Mark> problemMark) {
+  private Object constructKey(Node keyNode, Mark contextMark, Mark problemMark) {
     Object key = constructObject(keyNode);
     if (key != null) {
       try {
@@ -222,21 +220,19 @@ public class StandardConstructor extends BaseConstructor {
 
     public Object construct(Node node) {
       String val = constructScalar(node);
-      Optional<EnvConfig> opt = settings.getEnvConfig();
-      if (opt.isPresent()) {
-        EnvConfig config = opt.get();
-        Matcher matcher = JsonScalarResolver.ENV_FORMAT.matcher(val);
-        matcher.matches();
-        String name = matcher.group(1);
-        String value = matcher.group(3);
-        String nonNullValue = value != null ? value : "";
-        String separator = matcher.group(2);
-        String env = getEnv(name);
-        Optional<String> overruled = config.getValueFor(name, separator, nonNullValue, env);
-        return overruled.orElseGet(() -> apply(name, separator, nonNullValue, env));
-      } else {
+      EnvConfig config = settings.getEnvConfig();
+      if (config == null) {
         return val;
       }
+      Matcher matcher = JsonScalarResolver.ENV_FORMAT.matcher(val);
+      matcher.matches();
+      String name = matcher.group(1);
+      String value = matcher.group(3);
+      String nonNullValue = value != null ? value : "";
+      String separator = matcher.group(2);
+      String env = getEnv(name);
+      String overruled = config.getValueFor(name, separator, nonNullValue, env);
+      return overruled != null ? overruled : apply(name, separator, nonNullValue, env);
     }
 
     /**
