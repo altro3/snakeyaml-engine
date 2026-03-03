@@ -13,35 +13,19 @@
  */
 package org.snakeyaml.engine.v2.parser;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.SpecVersion;
 
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Store the internal state for directives
  */
-class VersionTagsTuple {
+record VersionTagsTuple(
+    @NonNull
+    SpecVersion specVersion,
+    @NonNull
+    Map<String, String> tags
+) {
 
-    private final SpecVersion specVersion;
-    private final Map<String, String> tags;
-
-    public VersionTagsTuple(SpecVersion specVersion, Map<String, String> tags) {
-        Objects.requireNonNull(specVersion);
-        this.specVersion = specVersion;
-        this.tags = tags;
-    }
-
-    public SpecVersion getSpecVersion() {
-        return specVersion;
-    }
-
-    public Map<String, String> getTags() {
-        return tags;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("VersionTagsTuple<%s, %s>", specVersion, tags);
-    }
 }

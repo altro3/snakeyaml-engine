@@ -13,14 +13,7 @@
  */
 package org.snakeyaml.engine.v2.parser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.common.Anchor;
@@ -59,6 +52,14 @@ import org.snakeyaml.engine.v2.tokens.StreamStartToken;
 import org.snakeyaml.engine.v2.tokens.TagToken;
 import org.snakeyaml.engine.v2.tokens.TagTuple;
 import org.snakeyaml.engine.v2.tokens.Token;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * <pre>
@@ -126,12 +127,10 @@ import org.snakeyaml.engine.v2.tokens.Token;
  */
 public class ParserImpl implements Parser {
 
-    private static final Map<String, String> DEFAULT_TAGS = new HashMap<>();
-
-    static {
-        DEFAULT_TAGS.put("!", "!");
-        DEFAULT_TAGS.put("!!", Tag.PREFIX);
-    }
+    private static final Map<String, String> DEFAULT_TAGS = Map.of(
+        "!", "!",
+        "!!", Tag.PREFIX
+    );
 
     /**
      * tokeniser
@@ -150,7 +149,7 @@ public class ParserImpl implements Parser {
      * @param settings - configuration options
      * @param reader - the input
      */
-    public ParserImpl(LoadSettings settings, StreamReader reader) {
+    public ParserImpl(@NonNull LoadSettings settings, @NonNull StreamReader reader) {
         this(settings, new ScannerImpl(settings, reader));
     }
 
@@ -160,7 +159,7 @@ public class ParserImpl implements Parser {
      * @param settings - configuration options
      * @param scanner - input
      */
-    public ParserImpl(LoadSettings settings, Scanner scanner) {
+    public ParserImpl(@NonNull LoadSettings settings, @NonNull Scanner scanner) {
         this.scanner = scanner;
         this.settings = settings;
         currentEvent = null;
@@ -258,7 +257,7 @@ public class ParserImpl implements Parser {
             // copy from tagHandles
             detectedTagHandles.putAll(tagHandles);
         }
-        for (Map.Entry<String, String> entry : DEFAULT_TAGS.entrySet()) {
+        for (var entry : DEFAULT_TAGS.entrySet()) {
             // do not overwrite re-defined tags
             if (!tagHandles.containsKey(entry.getKey())) {
                 tagHandles.put(entry.getKey(), entry.getValue());
@@ -266,7 +265,7 @@ public class ParserImpl implements Parser {
         }
         directiveTags = tagHandles;
         // data for the event (no default tags added)
-        return new VersionTagsTuple(yamlSpecVersion, detectedTagHandles);
+        return new VersionTagsTuple(yamlSpecVersion != null ? yamlSpecVersion : SpecVersion.V_1_2, detectedTagHandles);
     }
 
     private Event parseFlowNode() {
@@ -355,17 +354,16 @@ public class ParserImpl implements Parser {
                     // Content follows - emit comments first, then parse content
                     state = new ParseNodeWithPendingComments(block, indentlessSequence, anchor, tag, startMark, endMark, tagMark, commentTokensAfterProperties, states.pop());
                     return produceCommentEvent(commentTokensAfterProperties.remove(0));
-                } else {
-                    // No content follows - this is an empty scalar case.
-                    // Create the scalar event and set up state to emit DocumentEnd, then the comments.
-                    boolean implicit = tag == null;
-                    var scalarEvent = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "", ScalarStyle.PLAIN, startMark, endMark);
-                    // Pop states to maintain stack consistency (normally ParseDocumentEnd would be popped)
-                    states.pop();
-                    // The next state should emit DocumentEnd, then the collected comments, then continue
-                    state = new ParseDocumentEndThenComments(commentTokensAfterProperties);
-                    return scalarEvent;
                 }
+                // No content follows - this is an empty scalar case.
+                // Create the scalar event and set up state to emit DocumentEnd, then the comments.
+                boolean implicit = tag == null;
+                var scalarEvent = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "", ScalarStyle.PLAIN, startMark, endMark);
+                // Pop states to maintain stack consistency (normally ParseDocumentEnd would be popped)
+                states.pop();
+                // The next state should emit DocumentEnd, then the collected comments, then continue
+                state = new ParseDocumentEndThenComments(commentTokensAfterProperties);
+                return scalarEvent;
             }
             boolean implicit = tag == null;
             if (indentlessSequence && scanner.checkToken(Token.ID.BlockEntry)) {
@@ -507,7 +505,7 @@ public class ParserImpl implements Parser {
                     }
                     token = scanner.next();
                     Mark endMark = token.getEndMark();
-                    event = new DocumentStartEvent(true, tuple.getSpecVersion(), tuple.getTags(), startMark,
+                    event = new DocumentStartEvent(true, tuple.specVersion(), tuple.tags(), startMark,
                         endMark);
                     states.push(new ParseDocumentEnd());
                     state = new ParseDocumentContent();
@@ -1201,6 +1199,7 @@ public class ParserImpl implements Parser {
             this.pendingComments = pendingComments;
         }
 
+        @Override
         public Event produce() {
             if (!documentEndEmitted) {
                 // First, emit the DocumentEnd event (similar to ParseDocumentEnd.produce())

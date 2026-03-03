@@ -94,20 +94,18 @@ public abstract class BaseRepresenter {
      * @return RepresentToNode to call to create a Node
      */
     protected RepresentToNode findRepresenterFor(Object data) {
-        Class<?> clazz = data.getClass();
+        var clazz = data.getClass();
         // check the same class
         if (representers.containsKey(clazz)) {
             return representers.get(clazz);
-        } else {
-            // check the parents
-            for (Map.Entry<Class<?>, RepresentToNode> parentRepresenterEntry : parentClassRepresenters
-                .entrySet()) {
-                if (parentRepresenterEntry.getKey().isInstance(data)) {
-                    return parentRepresenterEntry.getValue();
-                }
-            }
-            return null;
         }
+        // check the parents
+        for (var parentRepresenterEntry : parentClassRepresenters.entrySet()) {
+            if (parentRepresenterEntry.getKey().isInstance(data)) {
+                return parentRepresenterEntry.getValue();
+            }
+        }
+        return null;
     }
 
     /**
@@ -152,7 +150,7 @@ public abstract class BaseRepresenter {
      * Create Node for string using PLAIN scalar style if possible
      *
      * @param tag - the tag for Node
-     * @param value - the surce
+     * @param value - the source
      * @return Node for string
      */
     protected Node representScalar(Tag tag, String value) {
