@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -49,7 +50,7 @@ class ConstructNodeTest {
         ConstructNode constructNode = new ConstructNode() {
 
             @Override
-            public Object construct(Node node) {
+            public Object construct(@NonNull Node node) {
                 return null;
             }
         };

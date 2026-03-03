@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.Load;
@@ -73,7 +73,7 @@ public class TimestampTagTest {
     public static final class TimestampConstructor implements ConstructNode {
 
         @Override
-        public Object construct(Node node) {
+        public Object construct(@NonNull Node node) {
             ScalarNode scalar = (ScalarNode) node;
             // the parsing depends on what should be parsed and to which object
             // examples can be found in SnakeYAML tests for the YAML 1.1 types format

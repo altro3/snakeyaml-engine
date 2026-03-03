@@ -16,6 +16,7 @@ package org.snakeyaml.engine.v2.nodes;
 import java.util.List;
 import java.util.Objects;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -27,9 +28,9 @@ public abstract class CollectionNode<T> extends Node {
 
     private FlowStyle flowStyle;
 
-    public CollectionNode(Tag tag, FlowStyle flowStyle, Mark startMark, Mark endMark) {
+    public CollectionNode(Tag tag, @NonNull FlowStyle flowStyle, Mark startMark, Mark endMark) {
         super(tag, startMark, endMark);
-        setFlowStyle(flowStyle);
+        this.flowStyle = flowStyle;
     }
 
     /**
@@ -44,12 +45,11 @@ public abstract class CollectionNode<T> extends Node {
      *
      * @return <code>true</code> for flow style, <code>false</code> for block style.
      */
-    public FlowStyle getFlowStyle() {
+    public @NonNull FlowStyle getFlowStyle() {
         return flowStyle;
     }
 
-    public void setFlowStyle(FlowStyle flowStyle) {
-        Objects.requireNonNull(flowStyle, "Flow style must be provided.");
+    public void setFlowStyle(@NonNull FlowStyle flowStyle) {
         this.flowStyle = flowStyle;
     }
 

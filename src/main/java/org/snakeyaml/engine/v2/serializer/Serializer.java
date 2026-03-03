@@ -240,10 +240,9 @@ public class Serializer {
     }
 
     private void serializeComments(List<CommentLine> comments) {
-        if (settings.getDumpComments() && comments != null) {
+        if (settings.dumpComments() && comments != null) {
             for (CommentLine line : comments) {
-                var commentEvent = new CommentEvent(line.commentType(), line.value(),
-                    line.startMark(), line.endMark());
+                var commentEvent = new CommentEvent(line.commentType(), line.value(), line.startMark(), line.endMark());
                 this.emitable.emit(commentEvent);
             }
         }

@@ -13,25 +13,13 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
-import java.util.Objects;
+import org.jspecify.annotations.NonNull;
 
-public final class TagTuple {
+public record TagTuple(
+    @NonNull
+    String handle,
+    @NonNull
+    String suffix
+) {
 
-    private final String handle;
-    private final String suffix;
-
-    public TagTuple(String handle, String suffix) {
-        Objects.requireNonNull(handle);
-        Objects.requireNonNull(suffix);
-        this.handle = handle;
-        this.suffix = suffix;
-    }
-
-    public String getHandle() {
-        return handle;
-    }
-
-    public String getSuffix() {
-        return suffix;
-    }
 }

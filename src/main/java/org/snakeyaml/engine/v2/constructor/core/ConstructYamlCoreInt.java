@@ -15,6 +15,7 @@ package org.snakeyaml.engine.v2.constructor.core;
 
 import java.math.BigInteger;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.constructor.ConstructScalar;
 import org.snakeyaml.engine.v2.exceptions.ConstructorException;
 import org.snakeyaml.engine.v2.nodes.Node;
@@ -29,20 +30,19 @@ public class ConstructYamlCoreInt extends ConstructScalar {
     static {
         int[] radixList = new int[] {8, 10, 16};
         for (int radix : radixList) {
-            RADIX_MAX[radix] =
-                new int[] {maxLen(Integer.MAX_VALUE, radix), maxLen(Long.MAX_VALUE, radix)};
+            RADIX_MAX[radix] = new int[] {maxLen(Integer.MAX_VALUE, radix), maxLen(Long.MAX_VALUE, radix)};
         }
     }
 
-    private static int maxLen(final int max, final int radix) {
+    private static int maxLen(int max, int radix) {
         return Integer.toString(max, radix).length();
     }
 
-    private static int maxLen(final long max, final int radix) {
+    private static int maxLen(long max, int radix) {
         return Long.toString(max, radix).length();
     }
 
-    protected static Number createLongOrBigInteger(final String number, final int radix) {
+    protected static Number createLongOrBigInteger(@NonNull String number, int radix) {
         try {
             return Long.valueOf(number, radix);
         } catch (NumberFormatException e1) {
@@ -51,11 +51,10 @@ public class ConstructYamlCoreInt extends ConstructScalar {
     }
 
     @Override
-    public Object construct(Node node) {
+    public Object construct(@NonNull Node node) {
         String value = constructScalar(node);
         if (value.isEmpty()) {
-            throw new ConstructorException("while constructing an int", node.getStartMark(),
-                "found empty value", node.getStartMark());
+            throw new ConstructorException("While constructing an int", node.getStartMark(), "found empty value", node.getStartMark());
         }
         return createIntNumber(value);
     }

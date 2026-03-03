@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.constructor.json;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.constructor.ConstructScalar;
 import org.snakeyaml.engine.v2.nodes.Node;
 
@@ -22,7 +23,7 @@ import org.snakeyaml.engine.v2.nodes.Node;
 public class ConstructYamlJsonFloat extends ConstructScalar {
 
     @Override
-    public Object construct(Node node) {
+    public Object construct(@NonNull Node node) {
         String value = constructScalar(node);
         if (".inf".equals(value)) {
             return Double.POSITIVE_INFINITY;

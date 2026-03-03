@@ -13,11 +13,11 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
-import java.util.List;
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
+
+import java.util.List;
 
 public final class DirectiveToken<T> extends Token {
 
@@ -26,15 +26,12 @@ public final class DirectiveToken<T> extends Token {
     private final String name;
     private final List<T> value;
 
-    public DirectiveToken(String name, List<T> value, Mark startMark, Mark endMark) {
+    public DirectiveToken(@NonNull String name, @NonNull List<T> value, Mark startMark, Mark endMark) {
         super(startMark, endMark);
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(value);
-        this.name = name;
         if (value.size() != 2) {
-            throw new YamlEngineException(
-                "Two strings/integers must be provided instead of " + value.size());
+            throw new YamlEngineException("Two strings/integers must be provided instead of " + value.size());
         }
+        this.name = name;
         this.value = value;
     }
 

@@ -13,7 +13,8 @@
  */
 package org.snakeyaml.engine.v2.exceptions;
 
-import java.util.Objects;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Parsing exception when the marks are available
@@ -34,11 +35,8 @@ public class MarkedYamlEngineException extends YamlEngineException {
      * @param problemMark - position of the issue
      * @param cause - exception which was thrown
      */
-    protected MarkedYamlEngineException(String context, Mark contextMark, String problem,
-                                        Mark problemMark, Throwable cause) {
+    protected MarkedYamlEngineException(String context, @Nullable Mark contextMark, String problem, @NonNull Mark problemMark, Throwable cause) {
         super(context + "; " + problem + "; " + problemMark, cause);
-        Objects.requireNonNull(contextMark, "contextMark must be provided");
-        Objects.requireNonNull(problemMark, "problemMark must be provided");
         this.context = context;
         this.contextMark = contextMark;
         this.problem = problem;
@@ -53,8 +51,7 @@ public class MarkedYamlEngineException extends YamlEngineException {
      * @param problem - the issue
      * @param problemMark - position of the issue
      */
-    protected MarkedYamlEngineException(String context, Mark contextMark, String problem,
-                                        Mark problemMark) {
+    protected MarkedYamlEngineException(String context, Mark contextMark, String problem, Mark problemMark) {
         this(context, contextMark, problem, problemMark, null);
     }
 
@@ -77,23 +74,23 @@ public class MarkedYamlEngineException extends YamlEngineException {
     public String toString() {
         var lines = new StringBuilder();
         if (context != null) {
-            lines.append(context);
-            lines.append('\n');
+            lines.append(context)
+                .append('\n');
         }
         if (contextMark != null && (problem == null || problemMark == null
             || contextMark.getName().equals(problemMark.getName())
             || (contextMark.getLine() != problemMark.getLine())
             || (contextMark.getColumn() != problemMark.getColumn()))) {
-            lines.append(contextMark);
-            lines.append('\n');
+            lines.append(contextMark)
+                .append('\n');
         }
         if (problem != null) {
-            lines.append(problem);
-            lines.append('\n');
+            lines.append(problem)
+                .append('\n');
         }
         if (problemMark != null) {
-            lines.append(problemMark);
-            lines.append('\n');
+            lines.append(problemMark)
+                .append('\n');
         }
         return lines.toString();
     }

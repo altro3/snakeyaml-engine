@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.Load;
@@ -52,7 +53,7 @@ class NullConstructorTest {
     private class MyConstructNull implements ConstructNode {
 
         @Override
-        public Object construct(Node node) {
+        public Object construct(@NonNull Node node) {
             if (node == null) {
                 return "absent";
             } else {

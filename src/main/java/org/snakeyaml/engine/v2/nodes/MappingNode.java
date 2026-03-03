@@ -13,11 +13,12 @@
  */
 package org.snakeyaml.engine.v2.nodes;
 
-import java.util.List;
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a map.
@@ -40,10 +41,8 @@ public class MappingNode extends CollectionNode<NodeTuple> {
      * @param startMark - start
      * @param endMark - end
      */
-    public MappingNode(Tag tag, boolean resolved, List<NodeTuple> value, FlowStyle flowStyle,
-                       Mark startMark, Mark endMark) {
+    public MappingNode(Tag tag, boolean resolved, @NonNull List<NodeTuple> value, FlowStyle flowStyle, Mark startMark, Mark endMark) {
         super(tag, flowStyle, startMark, endMark);
-        Objects.requireNonNull(value);
         this.value = value;
         this.resolved = resolved;
     }
@@ -55,7 +54,7 @@ public class MappingNode extends CollectionNode<NodeTuple> {
      * @param value - the value
      * @param flowStyle - the flow style of the node
      */
-    public MappingNode(Tag tag, List<NodeTuple> value, FlowStyle flowStyle) {
+    public MappingNode(Tag tag, @NonNull List<NodeTuple> value, FlowStyle flowStyle) {
         this(tag, true, value, flowStyle, null, null);
     }
 
@@ -69,7 +68,8 @@ public class MappingNode extends CollectionNode<NodeTuple> {
      *
      * @return List of entries.
      */
-    public List<NodeTuple> getValue() {
+    @Override
+    public @NonNull List<NodeTuple> getValue() {
         return value;
     }
 
@@ -79,8 +79,7 @@ public class MappingNode extends CollectionNode<NodeTuple> {
      *
      * @param merged - merged data to replace the internal value
      */
-    public void setValue(List<NodeTuple> merged) {
-        Objects.requireNonNull(merged);
+    public void setValue(@NonNull List<NodeTuple> merged) {
         value = merged;
     }
 

@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.api;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 import org.snakeyaml.engine.v2.nodes.Node;
 
@@ -31,7 +32,7 @@ public interface ConstructNode {
      * @param node composed Node
      * @return a complete Java instance or empty collection instance if it is recursive
      */
-    Object construct(Node node);
+    Object construct(@NonNull Node node);
 
     /**
      * Apply the second step when constructing recursive structures. Because the instance is already
@@ -43,7 +44,7 @@ public interface ConstructNode {
      * @param object the instance constructed earlier by <code>construct(Node node)</code> for the
      *     provided Node
      */
-    default void constructRecursive(Node node, Object object) {
+    default void constructRecursive(@NonNull Node node, Object object) {
         if (node.isRecursive()) {
             throw new IllegalStateException("Not implemented in " + getClass().getName());
         } else {

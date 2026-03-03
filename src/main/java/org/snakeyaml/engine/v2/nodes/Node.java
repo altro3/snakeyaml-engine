@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.comments.CommentLine;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -57,8 +58,8 @@ public abstract class Node {
      * @param startMark - start mark when available
      * @param endMark - end mark when available
      */
-    public Node(Tag tag, Mark startMark, Mark endMark) {
-        setTag(tag);
+    public Node(@NonNull Tag tag, Mark startMark, Mark endMark) {
+        this.tag = tag;
         this.startMark = startMark;
         this.endMark = endMark;
         this.recursive = false;
@@ -77,12 +78,11 @@ public abstract class Node {
      *
      * @return Tag of this node.
      */
-    public Tag getTag() {
+    public @NonNull Tag getTag() {
         return this.tag;
     }
 
-    public void setTag(Tag tag) {
-        Objects.requireNonNull(tag, "tag in a Node is required.");
+    public void setTag(@NonNull Tag tag) {
         this.tag = tag;
     }
 
@@ -163,11 +163,7 @@ public abstract class Node {
      * @return the value if it was specified
      */
     public Object getProperty(String key) {
-        if (properties == null) {
-            return null;
-        } else {
-            return properties.get(key);
-        }
+        return properties != null ?  properties.get(key) : null;
     }
 
 

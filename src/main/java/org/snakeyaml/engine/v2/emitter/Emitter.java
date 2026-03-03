@@ -13,17 +13,6 @@
  */
 package org.snakeyaml.engine.v2.emitter;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
-
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.comments.CommentEventsCollector;
@@ -52,6 +41,18 @@ import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 import org.snakeyaml.engine.v2.nodes.Tag;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
 
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+
+import static java.util.Map.entry;
+
 /**
  * <pre>
  * Emitter expects events obeying the following grammar:
@@ -64,7 +65,21 @@ import org.snakeyaml.engine.v2.scanner.StreamReader;
  */
 public final class Emitter implements Emitable {
 
-    private static final Map<Character, String> ESCAPE_REPLACEMENTS = new HashMap<>();
+    private static final Map<Character, String> ESCAPE_REPLACEMENTS = Map.ofEntries(
+        entry('\0', "0"),
+        entry('\u0007', "a"),
+        entry('\u0008', "b"),
+        entry('\u0009', "t"),
+        entry('\n', "n"),
+        entry('\u000B', "v"),
+        entry('\u000C', "f"),
+        entry('\r', "r"),
+        entry('\u001B', "e"),
+        entry('"', "\""),
+        entry('\\', "\\"),
+        entry('\u0085', "N"),
+        entry('\u00A0', "_")
+    );
     /**
      * indent cannot be zero spaces
      */
@@ -76,28 +91,10 @@ public final class Emitter implements Emitable {
 
     private static final String SPACE = " ";
 
-    static {
-        ESCAPE_REPLACEMENTS.put('\0', "0");
-        ESCAPE_REPLACEMENTS.put('\u0007', "a");
-        ESCAPE_REPLACEMENTS.put('\u0008', "b");
-        ESCAPE_REPLACEMENTS.put('\u0009', "t");
-        ESCAPE_REPLACEMENTS.put('\n', "n");
-        ESCAPE_REPLACEMENTS.put('\u000B', "v");
-        ESCAPE_REPLACEMENTS.put('\u000C', "f");
-        ESCAPE_REPLACEMENTS.put('\r', "r");
-        ESCAPE_REPLACEMENTS.put('\u001B', "e");
-        ESCAPE_REPLACEMENTS.put('"', "\"");
-        ESCAPE_REPLACEMENTS.put('\\', "\\");
-        ESCAPE_REPLACEMENTS.put('\u0085', "N");
-        ESCAPE_REPLACEMENTS.put('\u00A0', "_");
-    }
-
-    private static final Map<String, String> DEFAULT_TAG_PREFIXES = new LinkedHashMap<>();
-
-    static {
-        DEFAULT_TAG_PREFIXES.put("!", "!");
-        DEFAULT_TAG_PREFIXES.put(Tag.PREFIX, "!!");
-    }
+    private static final Map<String, String> DEFAULT_TAG_PREFIXES = Map.of(
+        "!", "!",
+        Tag.PREFIX, "!!"
+    );
 
     private final StreamDataWriter stream;
 
@@ -199,23 +196,23 @@ public final class Emitter implements Emitable {
         openEnded = false;
 
         // Formatting details.
-        this.canonical = opts.isCanonical();
-        this.multiLineFlow = opts.isMultiLineFlow();
-        this.allowUnicode = opts.isUseUnicodeEncoding();
+        this.canonical = opts.canonical();
+        this.multiLineFlow = opts.multiLineFlow();
+        this.allowUnicode = opts.useUnicodeEncoding();
         this.bestIndent = 2;
-        if ((opts.getIndent() > MIN_INDENT) && (opts.getIndent() < MAX_INDENT)) {
-            this.bestIndent = opts.getIndent();
+        if ((opts.indent() > MIN_INDENT) && (opts.indent() < MAX_INDENT)) {
+            this.bestIndent = opts.indent();
         }
-        this.indicatorIndent = opts.getIndicatorIndent();
-        this.indentWithIndicator = opts.getIndentWithIndicator();
+        this.indicatorIndent = opts.indicatorIndent();
+        this.indentWithIndicator = opts.indentWithIndicator();
         this.bestWidth = 80;
-        if (opts.getWidth() > this.bestIndent * 2) {
-            this.bestWidth = opts.getWidth();
+        if (opts.width() > this.bestIndent * 2) {
+            this.bestWidth = opts.width();
         }
-        this.bestLineBreak = opts.getBestLineBreak();
-        this.splitLines = opts.isSplitLines();
-        this.maxSimpleKeyLength = opts.getMaxSimpleKeyLength();
-        this.emitComments = opts.getDumpComments();
+        this.bestLineBreak = opts.bestLineBreak();
+        this.splitLines = opts.splitLines();
+        this.maxSimpleKeyLength = opts.maxSimpleKeyLength();
+        this.emitComments = opts.dumpComments();
 
         // Tag prefixes.
         this.tagPrefixes = new LinkedHashMap<>();
@@ -234,6 +231,7 @@ public final class Emitter implements Emitable {
         this.inlineCommentsCollector = new CommentEventsCollector(events, CommentType.IN_LINE);
     }
 
+    @Override
     public void emit(Event event) {
         this.events.add(event);
         while (!needMoreEvents()) {
@@ -317,6 +315,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectStreamStart implements EmitterState {
 
+        @Override
         public void expect() {
             if (event.getEventId() == Event.ID.StreamStart) {
                 writeStreamStart();
@@ -329,6 +328,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectNothing implements EmitterState {
 
+        @Override
         public void expect() {
             throw new EmitterException("expecting nothing, but got " + event);
         }
@@ -338,6 +338,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFirstDocumentStart implements EmitterState {
 
+        @Override
         public void expect() {
             new ExpectDocumentStart(true).expect();
         }
@@ -351,9 +352,10 @@ public final class Emitter implements Emitable {
             this.first = first;
         }
 
+        @Override
         public void expect() {
             if (event.getEventId() == Event.ID.DocumentStart) {
-                DocumentStartEvent ev = (DocumentStartEvent) event;
+                var ev = (DocumentStartEvent) event;
                 handleDocumentStartEvent(ev);
                 state = new ExpectDocumentRoot();
             } else if (event.getEventId() == Event.ID.StreamEnd) {
@@ -380,8 +382,7 @@ public final class Emitter implements Emitable {
             if (!ev.getTags().isEmpty()) {
                 handleTagDirectives(ev.getTags());
             }
-            boolean implicit = first && !ev.isExplicit() && !canonical && ev.getSpecVersion() == null
-                && (ev.getTags().isEmpty()) && !checkEmptyDocument();
+            boolean implicit = first && !ev.isExplicit() && !canonical && ev.getSpecVersion() == null && (ev.getTags().isEmpty()) && !checkEmptyDocument();
             if (!implicit) {
                 writeIndent();
                 writeIndicator("---", true, false, false);
@@ -409,8 +410,7 @@ public final class Emitter implements Emitable {
             Event nextEvent = events.peek();
             if (nextEvent.getEventId() == Event.ID.Scalar) {
                 var e = (ScalarEvent) nextEvent;
-                return e.getAnchor() == null && e.getTag().isEmpty() && e.getImplicit() != null
-                    && e.getValue().isEmpty();
+                return e.getAnchor() == null && e.getTag().isEmpty() && e.getImplicit() != null && e.getValue().isEmpty();
             }
             return false;
         }
@@ -461,8 +461,7 @@ public final class Emitter implements Emitable {
         simpleKeyContext = simpleKey;
         if (event.getEventId() == Event.ID.Alias) {
             expectAlias(simpleKey); // key indicator is needed to detect the trailing space for alias
-        } else if (event.getEventId() == Event.ID.Scalar || event.getEventId() == Event.ID.SequenceStart
-            || event.getEventId() == Event.ID.MappingStart) {
+        } else if (event.getEventId() == Event.ID.Scalar || event.getEventId() == Event.ID.SequenceStart || event.getEventId() == Event.ID.MappingStart) {
             processAnchor();
             processTag();
             handleNodeEvent(event.getEventId());
@@ -531,6 +530,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFirstFlowSequenceItem implements EmitterState {
 
+        @Override
         public void expect() {
             if (event.getEventId() == Event.ID.SequenceEnd) {
                 indent = indents.pop();
@@ -556,6 +556,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFlowSequenceItem implements EmitterState {
 
+        @Override
         public void expect() {
             if (event.getEventId() == Event.ID.SequenceEnd) {
                 indent = indents.pop();
@@ -603,6 +604,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFirstFlowMappingKey implements EmitterState {
 
+        @Override
         public void expect() {
             event = blockCommentsCollector.collectEventsAndPoll(event);
             writeBlockComment();
@@ -631,6 +633,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFlowMappingKey implements EmitterState {
 
+        @Override
         public void expect() {
             if (event.getEventId() == Event.ID.MappingEnd) {
                 indent = indents.pop();
@@ -667,6 +670,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFlowMappingSimpleValue implements EmitterState {
 
+        @Override
         public void expect() {
             writeIndicator(":", false, false, false);
             event = inlineCommentsCollector.collectEventsAndPoll(event);
@@ -680,6 +684,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFlowMappingValue implements EmitterState {
 
+        @Override
         public void expect() {
             if (canonical || (column > bestWidth) || multiLineFlow) {
                 writeIndent();
@@ -704,6 +709,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFirstBlockSequenceItem implements EmitterState {
 
+        @Override
         public void expect() {
             new ExpectBlockSequenceItem(true).expect();
         }
@@ -717,6 +723,7 @@ public final class Emitter implements Emitable {
             this.first = first;
         }
 
+        @Override
         public void expect() {
             if (!this.first && event.getEventId() == Event.ID.SequenceEnd) {
                 indent = indents.pop();
@@ -743,7 +750,7 @@ public final class Emitter implements Emitable {
                         if (scalarStyle == null) {
                             scalarStyle = chooseScalarStyle(scalarEvent);
                         }
-                        if (!analysis.isEmpty() || scalarStyle == ScalarStyle.SINGLE_QUOTED
+                        if (!analysis.empty() || scalarStyle == ScalarStyle.SINGLE_QUOTED
                             || scalarStyle == ScalarStyle.DOUBLE_QUOTED) {
                             writeIndent();
                         }
@@ -766,6 +773,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectFirstBlockMappingKey implements EmitterState {
 
+        @Override
         public void expect() {
             new ExpectBlockMappingKey(true).expect();
         }
@@ -779,6 +787,7 @@ public final class Emitter implements Emitable {
             this.first = first;
         }
 
+        @Override
         public void expect() {
             event = blockCommentsCollector.collectEventsAndPoll(event);
             writeBlockComment();
@@ -810,6 +819,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectBlockMappingSimpleValue implements EmitterState {
 
+        @Override
         public void expect() {
             writeIndicator(":", false, false, false);
             event = inlineCommentsCollector.collectEventsAndPoll(event);
@@ -836,6 +846,7 @@ public final class Emitter implements Emitable {
 
     private class ExpectBlockMappingValue implements EmitterState {
 
+        @Override
         public void expect() {
             writeIndent();
             writeIndicator(":", true, false, true);
@@ -889,10 +900,10 @@ public final class Emitter implements Emitable {
             if (analysis == null) {
                 analysis = analyzeScalar(((ScalarEvent) event).getValue());
             }
-            length += analysis.getScalar().length();
+            length += analysis.scalar().length();
         }
         return length < maxSimpleKeyLength && (event.getEventId() == Event.ID.Alias
-            || (event.getEventId() == Event.ID.Scalar && !analysis.isEmpty() && !analysis.isMultiline())
+            || (event.getEventId() == Event.ID.Scalar && !analysis.empty() && !analysis.multiline())
             || checkEmptySequence() || checkEmptyMapping());
     }
 
@@ -981,19 +992,19 @@ public final class Emitter implements Emitable {
             return ScalarStyle.DOUBLE_QUOTED;
         }
         if ((ev.isPlain() || ev.isJson()) && ev.getImplicit().canOmitTagInPlainScalar()) {
-            if (!(simpleKeyContext && (analysis.isEmpty() || analysis.isMultiline()))
-                && ((flowLevel != 0 && analysis.isAllowFlowPlain())
-                || (flowLevel == 0 && analysis.isAllowBlockPlain()))) {
+            if (!(simpleKeyContext && (analysis.empty() || analysis.multiline()))
+                && ((flowLevel != 0 && analysis.allowFlowPlain())
+                || (flowLevel == 0 && analysis.allowBlockPlain()))) {
                 return ScalarStyle.PLAIN;
             }
         }
         if (ev.isLiteral() || ev.isFolded()) {
-            if (flowLevel == 0 && !simpleKeyContext && analysis.isAllowBlock()) {
+            if (flowLevel == 0 && !simpleKeyContext && analysis.allowBlock()) {
                 return ev.getScalarStyle();
             }
         }
         if (ev.isPlain() || ev.isSQuoted()) {
-            if (analysis.isAllowSingleQuoted() && !(simpleKeyContext && analysis.isMultiline())) {
+            if (analysis.allowSingleQuoted() && !(simpleKeyContext && analysis.multiline())) {
                 return ScalarStyle.SINGLE_QUOTED;
             }
         }
@@ -1008,19 +1019,19 @@ public final class Emitter implements Emitable {
         boolean split = !simpleKeyContext && splitLines;
         switch (scalarStyle) {
             case PLAIN:
-                writePlain(analysis.getScalar(), split);
+                writePlain(analysis.scalar(), split);
                 break;
             case DOUBLE_QUOTED:
-                writeDoubleQuoted(analysis.getScalar(), split);
+                writeDoubleQuoted(analysis.scalar(), split);
                 break;
             case SINGLE_QUOTED:
-                writeSingleQuoted(analysis.getScalar(), split);
+                writeSingleQuoted(analysis.scalar(), split);
                 break;
             case FOLDED:
-                writeFolded(analysis.getScalar(), split);
+                writeFolded(analysis.scalar(), split);
                 break;
             case LITERAL:
-                writeLiteral(analysis.getScalar());
+                writeLiteral(analysis.scalar());
                 break;
             default:
                 throw new YamlEngineException("Unexpected scalarStyle: " + scalarStyle);
@@ -1251,7 +1262,7 @@ public final class Emitter implements Emitable {
             allowFlowPlain = allowBlockPlain = allowSingleQuoted = false;
         }
         // Spaces followed by breaks, as well as special character are only
-        // allowed for double quoted scalars.
+        // allowed for double-quoted scalars.
         if (spaceBreak || specialCharacters) {
             allowFlowPlain = allowBlockPlain = allowSingleQuoted = allowBlock = false;
         }
@@ -1269,8 +1280,7 @@ public final class Emitter implements Emitable {
             allowBlockPlain = false;
         }
 
-        return new ScalarAnalysis(scalar, false, lineBreaks, allowFlowPlain, allowBlockPlain,
-            allowSingleQuoted, allowBlock);
+        return new ScalarAnalysis(scalar, false, lineBreaks, allowFlowPlain, allowBlockPlain, allowSingleQuoted, allowBlock);
     }
 
     // Writers.

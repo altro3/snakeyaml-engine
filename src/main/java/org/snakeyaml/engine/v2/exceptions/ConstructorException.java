@@ -27,8 +27,7 @@ public class ConstructorException extends MarkedYamlEngineException { // NOSONAR
      * @param problemMark - problem position
      * @param cause - the reason
      */
-    public ConstructorException(String context, Mark contextMark, String problem, Mark problemMark,
-                                Throwable cause) {
+    public ConstructorException(String context, Mark contextMark, String problem, Mark problemMark, Throwable cause) {
         super(context, contextMark, problem, problemMark, cause);
     }
 

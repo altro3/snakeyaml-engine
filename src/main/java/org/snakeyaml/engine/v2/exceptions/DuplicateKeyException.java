@@ -26,7 +26,6 @@ public class DuplicateKeyException extends ConstructorException { // NOSONAR
      * @param problemMark - the problem location
      */
     public DuplicateKeyException(Mark contextMark, Object key, Mark problemMark) {
-        super("while constructing a mapping", contextMark, "found duplicate key " + key.toString(),
-            problemMark);
+        super("while constructing a mapping", contextMark, "found duplicate key " + key.toString(), problemMark);
     }
 }

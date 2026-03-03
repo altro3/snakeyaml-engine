@@ -59,5 +59,6 @@ public interface Parser extends Iterator<Event> {
      * @throws ParserException in case of malformed input.
      * @throws NoSuchElementException in case no next event is available.
      */
+    @Override
     Event next();
 }

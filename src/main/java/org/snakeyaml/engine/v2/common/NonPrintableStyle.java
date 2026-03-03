@@ -21,9 +21,8 @@ public enum NonPrintableStyle {
      * Transform non-printable string to !!binary
      */
     BINARY,
-
     /**
      * Escape non-printable string with \\u or \\x notation
      */
-    ESCAPE
+    ESCAPE,
 }

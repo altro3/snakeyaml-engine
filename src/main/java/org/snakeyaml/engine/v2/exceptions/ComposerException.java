@@ -13,7 +13,7 @@
  */
 package org.snakeyaml.engine.v2.exceptions;
 
-import java.util.Objects;
+import org.jspecify.annotations.NonNull;
 
 /**
  * General exception during composition step
@@ -28,9 +28,8 @@ public class ComposerException extends MarkedYamlEngineException { // NOSONAR
      * @param problem - the issue
      * @param problemMark - the problem location
      */
-    public ComposerException(String context, Mark contextMark, String problem, Mark problemMark) {
+    public ComposerException(@NonNull String context, Mark contextMark, String problem, Mark problemMark) {
         super(context, contextMark, problem, problemMark);
-        Objects.requireNonNull(context);
     }
 
     /**

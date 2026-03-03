@@ -13,9 +13,9 @@
  */
 package org.snakeyaml.engine.v2.exceptions;
 
-import java.io.Serializable;
-
 import org.snakeyaml.engine.v2.common.CharConstants;
+
+import java.io.Serializable;
 
 /**
  * Location of a problem in the YAML document. Its only use is producing nice error messages. Parser
@@ -41,7 +41,6 @@ public final class Mark implements Serializable {
      * @param pointer - the position of the mark from the beginning of the data
      */
     public Mark(String name, int index, int line, int column, int[] buffer, int pointer) {
-        super();
         this.name = name;
         this.index = index;
         this.line = line;
@@ -89,7 +88,7 @@ public final class Mark implements Serializable {
      * @return readable piece of YAML where a problem detected
      */
     public String createSnippet(int indent, int maxLength) {
-        float half = maxLength / 2f - 1f;
+        float half = maxLength / 2F - 1F;
         int start = pointer;
         String head = "";
         while ((start > 0) && !isLineBreak(buffer[start - 1])) {
@@ -111,7 +110,7 @@ public final class Mark implements Serializable {
             }
         }
 
-        StringBuilder result = new StringBuilder();
+        var result = new StringBuilder();
         for (int i = 0; i < indent; i++) {
             result.append(" ");
         }
@@ -119,8 +118,8 @@ public final class Mark implements Serializable {
         for (int i = start; i < end; i++) {
             result.appendCodePoint(buffer[i]);
         }
-        result.append(tail);
-        result.append("\n");
+        result.append(tail)
+            .append("\n");
         for (int i = 0; i < indent + pointer - start + head.length(); i++) {
             result.append(" ");
         }
@@ -135,12 +134,6 @@ public final class Mark implements Serializable {
      */
     public String createSnippet() {
         return createSnippet(4, 75);
-    }
-
-    @Override
-    public String toString() {
-        String snippet = createSnippet();
-        return " in " + name + ", line " + (line + 1) + ", column " + (column + 1) + ":\n" + snippet;
     }
 
     /**
@@ -196,5 +189,11 @@ public final class Mark implements Serializable {
      */
     public int getPointer() {
         return pointer;
+    }
+
+    @Override
+    public String toString() {
+        String snippet = createSnippet();
+        return " in " + name + ", line " + (line + 1) + ", column " + (column + 1) + ":\n" + snippet;
     }
 }

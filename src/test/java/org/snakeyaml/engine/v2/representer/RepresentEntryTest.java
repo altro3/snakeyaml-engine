@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -71,16 +71,14 @@ public class RepresentEntryTest {
         }
 
         @Override
-        protected NodeTuple representMappingEntry(Map.Entry<?, ?> entry) {
+        protected @NonNull NodeTuple representMappingEntry(Map.Entry<?, ?> entry) {
             NodeTuple tuple = super.representMappingEntry(entry);
-            List<CommentLine> keyBlockComments = new ArrayList<>();
-            keyBlockComments
-                .add(new CommentLine(null, null, "Key node block comment", CommentType.BLOCK));
+            var keyBlockComments = new ArrayList<CommentLine>();
+            keyBlockComments.add(new CommentLine(null, null, "Key node block comment", CommentType.BLOCK));
             tuple.getKeyNode().setBlockComments(keyBlockComments);
 
-            List<CommentLine> valueEndComments = new ArrayList<>();
-            valueEndComments
-                .add(new CommentLine(null, null, "Value node inline comment", CommentType.IN_LINE));
+            var valueEndComments = new ArrayList<CommentLine>();
+            valueEndComments.add(new CommentLine(null, null, "Value node inline comment", CommentType.IN_LINE));
             tuple.getValueNode().setEndComments(valueEndComments);
 
             return tuple;

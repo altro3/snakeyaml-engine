@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.comments;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.events.CommentEvent;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -21,9 +22,9 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  * A comment line. Maybe a block comment, blank line, or inline comment.
  */
 public record CommentLine(
-    @NonNull
+    @Nullable
     Mark startMark,
-    @NonNull
+    @Nullable
     Mark endMark,
     @NonNull
     String value,

@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.env.EnvConfig;
@@ -126,7 +127,7 @@ public class StandardConstructor extends BaseConstructor {
     public class ConstructYamlSet implements ConstructNode {
 
         @Override
-        public Object construct(Node node) {
+        public Object construct(@NonNull Node node) {
             if (node.isRecursive()) {
                 return constructedObjects.containsKey(node) ? constructedObjects.get(node)
                     : createEmptySetForNode((MappingNode) node);
@@ -137,7 +138,7 @@ public class StandardConstructor extends BaseConstructor {
 
         @Override
         @SuppressWarnings("unchecked")
-        public void constructRecursive(Node node, Object object) {
+        public void constructRecursive(@NonNull Node node, Object object) {
             if (node.isRecursive()) {
                 constructSet2ndStep((MappingNode) node, (Set<Object>) object);
             } else {
@@ -152,7 +153,7 @@ public class StandardConstructor extends BaseConstructor {
     public class ConstructYamlStr extends ConstructScalar {
 
         @Override
-        public Object construct(Node node) {
+        public Object construct(@NonNull Node node) {
             return constructScalar(node);
         }
     }
@@ -163,7 +164,7 @@ public class StandardConstructor extends BaseConstructor {
     public class ConstructYamlSeq implements ConstructNode {
 
         @Override
-        public Object construct(Node node) {
+        public Object construct(@NonNull Node node) {
             SequenceNode seqNode = (SequenceNode) node;
             if (node.isRecursive()) {
                 return createEmptyListForNode(seqNode);
@@ -174,7 +175,7 @@ public class StandardConstructor extends BaseConstructor {
 
         @Override
         @SuppressWarnings("unchecked")
-        public void constructRecursive(Node node, Object data) {
+        public void constructRecursive(@NonNull Node node, Object data) {
             if (node.isRecursive()) {
                 constructSequenceStep2((SequenceNode) node, (List<Object>) data);
             } else {
@@ -189,7 +190,7 @@ public class StandardConstructor extends BaseConstructor {
     public class ConstructYamlMap implements ConstructNode {
 
         @Override
-        public Object construct(Node node) {
+        public Object construct(@NonNull Node node) {
             MappingNode mappingNode = (MappingNode) node;
             if (node.isRecursive()) {
                 return createEmptyMapFor(mappingNode);
@@ -200,7 +201,7 @@ public class StandardConstructor extends BaseConstructor {
 
         @Override
         @SuppressWarnings("unchecked")
-        public void constructRecursive(Node node, Object object) {
+        public void constructRecursive(@NonNull Node node, Object object) {
             if (node.isRecursive()) {
                 constructMapping2ndStep((MappingNode) node, (Map<Object, Object>) object);
             } else {
@@ -219,7 +220,8 @@ public class StandardConstructor extends BaseConstructor {
      */
     public class ConstructEnv extends ConstructScalar {
 
-        public Object construct(Node node) {
+        @Override
+        public Object construct(@NonNull Node node) {
             String val = constructScalar(node);
             EnvConfig config = settings.getEnvConfig();
             if (config == null) {

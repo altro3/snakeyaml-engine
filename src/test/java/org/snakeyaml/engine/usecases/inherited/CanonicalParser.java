@@ -98,7 +98,7 @@ public class CanonicalParser implements Parser {
             String tag = null;
             if (scanner.checkToken(Token.ID.Tag)) {
                 var token = (TagToken) scanner.next();
-                tag = token.getValue().getHandle() + token.getValue().getSuffix();
+                tag = token.getValue().handle() + token.getValue().suffix();
             }
             if (scanner.checkToken(Token.ID.Scalar)) {
                 var token = (ScalarToken) scanner.next();

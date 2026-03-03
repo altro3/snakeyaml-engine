@@ -16,12 +16,12 @@ package org.snakeyaml.engine.v2.emitter;
 import org.snakeyaml.engine.v2.events.Event;
 
 /**
- * Drefine a way to serialize an event to output stream
+ * Define a way to serialize an event to output stream
  */
 public interface Emitable {
 
     /**
-     * Serialise event to bytes
+     * Serialize event to bytes
      *
      * @param event - the source
      */

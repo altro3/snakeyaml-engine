@@ -46,7 +46,8 @@ public enum ScalarStyle {
     /**
      * Plain scalar
      */
-    PLAIN(null);
+    PLAIN(null),
+    ;
 
     private final Character styleOpt;
 

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.comments.CommentEventsCollector;
 import org.snakeyaml.engine.v2.comments.CommentLine;
@@ -63,8 +64,8 @@ public class Composer implements Iterator<Node> {
      */
     protected final Parser parser;
     private final ScalarResolver scalarResolver;
-    private final Map<Anchor, Node> anchors;
-    private final Set<Node> recursiveNodes;
+    private final Map<Anchor, Node> anchors = new HashMap<>();
+    private final Set<Node> recursiveNodes = new HashSet<>();
     private final LoadSettings settings;
     private final CommentEventsCollector blockCommentsCollector;
     private final CommentEventsCollector inlineCommentsCollector;
@@ -77,16 +78,14 @@ public class Composer implements Iterator<Node> {
      * @param settings - configuration options
      * @param parser - the input
      */
-    public Composer(LoadSettings settings, Parser parser) {
+    public Composer(@NonNull LoadSettings settings, @NonNull Parser parser) {
         this.parser = parser;
-        this.scalarResolver = settings.getSchema().getScalarResolver();
+        this.scalarResolver = settings.schema().getScalarResolver();
         this.settings = settings;
-        this.anchors = new HashMap<>();
-        this.recursiveNodes = new HashSet<>();
-        this.blockCommentsCollector =
-            new CommentEventsCollector(parser, CommentType.BLANK_LINE, CommentType.BLOCK);
+        this.blockCommentsCollector = new CommentEventsCollector(parser, CommentType.BLANK_LINE, CommentType.BLOCK);
         this.inlineCommentsCollector = new CommentEventsCollector(parser, CommentType.IN_LINE);
         this.mergeUtils = new MergeUtils() {
+            @Override
             public MappingNode asMappingNode(Node node) {
                 return Composer.this.asMappingNode(node);
             }
@@ -132,8 +131,7 @@ public class Composer implements Iterator<Node> {
         if (!parser.checkEvent(Event.ID.StreamEnd)) {
             Event event = parser.next();
             Mark previousDocMark = document.getStartMark();
-            throw new ComposerException("expected a single document in the stream", previousDocMark,
-                "but found another document", event.getStartMark());
+            throw new ComposerException("Expected a single document in the stream", previousDocMark, "but found another document", event.getStartMark());
         }
         // Drop the STREAM-END event.
         parser.next();
@@ -151,8 +149,7 @@ public class Composer implements Iterator<Node> {
         if (parser.checkEvent(Event.ID.StreamEnd)) {
             List<CommentLine> commentLines = blockCommentsCollector.consume();
             Mark startMark = commentLines.get(0).startMark();
-            List<NodeTuple> children = Collections.emptyList();
-            Node node = new MappingNode(Tag.COMMENT, false, children, FlowStyle.BLOCK, startMark, null);
+            Node node = new MappingNode(Tag.COMMENT, false, List.of(), FlowStyle.BLOCK, startMark, null);
             node.setBlockComments(commentLines);
             return node;
         }
@@ -188,10 +185,8 @@ public class Composer implements Iterator<Node> {
             node = anchors.get(anchor);
             if (node.getNodeType() != NodeType.SCALAR) {
                 this.nonScalarAliasesCount++;
-                if (this.nonScalarAliasesCount > settings.getMaxAliasesForCollections()) {
-                    throw new YamlEngineException(
-                        "Number of aliases for non-scalar nodes exceeds the specified max="
-                            + settings.getMaxAliasesForCollections());
+                if (this.nonScalarAliasesCount > settings.maxAliasesForCollections()) {
+                    throw new YamlEngineException("Number of aliases for non-scalar nodes exceeds the specified max=" + settings.maxAliasesForCollections());
                 }
             }
             if (recursiveNodes.remove(node)) {
@@ -241,8 +236,7 @@ public class Composer implements Iterator<Node> {
         } else {
             nodeTag = new Tag(tag);
         }
-        Node node = new ScalarNode(nodeTag, resolved, ev.getValue(), ev.getScalarStyle(),
-            ev.getStartMark(), ev.getEndMark());
+        Node node = new ScalarNode(nodeTag, resolved, ev.getValue(), ev.getScalarStyle(), ev.getStartMark(), ev.getEndMark());
         if (anchor != null) {
             registerAnchor(anchor, node);
         }

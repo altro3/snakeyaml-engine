@@ -16,9 +16,7 @@ package org.snakeyaml.engine.v2.env;
 /**
  * Configurator for ENV format
  *
- * @see <a href=
- *     "https://bitbucket.org/snakeyaml/snakeyaml-engine/wiki/Documentation#markdown-header-variable-substitution">Variable
- *     substitution</a>
+ * @see <a href="https://bitbucket.org/snakeyaml/snakeyaml-engine/wiki/Documentation#markdown-header-variable-substitution">Variable substitution</a>
  */
 public interface EnvConfig {
 

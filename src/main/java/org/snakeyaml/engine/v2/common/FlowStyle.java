@@ -22,14 +22,12 @@ public enum FlowStyle {
      * Flow style
      */
     FLOW,
-
     /**
      * Block style
      */
     BLOCK,
-
     /**
      * Block style for the root level and flow style for other levels
      */
-    AUTO
+    AUTO,
 }

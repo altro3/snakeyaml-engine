@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.RepresentToNode;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -168,26 +169,22 @@ public abstract class BaseRepresenter {
      */
     protected Node representSequence(Tag tag, Iterable<?> sequence, FlowStyle flowStyle) {
         int size = 10; // default for ArrayList
-        if (sequence instanceof List<?>) {
-            size = ((List<?>) sequence).size();
+        if (sequence instanceof List<?> list) {
+            size = list.size();
         }
-        List<Node> value = new ArrayList<>(size);
+        var value = new ArrayList<Node>(size);
         SequenceNode node = new SequenceNode(tag, value, flowStyle);
         representedObjects.put(objectToRepresent, node);
-        FlowStyle bestStyle = FlowStyle.FLOW;
+        var bestStyle = FlowStyle.FLOW;
         for (Object item : sequence) {
             Node nodeItem = representData(item);
-            if (!(nodeItem instanceof ScalarNode && ((ScalarNode) nodeItem).isPlain())) {
+            if (!(nodeItem instanceof ScalarNode scalarNode && scalarNode.isPlain())) {
                 bestStyle = FlowStyle.BLOCK;
             }
             value.add(nodeItem);
         }
         if (flowStyle == FlowStyle.AUTO) {
-            if (defaultFlowStyle != FlowStyle.AUTO) {
-                node.setFlowStyle(defaultFlowStyle);
-            } else {
-                node.setFlowStyle(bestStyle);
-            }
+            node.setFlowStyle(defaultFlowStyle != FlowStyle.AUTO ? defaultFlowStyle : bestStyle);
         }
         return node;
     }
@@ -198,7 +195,7 @@ public abstract class BaseRepresenter {
      * @param entry - Map entry
      * @return the tuple where both key and value are converted to Node
      */
-    protected NodeTuple representMappingEntry(Map.Entry<?, ?> entry) {
+    protected @NonNull NodeTuple representMappingEntry(Map.Entry<?, ?> entry) {
         return new NodeTuple(representData(entry.getKey()), representData(entry.getValue()));
     }
 

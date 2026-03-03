@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.common;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.Serializable;
 
 /**
@@ -20,6 +22,8 @@ import java.io.Serializable;
  */
 public enum SpecVersion implements Serializable {
 
+    V_1_0(1, 0),
+    V_1_1(1, 1),
     V_1_2(1, 2),
     ;
 
@@ -73,6 +77,15 @@ public enum SpecVersion implements Serializable {
      */
     public String getRepresentation() {
         return representation;
+    }
+
+    public static @NonNull SpecVersion findVersion(@NonNull Integer major, @NonNull Integer minor) {
+        return switch (minor) {
+            case 0 -> V_1_0;
+            case 1 -> V_1_1;
+            case 2 -> V_1_2;
+            default -> throw new IllegalArgumentException("Unknown YAML specification version: " + major + "." + minor);
+        };
     }
 
     @Override

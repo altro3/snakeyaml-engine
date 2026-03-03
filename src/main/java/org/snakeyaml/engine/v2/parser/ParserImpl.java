@@ -236,21 +236,18 @@ public class ParserImpl implements Parser {
             List<?> dirOption = token.getValue();
             if (dirOption != null) {
                 // the value must be present
-                List<?> directiveValue = dirOption;
                 if (token.getName().equals(DirectiveToken.YAML_DIRECTIVE)) {
                     if (yamlSpecVersion != null) {
-                        throw new ParserException("found duplicate YAML directive", token.getStartMark());
+                        throw new ParserException("Found duplicate YAML directive", token.getStartMark());
                     }
-                    var value = (List<Integer>) directiveValue;
-                    Integer major = value.get(0);
-                    Integer minor = value.get(1);
-                    yamlSpecVersion = settings.getVersionFunction().apply(new SpecVersion(major, minor));
+                    var value = (List<Integer>) dirOption;
+                    yamlSpecVersion = settings.versionFunction().apply(SpecVersion.findVersion(value.get(0), value.get(1)));
                 } else if (token.getName().equals(DirectiveToken.TAG_DIRECTIVE)) {
-                    var value = (List<String>) directiveValue;
+                    var value = (List<String>) dirOption;
                     String handle = value.get(0);
                     String prefix = value.get(1);
                     if (tagHandles.containsKey(handle)) {
-                        throw new ParserException("duplicate tag handle " + handle, token.getStartMark());
+                        throw new ParserException("Duplicate tag handle " + handle, token.getStartMark());
                     }
                     tagHandles.put(handle, prefix);
                 }
@@ -333,17 +330,12 @@ public class ParserImpl implements Parser {
             }
             String tag = null;
             if (tagTupleValue != null) {
-                String handle = tagTupleValue.getHandle();
-                String suffix = tagTupleValue.getSuffix();
-                if (handle != null) {
-                    if (!directiveTags.containsKey(handle)) {
-                        throw new ParserException("while parsing a node", startMark,
-                            "found undefined tag handle " + handle, tagMark);
-                    }
-                    tag = directiveTags.get(handle) + suffix;
-                } else {
-                    tag = suffix;
+                String handle = tagTupleValue.handle();
+                String suffix = tagTupleValue.suffix();
+                if (!directiveTags.containsKey(handle)) {
+                    throw new ParserException("while parsing a node", startMark, "found undefined tag handle " + handle, tagMark);
                 }
+                tag = directiveTags.get(handle) + suffix;
             }
             if (startMark == null) {
                 startMark = scanner.peekToken().getStartMark();
@@ -354,22 +346,20 @@ public class ParserImpl implements Parser {
             // inline comments that should be handled by the existing flow.
             if ((anchor != null || tag != null) && scanner.checkToken(Token.ID.Comment)) {
                 // Peek ahead to see if there's content after any comments
-                List<CommentToken> commentTokensAfterProperties = new ArrayList<>();
+                var commentTokensAfterProperties = new ArrayList<CommentToken>();
                 while (scanner.checkToken(Token.ID.Comment)) {
                     commentTokensAfterProperties.add((CommentToken) scanner.next());
                 }
                 // Check if there's actual content after the comments
                 if (hasNodeContent(block, indentlessSequence)) {
                     // Content follows - emit comments first, then parse content
-                    state = new ParseNodeWithPendingComments(block, indentlessSequence, anchor, tag,
-                        startMark, endMark, tagMark, commentTokensAfterProperties, states.pop());
+                    state = new ParseNodeWithPendingComments(block, indentlessSequence, anchor, tag, startMark, endMark, tagMark, commentTokensAfterProperties, states.pop());
                     return produceCommentEvent(commentTokensAfterProperties.remove(0));
                 } else {
                     // No content follows - this is an empty scalar case.
                     // Create the scalar event and set up state to emit DocumentEnd, then the comments.
                     boolean implicit = tag == null;
-                    Event scalarEvent = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "",
-                        ScalarStyle.PLAIN, startMark, endMark);
+                    var scalarEvent = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "", ScalarStyle.PLAIN, startMark, endMark);
                     // Pop states to maintain stack consistency (normally ParseDocumentEnd would be popped)
                     states.pop();
                     // The next state should emit DocumentEnd, then the collected comments, then continue
@@ -394,8 +384,7 @@ public class ParserImpl implements Parser {
                     } else {
                         implicitValues = new ImplicitTuple(false, false);
                     }
-                    event = new ScalarEvent(anchor, tag, implicitValues, token.getValue(), token.getStyle(),
-                        startMark, endMark);
+                    event = new ScalarEvent(anchor, tag, implicitValues, token.getValue(), token.getStyle(), startMark, endMark);
                     state = states.pop();
                 } else if (scanner.checkToken(Token.ID.FlowSequenceStart)) {
                     endMark = scanner.peekToken().getEndMark();
@@ -407,8 +396,7 @@ public class ParserImpl implements Parser {
                     state = new ParseFlowMappingFirstKey();
                 } else if (block && scanner.checkToken(Token.ID.BlockSequenceStart)) {
                     endMark = scanner.peekToken().getStartMark();
-                    event =
-                        new SequenceStartEvent(anchor, tag, implicit, FlowStyle.BLOCK, startMark, endMark);
+                    event = new SequenceStartEvent(anchor, tag, implicit, FlowStyle.BLOCK, startMark, endMark);
                     state = new ParseBlockSequenceFirstEntry();
                 } else if (block && scanner.checkToken(Token.ID.BlockMappingStart)) {
                     endMark = scanner.peekToken().getStartMark();
@@ -416,14 +404,11 @@ public class ParserImpl implements Parser {
                     state = new ParseBlockMappingFirstKey();
                 } else if (anchor != null || tag != null) {
                     // Empty scalars are allowed even if a tag or an anchor is specified.
-                    event = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "",
-                        ScalarStyle.PLAIN, startMark, endMark);
+                    event = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "", ScalarStyle.PLAIN, startMark, endMark);
                     state = states.pop();
                 } else {
                     Token token = scanner.peekToken();
-                    throw new ParserException("while parsing a " + (block ? "block" : "flow") + " node",
-                        startMark, "expected the node content, but found '" + token.getTokenId() + "'",
-                        token.getStartMark());
+                    throw new ParserException("while parsing a " + (block ? "block" : "flow") + " node", startMark, "expected the node content, but found '" + token.getTokenId() + "'", token.getStartMark());
                 }
             }
         }
@@ -518,9 +503,7 @@ public class ParserImpl implements Parser {
                 }
                 if (!scanner.checkToken(Token.ID.StreamEnd)) {
                     if (!scanner.checkToken(Token.ID.DocumentStart)) {
-                        throw new ParserException(
-                            "expected '<document start>', but found '" + scanner.peekToken().getTokenId() + "'",
-                            scanner.peekToken().getStartMark());
+                        throw new ParserException("expected '<document start>', but found '" + scanner.peekToken().getTokenId() + "'", scanner.peekToken().getStartMark());
                     }
                     token = scanner.next();
                     Mark endMark = token.getEndMark();
@@ -530,9 +513,7 @@ public class ParserImpl implements Parser {
                     state = new ParseDocumentContent();
                     return event;
                 } else {
-                    throw new ParserException(
-                        "expected '<document start>', but found '" + scanner.peekToken().getTokenId() + "'",
-                        scanner.peekToken().getStartMark());
+                    throw new ParserException("expected '<document start>', but found '" + scanner.peekToken().getTokenId() + "'", scanner.peekToken().getStartMark());
                 }
             }
             // Parse the end of the stream.
@@ -570,8 +551,7 @@ public class ParserImpl implements Parser {
                 endMark = token.getEndMark();
                 explicit = true;
             } else if (scanner.checkToken(Token.ID.Directive)) {
-                throw new ParserException("expected '<document end>' before directives, but found '"
-                    + scanner.peekToken().getTokenId() + "'", scanner.peekToken().getStartMark());
+                throw new ParserException("expected '<document end>' before directives, but found '" + scanner.peekToken().getTokenId() + "'", scanner.peekToken().getStartMark());
             }
             directiveTags.clear(); // directive tags do not survive between the documents
             var event = new DocumentEndEvent(explicit, startMark, endMark);
