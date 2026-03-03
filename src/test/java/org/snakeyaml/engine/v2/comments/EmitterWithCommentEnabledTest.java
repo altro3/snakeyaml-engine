@@ -371,7 +371,7 @@ public class EmitterWithCommentEnabledTest {
 
     emitter.emit(new StreamStartEvent(null, null));
     emitter
-        .emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>(), null, null));
+        .emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
     emitter.emit(new MappingStartEvent(null, "yaml.org,2002:map", true, FlowStyle.FLOW));
     emitter.emit(new CommentEvent(CommentType.BLOCK, " I'm first", null, null));
     ImplicitTuple allImplicit = new ImplicitTuple(true, true);
@@ -411,7 +411,7 @@ public class EmitterWithCommentEnabledTest {
 
     emitter.emit(new StreamStartEvent(null, null));
     emitter
-        .emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>(), null, null));
+        .emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
     emitter
         .emit(new MappingStartEvent(null, "yaml.org,2002:map", true, FlowStyle.FLOW, null, null));
     emitter.emit(new CommentEvent(CommentType.BLOCK, " nobody home", null, null));
@@ -433,7 +433,7 @@ public class EmitterWithCommentEnabledTest {
 
     emitter.emit(new StreamStartEvent(null, null));
     emitter
-        .emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>(), null, null));
+        .emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
     emitter
         .emit(new SequenceStartEvent(null, "yaml.org,2002:seq", true, FlowStyle.FLOW, null, null));
     emitter.emit(new CommentEvent(CommentType.BLOCK, " red", null, null));
@@ -459,7 +459,7 @@ public class EmitterWithCommentEnabledTest {
 
     emitter.emit(new StreamStartEvent(null, null));
     emitter
-        .emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>(), null, null));
+        .emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
     emitter
         .emit(new SequenceStartEvent(null, "yaml.org,2002:seq", true, FlowStyle.FLOW, null, null));
     emitter.emit(new CommentEvent(CommentType.BLOCK, " nobody home", null, null));

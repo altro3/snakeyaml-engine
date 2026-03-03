@@ -18,7 +18,10 @@ import java.io.Serializable;
 /**
  * YAML Version indicator
  */
-public class SpecVersion implements Serializable {
+public enum SpecVersion implements Serializable {
+
+  V_1_2(1, 2),
+  ;
 
   /**
    * keep major
@@ -28,16 +31,21 @@ public class SpecVersion implements Serializable {
    * keep minor
    */
   private final int minor;
+  /**
+   * String representation like "1.2"
+   */
+  private final String representation;
 
   /**
    * Create
    *
-   * @param major - major part ov version, must be 1
-   * @param minor - minor part of version, may be 0 or 1
+   * @param major - major part ov version
+   * @param minor - minor part of version
    */
-  public SpecVersion(int major, int minor) {
+  SpecVersion(int major, int minor) {
     this.major = major;
     this.minor = minor;
+    representation = major + "." + minor;
   }
 
   /**
@@ -64,7 +72,7 @@ public class SpecVersion implements Serializable {
    * @return text
    */
   public String getRepresentation() {
-    return major + "." + minor;
+    return representation;
   }
 
   @Override

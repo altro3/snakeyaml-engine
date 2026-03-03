@@ -74,11 +74,11 @@ class EventRepresentationTest {
   @Test
   @DisplayName("Represent DocumentStartEvent")
   void testDocumentStartEvent() {
-    valid(new DocumentStartEvent(true, new SpecVersion(10, 10), Collections.emptyMap()),
+    valid(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap()),
         "+DOC ---");
-    valid(new DocumentStartEvent(true, new SpecVersion(10, 10), Collections.emptyMap()), "+DOC");
-    valid(new DocumentStartEvent(false, new SpecVersion(10, 10), Collections.emptyMap()), "+DOC");
-    valid(new DocumentStartEvent(false, new SpecVersion(10, 10), Collections.emptyMap()),
+    valid(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap()), "+DOC");
+    valid(new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap()), "+DOC");
+    valid(new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap()),
         "+DOC ---");
   }
 

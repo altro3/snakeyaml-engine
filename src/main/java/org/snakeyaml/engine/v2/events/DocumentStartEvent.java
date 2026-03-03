@@ -30,8 +30,7 @@ public final class DocumentStartEvent extends Event {
   private final SpecVersion specVersion;
   private final Map<String, String> tags;
 
-  public DocumentStartEvent(boolean explicit, SpecVersion specVersion, Map<String, String> tags,
-      Mark startMark, Mark endMark) {
+  public DocumentStartEvent(boolean explicit, SpecVersion specVersion, Map<String, String> tags, Mark startMark, Mark endMark) {
     super(startMark, endMark);
     Objects.requireNonNull(specVersion);
     Objects.requireNonNull(tags);

@@ -72,7 +72,7 @@ public class SetWidthTest {
     StreamDataWriter writer = new StreamToStringWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), emptyMap()));
+    emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, emptyMap()));
 
     emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
         ScalarStyle.PLAIN));
@@ -94,7 +94,7 @@ public class SetWidthTest {
     StreamDataWriter writer = new StreamToStringWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), emptyMap()));
+    emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, emptyMap()));
 
     emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
         ScalarStyle.PLAIN));

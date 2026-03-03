@@ -43,7 +43,7 @@ public class EmitCommentTest {
     StreamDataWriter writer = new StreamToStringWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>()));
+    emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
     emitter.emit(new CommentEvent(CommentType.BLOCK, "Hello world!", null, null));
     emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), "This is the scalar",
         ScalarStyle.DOUBLE_QUOTED));
@@ -60,7 +60,7 @@ public class EmitCommentTest {
     StreamDataWriter writer = new StreamToStringWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>()));
+    emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
     emitter.emit(new CommentEvent(CommentType.BLOCK, "Hello world!", null, null));
     emitter.emit(new DocumentEndEvent(false));
     emitter.emit(new StreamEndEvent());

@@ -146,7 +146,7 @@ public class EmitterTest {
 
     emitter.emit(new StreamStartEvent(null, null));
     emitter
-        .emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>(), null, null));
+        .emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
     emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, false), burger + halfBurger,
         ScalarStyle.DOUBLE_QUOTED, null, null));
     String expected = "! \"\\U0001f354\\ud83c\"";

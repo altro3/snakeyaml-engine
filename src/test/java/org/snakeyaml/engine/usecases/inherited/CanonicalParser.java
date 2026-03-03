@@ -63,8 +63,7 @@ public class CanonicalParser implements Parser {
       if (scanner.checkToken(Token.ID.Directive, Token.ID.DocumentStart)) {
         parseDocument();
       } else {
-        throw new CanonicalException(
-            "document is expected, got " + scanner.tokens.get(0) + " in " + label);
+        throw new CanonicalException("Document is expected, got " + scanner.tokens.get(0) + " in " + label);
       }
     }
     scanner.getToken(Token.ID.StreamEnd);
@@ -77,7 +76,7 @@ public class CanonicalParser implements Parser {
       scanner.getToken(Token.ID.Directive);
     }
     scanner.getToken(Token.ID.DocumentStart);
-    events.add(new DocumentStartEvent(true, new SpecVersion(1, 2), Collections.emptyMap(), null, null));
+    events.add(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap(), null, null));
     parseNode();
     if (scanner.checkToken(Token.ID.DocumentEnd)) {
       scanner.getToken(Token.ID.DocumentEnd);
@@ -103,19 +102,15 @@ public class CanonicalParser implements Parser {
       }
       if (scanner.checkToken(Token.ID.Scalar)) {
         var token = (ScalarToken) scanner.next();
-        events.add(new ScalarEvent(anchor, tag, new ImplicitTuple(false, false), token.getValue(),
-            ScalarStyle.PLAIN, null, null));
+        events.add(new ScalarEvent(anchor, tag, new ImplicitTuple(false, false), token.getValue(), ScalarStyle.PLAIN, null, null));
       } else if (scanner.checkToken(Token.ID.FlowSequenceStart)) {
-        events.add(
-            new SequenceStartEvent(anchor, Tag.SEQ.getValue(), false, FlowStyle.AUTO, null, null));
+        events.add(new SequenceStartEvent(anchor, Tag.SEQ.getValue(), false, FlowStyle.AUTO, null, null));
         parseSequence();
       } else if (scanner.checkToken(Token.ID.FlowMappingStart)) {
-        events.add(
-            new MappingStartEvent(anchor, Tag.MAP.getValue(), false, FlowStyle.AUTO, null, null));
+        events.add(new MappingStartEvent(anchor, Tag.MAP.getValue(), false, FlowStyle.AUTO, null, null));
         parseMapping();
       } else {
-        throw new CanonicalException(
-            "SCALAR, '[', or '{' is expected, got " + scanner.tokens.get(0));
+        throw new CanonicalException("SCALAR, '[', or '{' is expected, got " + scanner.tokens.get(0));
       }
     }
   }

@@ -61,7 +61,7 @@ public class EmptyStringOutputTest {
     MyWriter writer = new MyWriter();
     Emitter emitter = new Emitter(settings, writer);
     emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, new SpecVersion(10, 10), new HashMap<>()));
+    emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
     emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, false), value,
         ScalarStyle.PLAIN, null, null));
     return writer.toString();
