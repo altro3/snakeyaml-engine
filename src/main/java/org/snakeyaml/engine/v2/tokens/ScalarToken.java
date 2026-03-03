@@ -13,10 +13,9 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
-
-import java.util.Objects;
 
 public final class ScalarToken extends Token {
 
@@ -24,14 +23,12 @@ public final class ScalarToken extends Token {
     private final boolean plain;
     private final ScalarStyle style;
 
-    public ScalarToken(String value, boolean plain, Mark startMark, Mark endMark) {
+    public ScalarToken(@NonNull String value, boolean plain, @NonNull Mark startMark, @NonNull Mark endMark) {
         this(value, plain, ScalarStyle.PLAIN, startMark, endMark);
     }
 
-    public ScalarToken(String value, boolean plain, ScalarStyle style, Mark startMark, Mark endMark) {
+    public ScalarToken(@NonNull String value, boolean plain, @NonNull ScalarStyle style, @NonNull Mark startMark, @NonNull Mark endMark) {
         super(startMark, endMark);
-        Objects.requireNonNull(value);
-        Objects.requireNonNull(style);
         this.value = value;
         this.plain = plain;
         this.style = style;
@@ -41,17 +38,17 @@ public final class ScalarToken extends Token {
         return this.plain;
     }
 
-    public String getValue() {
+    public @NonNull String getValue() {
         return this.value;
     }
 
-    public ScalarStyle getStyle() {
+    public @NonNull ScalarStyle getStyle() {
         return this.style;
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.Scalar;
+    public @NonNull Id getTokenId() {
+        return Id.Scalar;
     }
 
     @Override

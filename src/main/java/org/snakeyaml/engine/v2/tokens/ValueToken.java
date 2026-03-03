@@ -13,16 +13,17 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class ValueToken extends Token {
 
-    public ValueToken(Mark startMark, Mark endMark) {
+    public ValueToken(@NonNull Mark startMark, @NonNull Mark endMark) {
         super(startMark, endMark);
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.Value;
+    public @NonNull Id getTokenId() {
+        return Id.Value;
     }
 }

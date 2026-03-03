@@ -13,8 +13,7 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -25,18 +24,16 @@ public abstract class Token {
     private final Mark startMark;
     private final Mark endMark;
 
-    public Token(Mark startMark, Mark endMark) {
-        Objects.requireNonNull(startMark);
-        Objects.requireNonNull(endMark);
+    public Token(@NonNull Mark startMark, @NonNull Mark endMark) {
         this.startMark = startMark;
         this.endMark = endMark;
     }
 
-    public Mark getStartMark() {
+    public @NonNull Mark getStartMark() {
         return startMark;
     }
 
-    public Mark getEndMark() {
+    public @NonNull Mark getEndMark() {
         return endMark;
     }
 
@@ -45,14 +42,14 @@ public abstract class Token {
      *
      * @return ID of this token
      */
-    public abstract Token.ID getTokenId();
+    public abstract @NonNull Id getTokenId();
 
     @Override
     public String toString() {
         return getTokenId().toString();
     }
 
-    public enum ID {
+    public enum Id {
         Alias("<alias>"), // NOSONAR
         Anchor("<anchor>"), // NOSONAR
         BlockEnd("<block end>"), // NOSONAR
@@ -76,7 +73,7 @@ public abstract class Token {
 
         private final String description;
 
-        ID(String s) {
+        Id(String s) {
             description = s;
         }
 

@@ -45,25 +45,25 @@ public class InheritedTokensTest extends InheritedImportTest {
     @Test
     @DisplayName("Tokens are correct")
     public void testTokens() throws FileNotFoundException {
-        Map<Token.ID, String> replaces = new HashMap<Token.ID, String>();
-        replaces.put(Token.ID.Directive, "%");
-        replaces.put(Token.ID.DocumentStart, "---");
-        replaces.put(Token.ID.DocumentEnd, "...");
-        replaces.put(Token.ID.Alias, "*");
-        replaces.put(Token.ID.Anchor, "&");
-        replaces.put(Token.ID.Tag, "!");
-        replaces.put(Token.ID.Scalar, "_");
-        replaces.put(Token.ID.BlockSequenceStart, "[[");
-        replaces.put(Token.ID.BlockMappingStart, "{{");
-        replaces.put(Token.ID.BlockEnd, "]}");
-        replaces.put(Token.ID.FlowSequenceStart, "[");
-        replaces.put(Token.ID.FlowSequenceEnd, "]");
-        replaces.put(Token.ID.FlowMappingStart, "{");
-        replaces.put(Token.ID.FlowMappingEnd, "}");
-        replaces.put(Token.ID.BlockEntry, ",");
-        replaces.put(Token.ID.FlowEntry, ",");
-        replaces.put(Token.ID.Key, "?");
-        replaces.put(Token.ID.Value, ":");
+        Map<Token.Id, String> replaces = new HashMap<Token.Id, String>();
+        replaces.put(Token.Id.Directive, "%");
+        replaces.put(Token.Id.DocumentStart, "---");
+        replaces.put(Token.Id.DocumentEnd, "...");
+        replaces.put(Token.Id.Alias, "*");
+        replaces.put(Token.Id.Anchor, "&");
+        replaces.put(Token.Id.Tag, "!");
+        replaces.put(Token.Id.Scalar, "_");
+        replaces.put(Token.Id.BlockSequenceStart, "[[");
+        replaces.put(Token.Id.BlockMappingStart, "{{");
+        replaces.put(Token.Id.BlockEnd, "]}");
+        replaces.put(Token.Id.FlowSequenceStart, "[");
+        replaces.put(Token.Id.FlowSequenceEnd, "]");
+        replaces.put(Token.Id.FlowMappingStart, "{");
+        replaces.put(Token.Id.FlowMappingEnd, "}");
+        replaces.put(Token.Id.BlockEntry, ",");
+        replaces.put(Token.Id.FlowEntry, ",");
+        replaces.put(Token.Id.Key, "?");
+        replaces.put(Token.Id.Value, ":");
         //
         File[] tokensFiles = getStreamsByExtension(".tokens");
         assertTrue(tokensFiles.length > 0, "No test files found.");

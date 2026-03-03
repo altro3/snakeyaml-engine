@@ -13,16 +13,25 @@
  */
 package org.snakeyaml.engine.v2.serializer;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.nodes.Node;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Simple generate of the format id + number
  */
 public class NumberAnchorGenerator implements AnchorGenerator {
+
+    public static final NumberFormat FORMATTER = NumberFormat.getNumberInstance(Locale.ROOT);
+
+    static {
+        FORMATTER.setMinimumIntegerDigits(3);
+        FORMATTER.setMaximumFractionDigits(0);// issue 172
+        FORMATTER.setGroupingUsed(false);
+    }
 
     private int lastAnchorId;
 
@@ -43,17 +52,13 @@ public class NumberAnchorGenerator implements AnchorGenerator {
      * @return unique anchor name or existing anchor name
      */
     @Override
-    public Anchor nextAnchor(Node node) {
+    public @Nullable Anchor nextAnchor(Node node) {
         if (node.getAnchor() != null) {
             // keep the anchor when it is set explicitly
             return node.getAnchor();
         }
         this.lastAnchorId++;
-        var format = NumberFormat.getNumberInstance(Locale.ROOT);
-        format.setMinimumIntegerDigits(3);
-        format.setMaximumFractionDigits(0);// issue 172
-        format.setGroupingUsed(false);
-        String anchorId = format.format(this.lastAnchorId);
+        String anchorId = FORMATTER.format(this.lastAnchorId);
         return new Anchor("id" + anchorId);
     }
 }

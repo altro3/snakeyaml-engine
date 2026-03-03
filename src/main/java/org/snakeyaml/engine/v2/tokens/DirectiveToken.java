@@ -23,6 +23,7 @@ public final class DirectiveToken<T> extends Token {
 
     public static final String YAML_DIRECTIVE = "YAML";
     public static final String TAG_DIRECTIVE = "TAG";
+
     private final String name;
     private final List<T> value;
 
@@ -35,16 +36,16 @@ public final class DirectiveToken<T> extends Token {
         this.value = value;
     }
 
-    public String getName() {
+    public @NonNull String getName() {
         return this.name;
     }
 
-    public List<T> getValue() {
+    public @NonNull List<T> getValue() {
         return this.value;
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.Directive;
+    public @NonNull Id getTokenId() {
+        return Id.Directive;
     }
 }

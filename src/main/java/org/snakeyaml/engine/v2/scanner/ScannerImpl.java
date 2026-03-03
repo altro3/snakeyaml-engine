@@ -91,8 +91,7 @@ import static org.snakeyaml.engine.v2.common.CharConstants.ESCAPE_REPLACEMENTS;
 public final class ScannerImpl implements Scanner {
 
     private static final String DIRECTIVE_PREFIX = "while scanning a directive";
-    private static final String EXPECTED_ALPHA_ERROR_PREFIX =
-        "expected alphabetic or numeric character, but found ";
+    private static final String EXPECTED_ALPHA_ERROR_PREFIX = "expected alphabetic or numeric character, but found ";
     private static final String SCANNING_SCALAR = "while scanning a block scalar";
     private static final String SCANNING_PREFIX = "while scanning a ";
     /**
@@ -169,7 +168,7 @@ public final class ScannerImpl implements Scanner {
      * Check whether the next token is the given type.
      */
     @Override
-    public boolean checkToken(Token.ID choice) {
+    public boolean checkToken(Token.Id choice) {
         while (needMoreTokens()) {
             fetchMoreTokens();
         }
@@ -183,7 +182,7 @@ public final class ScannerImpl implements Scanner {
      * Check whether the next token is one of the given types.
      */
     @Override
-    public boolean checkToken(Token.ID... choices) {
+    public boolean checkToken(Token.Id... choices) {
         while (needMoreTokens()) {
             fetchMoreTokens();
         }
@@ -194,8 +193,8 @@ public final class ScannerImpl implements Scanner {
             // since the profiler puts this method on top (it is used a lot), we
             // should not use 'foreach' here because of the performance reasons
             Token firstToken = this.tokens.get(0);
-            Token.ID first = firstToken.getTokenId();
-            for (Token.ID choice : choices) {
+            Token.Id first = firstToken.getTokenId();
+            for (Token.Id choice : choices) {
                 if (first == choice) {
                     return true;
                 }
@@ -207,6 +206,7 @@ public final class ScannerImpl implements Scanner {
     /**
      * Return the next token but do not delete it from the queue.
      */
+    @Override
     public Token peekToken() {
         while (needMoreTokens()) {
             fetchMoreTokens();
@@ -222,6 +222,7 @@ public final class ScannerImpl implements Scanner {
     /**
      * Return the next token, removing it from the queue.
      */
+    @Override
     public Token next() {
         this.tokensTaken++;
         if (this.tokens.isEmpty()) {
@@ -280,9 +281,8 @@ public final class ScannerImpl implements Scanner {
      * Fetch one or more tokens from the StreamReader.
      */
     private void fetchMoreTokens() {
-        if (reader.getDocumentIndex() > settings.getCodePointLimit()) {
-            throw new YamlEngineException("The incoming YAML document exceeds the limit: "
-                + settings.getCodePointLimit() + " code points.");
+        if (reader.getDocumentIndex() > settings.codePointLimit()) {
+            throw new YamlEngineException("The incoming YAML document exceeds the limit: " + settings.codePointLimit() + " code points.");
         }
         // Eat whitespaces and process comments until we reach the next token.
         scanToNextToken();
@@ -423,7 +423,7 @@ public final class ScannerImpl implements Scanner {
          * Because this.possibleSimpleKeys is ordered, we can simply take the first key
          */
         if (!this.possibleSimpleKeys.isEmpty()) {
-            return this.possibleSimpleKeys.values().iterator().next().getTokenNumber();
+            return this.possibleSimpleKeys.values().iterator().next().tokenNumber();
         }
         return -1;
     }
@@ -443,15 +443,15 @@ public final class ScannerImpl implements Scanner {
             for (Iterator<SimpleKey> iterator = this.possibleSimpleKeys.values().iterator(); iterator
                 .hasNext(); ) {
                 SimpleKey key = iterator.next();
-                if ((key.getLine() != reader.getLine()) || (reader.getIndex() - key.getIndex() > 1024)) {
+                if ((key.line() != reader.getLine()) || (reader.getIndex() - key.index() > 1024)) {
                     // If the key is not on the same line as the current
                     // position OR the difference in column between the token
                     // start and the current position is more than the maximum
                     // simple key length, then this cannot be a simple key.
-                    if (key.isRequired()) {
+                    if (key.required()) {
                         // If the key was required, this implies an error
                         // condition.
-                        throw new ScannerException("while scanning a simple key", key.getMark(),
+                        throw new ScannerException("while scanning a simple key", key.mark(),
                             "could not find expected ':'", reader.getMark());
                     }
                     iterator.remove();
@@ -496,8 +496,8 @@ public final class ScannerImpl implements Scanner {
      */
     private void removePossibleSimpleKey() {
         SimpleKey key = possibleSimpleKeys.remove(flowLevel);
-        if (key != null && key.isRequired()) {
-            throw new ScannerException("while scanning a simple key", key.getMark(),
+        if (key != null && key.required()) {
+            throw new ScannerException("while scanning a simple key", key.mark(),
                 "could not find expected ':'", reader.getMark());
         }
     }
@@ -806,13 +806,13 @@ public final class ScannerImpl implements Scanner {
         SimpleKey key = this.possibleSimpleKeys.remove(this.flowLevel);
         if (key != null) {
             // Add KEY.
-            addToken(key.getTokenNumber() - this.tokensTaken, new KeyToken(key.getMark(), key.getMark()));
+            addToken(key.tokenNumber() - this.tokensTaken, new KeyToken(key.mark(), key.mark()));
 
             // If this key starts a new block mapping, we need to add
             // BLOCK-MAPPING-START.
-            if (isBlockContext() && addIndent(key.getColumn())) {
-                addToken(key.getTokenNumber() - this.tokensTaken,
-                    new BlockMappingStartToken(key.getMark(), key.getMark()));
+            if (isBlockContext() && addIndent(key.column())) {
+                addToken(key.tokenNumber() - this.tokensTaken,
+                    new BlockMappingStartToken(key.mark(), key.mark()));
             }
             // There cannot be two simple keys one after another.
             this.allowSimpleKey = false;
@@ -1128,7 +1128,7 @@ public final class ScannerImpl implements Scanner {
                 commentSeen = true;
                 CommentType type;
                 if (columnBeforeComment != 0
-                    && !(lastToken != null && lastToken.getTokenId() == Token.ID.BlockEntry)) {
+                    && !(lastToken != null && lastToken.getTokenId() == Token.Id.BlockEntry)) {
                     type = CommentType.IN_LINE;
                     inlineStartColumn = reader.getColumn();
                 } else if (inlineStartColumn == reader.getColumn()) {
@@ -1138,7 +1138,7 @@ public final class ScannerImpl implements Scanner {
                     type = CommentType.BLOCK;
                 }
                 CommentToken token = scanComment(type);
-                if (settings.getParseComments()) {
+                if (settings.parseComments()) {
                     addToken(token);
                 }
             }
@@ -1146,7 +1146,7 @@ public final class ScannerImpl implements Scanner {
             // simple keys may be allowed.
             String lineBreak = scanLineBreak();
             if (lineBreak != null) { // found a line-break
-                if (settings.getParseComments() && !commentSeen) {
+                if (settings.parseComments() && !commentSeen) {
                     if (columnBeforeComment == 0) {
                         addToken(
                             new CommentToken(CommentType.BLANK_LINE, lineBreak, startMark, reader.getMark()));
@@ -1359,15 +1359,14 @@ public final class ScannerImpl implements Scanner {
         CommentToken commentToken = null;
         if (reader.peek() == '#') {
             CommentToken comment = scanComment(CommentType.IN_LINE);
-            if (settings.getParseComments()) {
+            if (settings.parseComments()) {
                 commentToken = comment;
             }
         }
         int c = reader.peek();
         if (scanLineBreak() == null && c != 0) {
             var s = new String(Character.toChars(c));
-            throw new ScannerException(DIRECTIVE_PREFIX, startMark,
-                "expected a comment or a line break, but found " + s + "(" + c + ")", reader.getMark());
+            throw new ScannerException(DIRECTIVE_PREFIX, startMark, "expected a comment or a line break, but found " + s + "(" + c + ")", reader.getMark());
         }
         return commentToken;
     }
@@ -2025,7 +2024,7 @@ public final class ScannerImpl implements Scanner {
             || "...".equals(prefix) && CharConstants.NULL_BL_T_LINEBR.has(reader.peek(3))) {
             return "";
         }
-        if (settings.getParseComments() && atEndOfPlain()) {
+        if (settings.parseComments() && atEndOfPlain()) {
             return "";
         }
         var breaks = new StringBuilder();
@@ -2180,13 +2179,10 @@ public final class ScannerImpl implements Scanner {
                 buff.put(code);
             } catch (NumberFormatException nfe) {
                 int c1 = reader.peek();
-                final String s1 = String.valueOf(Character.toChars(c1));
+                final String s1 = new String(Character.toChars(c1));
                 int c2 = reader.peek(1);
-                final String s2 = String.valueOf(Character.toChars(c2));
-                throw new ScannerException(SCANNING_PREFIX + name, startMark,
-                    "expected URI escape sequence of 2 hexadecimal numbers, but found " + s1 + "(" + c1
-                        + ") and " + s2 + "(" + c2 + ")",
-                    reader.getMark());
+                final String s2 = new String(Character.toChars(c2));
+                throw new ScannerException(SCANNING_PREFIX + name, startMark, "expected URI escape sequence of 2 hexadecimal numbers, but found " + s1 + "(" + c1 + ") and " + s2 + "(" + c2 + ")", reader.getMark());
             }
             reader.forward(2);
         }
@@ -2237,7 +2233,7 @@ public final class ScannerImpl implements Scanner {
             if (token == null) {
                 continue;
             }
-            if (!settings.getParseComments() && (token instanceof CommentToken)) {
+            if (!settings.parseComments() && (token instanceof CommentToken)) {
                 continue;
             }
             tokenList.add(token);
@@ -2278,7 +2274,9 @@ public final class ScannerImpl implements Scanner {
         }
 
         enum Indicator {
-            STRIP, CLIP, KEEP
+            STRIP,
+            CLIP,
+            KEEP,
         }
     }
 

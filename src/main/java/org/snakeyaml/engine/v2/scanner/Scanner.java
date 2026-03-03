@@ -37,7 +37,7 @@ public interface Scanner extends Iterator<Token> {
      *     <code>false</code> if no more tokens are available.
      * @throws ScannerException Thrown in case of malformed input.
      */
-    boolean checkToken(Token.ID... choices);
+    boolean checkToken(Token.Id... choices);
 
     /**
      * Check if the next token is the given type.
@@ -47,8 +47,8 @@ public interface Scanner extends Iterator<Token> {
      *     more tokens are available.
      * @throws ScannerException Thrown in case of malformed input.
      */
-    default boolean checkToken(Token.ID choice) {
-        return checkToken(new Token.ID[] {choice});
+    default boolean checkToken(Token.Id choice) {
+        return checkToken(new Token.Id[] {choice});
     }
 
     /**

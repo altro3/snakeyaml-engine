@@ -101,7 +101,7 @@ public class CanonicalScanner implements Scanner {
     }
 
     @Override
-    public boolean checkToken(Token.ID... choices) {
+    public boolean checkToken(Token.Id... choices) {
         if (!scanned) {
             scan();
         }
@@ -110,7 +110,7 @@ public class CanonicalScanner implements Scanner {
                 return true;
             }
             Token first = this.tokens.get(0);
-            for (Token.ID choice : choices) {
+            for (Token.Id choice : choices) {
                 if (first.getTokenId() == choice) {
                     return true;
                 }
@@ -147,7 +147,7 @@ public class CanonicalScanner implements Scanner {
         this.index = 0;
     }
 
-    public Token getToken(Token.ID choice) {
+    public Token getToken(Token.Id choice) {
         Token token = next();
         if (choice != null && token.getTokenId() != choice) {
             throw new CanonicalException("unexpected token " + token);

@@ -27,7 +27,7 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.tokens.AnchorToken;
 import org.snakeyaml.engine.v2.tokens.ScalarToken;
 import org.snakeyaml.engine.v2.tokens.Token;
-import org.snakeyaml.engine.v2.tokens.Token.ID;
+import org.snakeyaml.engine.v2.tokens.Token.Id;
 
 @org.junit.jupiter.api.Tag("fast")
 class ScannerTest {
@@ -52,11 +52,11 @@ class ScannerTest {
         StreamReader reader = new StreamReader(settings, "444222");
         ScannerImpl scanner = new ScannerImpl(settings, reader);
         assertTrue(scanner.hasNext());
-        assertEquals(Token.ID.StreamStart, scanner.next().getTokenId());
+        assertEquals(Id.StreamStart, scanner.next().getTokenId());
         assertTrue(scanner.hasNext());
-        assertEquals(Token.ID.Scalar, scanner.next().getTokenId());
+        assertEquals(Id.Scalar, scanner.next().getTokenId());
         assertTrue(scanner.hasNext());
-        assertEquals(Token.ID.StreamEnd, scanner.next().getTokenId());
+        assertEquals(Id.StreamEnd, scanner.next().getTokenId());
         assertFalse(scanner.hasNext());
         try {
             scanner.next();
@@ -70,7 +70,7 @@ class ScannerTest {
     @DisplayName("652Z: ? is part of the key if no space after it")
     void testQuestionMarkStartsToken() {
         Token token = scanTo("{ ?foo: bar }", 3);
-        assertEquals(ID.Scalar, token.getTokenId());
+        assertEquals(Id.Scalar, token.getTokenId());
         ScalarToken scalar = (ScalarToken) token;
         assertEquals("?foo", scalar.getValue());
     }
@@ -79,7 +79,7 @@ class ScannerTest {
     @DisplayName("Y2GN: anchor may contain colon ':'")
     void testAnchor() {
         Token token = scanTo("key: &an:chor value", 5);
-        assertEquals(ID.Anchor, token.getTokenId());
+        assertEquals(Id.Anchor, token.getTokenId());
         AnchorToken anchorToken = (AnchorToken) token;
         assertEquals("an:chor", anchorToken.getValue().getValue());
     }

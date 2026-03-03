@@ -13,16 +13,17 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class FlowMappingEndToken extends Token {
 
-    public FlowMappingEndToken(Mark startMark, Mark endMark) {
+    public FlowMappingEndToken(@NonNull Mark startMark, @NonNull Mark endMark) {
         super(startMark, endMark);
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.FlowMappingEnd;
+    public @NonNull Id getTokenId() {
+        return Id.FlowMappingEnd;
     }
 }

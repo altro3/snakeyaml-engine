@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -23,12 +25,12 @@ public final class AliasEvent extends NodeEvent {
 
     private final Anchor alias;
 
-    public AliasEvent(Anchor anchor, Mark startMark, Mark endMark) {
+    public AliasEvent(@NonNull Anchor anchor, Mark startMark, Mark endMark) {
         super(anchor, startMark, endMark);
         alias = anchor;
     }
 
-    public AliasEvent(Anchor anchor) {
+    public AliasEvent(@NonNull Anchor anchor) {
         this(anchor, null, null);
     }
 
@@ -42,7 +44,7 @@ public final class AliasEvent extends NodeEvent {
         return "=ALI *" + alias;
     }
 
-    public Anchor getAlias() {
+    public @NonNull Anchor getAlias() {
         return alias;
     }
 }

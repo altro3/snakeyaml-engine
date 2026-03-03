@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 import java.util.Objects;
@@ -21,18 +22,17 @@ public final class TagToken extends Token {
 
     private final TagTuple value;
 
-    public TagToken(TagTuple value, Mark startMark, Mark endMark) {
+    public TagToken(@NonNull TagTuple value, @NonNull Mark startMark, @NonNull Mark endMark) {
         super(startMark, endMark);
-        Objects.requireNonNull(value);
         this.value = value;
     }
 
-    public TagTuple getValue() {
+    public @NonNull TagTuple getValue() {
         return this.value;
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.Tag;
+    public @NonNull Id getTokenId() {
+        return Id.Tag;
     }
 }

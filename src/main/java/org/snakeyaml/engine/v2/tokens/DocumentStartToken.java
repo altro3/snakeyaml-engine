@@ -13,16 +13,17 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class DocumentStartToken extends Token {
 
-    public DocumentStartToken(Mark startMark, Mark endMark) {
+    public DocumentStartToken(@NonNull Mark startMark, @NonNull Mark endMark) {
         super(startMark, endMark);
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.DocumentStart;
+    public @NonNull Id getTokenId() {
+        return Id.DocumentStart;
     }
 }

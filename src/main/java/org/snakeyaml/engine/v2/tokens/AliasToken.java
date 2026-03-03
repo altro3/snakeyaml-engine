@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -22,18 +23,17 @@ public final class AliasToken extends Token {
 
     private final Anchor value;
 
-    public AliasToken(Anchor value, Mark startMark, Mark endMark) {
+    public AliasToken(@NonNull Anchor value, Mark startMark, Mark endMark) {
         super(startMark, endMark);
-        Objects.requireNonNull(value);
         this.value = value;
     }
 
-    public Anchor getValue() {
+    public @NonNull Anchor getValue() {
         return this.value;
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.Alias;
+    public @NonNull Id getTokenId() {
+        return Id.Alias;
     }
 }

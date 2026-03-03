@@ -13,16 +13,17 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class BlockEntryToken extends Token {
 
-    public BlockEntryToken(Mark startMark, Mark endMark) {
+    public BlockEntryToken(@NonNull Mark startMark, @NonNull Mark endMark) {
         super(startMark, endMark);
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.BlockEntry;
+    public @NonNull Id getTokenId() {
+        return Id.BlockEntry;
     }
 }

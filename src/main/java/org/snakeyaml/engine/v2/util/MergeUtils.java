@@ -64,25 +64,23 @@ public abstract class MergeUtils {
         boolean process = true;
         while (process) {
             process = false;
-            List<NodeTuple> updated = new ArrayList<>(toProcess.size());
-            Set<String> keys = new HashSet<>(toProcess.size());
-            List<NodeTuple> merges = new ArrayList<>(2);
-            for (NodeTuple tuple : toProcess) {
+            var updated = new ArrayList<NodeTuple>(toProcess.size());
+            var keys = new HashSet<String>(toProcess.size());
+            var merges = new ArrayList<NodeTuple>(2);
+            for (var tuple : toProcess) {
                 Node keyNode = tuple.getKeyNode();
                 if (keyNode.getTag().equals(MERGE)) {
                     merges.add(tuple);
                 } else {
                     updated.add(tuple);
-                    if (keyNode instanceof ScalarNode) {
-                        ScalarNode sNode = (ScalarNode) keyNode;
+                    if (keyNode instanceof ScalarNode sNode) {
                         keys.add(sNode.getValue());
                     }
                 }
             }
-            for (NodeTuple tuple : merges) {
+            for (var tuple : merges) {
                 Node valueNode = tuple.getValueNode();
-                if (valueNode instanceof SequenceNode) {
-                    SequenceNode seqNode = (SequenceNode) valueNode;
+                if (valueNode instanceof SequenceNode seqNode) {
                     for (Node ref : seqNode.getValue()) {
                         MappingNode mergable = asMappingNode(ref);
                         process = process || mergable.hasMergeTag();
@@ -123,15 +121,13 @@ public abstract class MergeUtils {
      * @return A tuple of a list of filtered NodeTuples and a set containing the keys of the
      *     NodeTuples in the returned list.
      */
-    private Tuple<List<NodeTuple>, Set<String>> filter(List<NodeTuple> mergables,
-                                                       Set<String> filter) {
+    private Tuple<List<NodeTuple>, Set<String>> filter(List<NodeTuple> mergables, Set<String> filter) {
         int size = mergables.size();
-        Set<String> keys = new HashSet<>(size);
-        List<NodeTuple> result = new ArrayList<>(size);
-        for (NodeTuple tuple : mergables) {
+        var keys = new HashSet<String>(size);
+        var result = new ArrayList<NodeTuple>(size);
+        for (var tuple : mergables) {
             Node key = tuple.getKeyNode();
-            if (key instanceof ScalarNode) {
-                ScalarNode sNode = (ScalarNode) key;
+            if (key instanceof ScalarNode sNode) {
                 String nodeValue = sNode.getValue();
                 if (!filter.contains(nodeValue)) {
                     result.add(tuple);

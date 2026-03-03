@@ -13,8 +13,7 @@
  */
 package org.snakeyaml.engine.v2.tokens;
 
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -23,24 +22,22 @@ public final class CommentToken extends Token {
     private final CommentType type;
     private final String value;
 
-    public CommentToken(CommentType type, String value, Mark startMark, Mark endMark) {
+    public CommentToken(@NonNull CommentType type, @NonNull String value, @NonNull Mark startMark, @NonNull Mark endMark) {
         super(startMark, endMark);
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(value);
         this.type = type;
         this.value = value;
     }
 
-    public CommentType getCommentType() {
+    public @NonNull CommentType getCommentType() {
         return this.type;
     }
 
-    public String getValue() {
+    public @NonNull String getValue() {
         return this.value;
     }
 
     @Override
-    public Token.ID getTokenId() {
-        return ID.Comment;
+    public @NonNull Id getTokenId() {
+        return Id.Comment;
     }
 }

@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.serializer;
 
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.nodes.Node;
 
@@ -27,5 +28,5 @@ public interface AnchorGenerator {
      * @param node - the node to refer to
      * @return unique name
      */
-    Anchor nextAnchor(Node node);
+    @Nullable Anchor nextAnchor(Node node);
 }

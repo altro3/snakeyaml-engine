@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.comments.CommentLine;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -44,6 +45,7 @@ public abstract class Node {
     protected boolean resolved;
     protected Tag tag;
     private boolean recursive;
+    @Nullable
     private Anchor anchor;
     private List<CommentLine> inLineComments;
     private List<CommentLine> blockComments;
@@ -128,7 +130,7 @@ public abstract class Node {
      * @return the Anchor if available
      * @see <a href="https://yaml.org/spec/1.2/spec.html#id2765878">3.2.2.2. Anchors and Aliases</a>
      */
-    public Anchor getAnchor() {
+    public @Nullable Anchor getAnchor() {
         return anchor;
     }
 
@@ -138,7 +140,7 @@ public abstract class Node {
      * @param anchor - the Anchor for this Node
      * @see <a href="https://yaml.org/spec/1.2/spec.html#id2765878">3.2.2.2. Anchors and Aliases</a>
      */
-    public void setAnchor(Anchor anchor) {
+    public void setAnchor(@Nullable Anchor anchor) {
         this.anchor = anchor;
     }
 

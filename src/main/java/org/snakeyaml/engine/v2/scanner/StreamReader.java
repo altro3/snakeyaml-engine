@@ -13,16 +13,17 @@
  */
 package org.snakeyaml.engine.v2.scanner;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.Arrays;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.common.CharConstants;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 import org.snakeyaml.engine.v2.exceptions.ReaderException;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.Arrays;
 
 /**
  * Read the provided stream of code points into String and implement look-ahead operations. Checks
@@ -66,15 +67,15 @@ public final class StreamReader {
      * @param loadSettings - configuration options
      * @param reader - the input
      */
-    public StreamReader(LoadSettings loadSettings, Reader reader) {
-        this.name = loadSettings.getLabel();
+    public StreamReader(@NonNull LoadSettings loadSettings, Reader reader) {
+        this.name = loadSettings.label();
         this.codePointsWindow = new int[0];
         this.dataLength = 0;
         this.stream = reader;
         this.eof = false;
         // read one less because the last char may be HighSurrogate
-        this.buffer = new char[loadSettings.getBufferSize() + 1];
-        this.useMarks = loadSettings.getUseMarks();
+        this.buffer = new char[loadSettings.bufferSize() + 1];
+        this.useMarks = loadSettings.useMarks();
     }
 
     /**
@@ -83,7 +84,7 @@ public final class StreamReader {
      * @param loadSettings - configuration options
      * @param stream - the input
      */
-    public StreamReader(LoadSettings loadSettings, String stream) {
+    public StreamReader(@NonNull LoadSettings loadSettings, String stream) {
         this(loadSettings, new StringReader(stream));
     }
 
@@ -93,7 +94,7 @@ public final class StreamReader {
      * @param data - content to be checked for human-readability
      * @return true only when everything is human-readable
      */
-    public static boolean isPrintable(final String data) {
+    public static boolean isPrintable(@NonNull String data) {
         final int length = data.length();
         int offset = 0;
         while (offset < length) {
@@ -112,7 +113,7 @@ public final class StreamReader {
      * @param c - code point to be checked for human-readability
      * @return true only when the code point is human-readable
      */
-    public static boolean isPrintable(final int c) {
+    public static boolean isPrintable(int c) {
         return (c >= 0x20 && c <= 0x7F) || c == 0x9 || c == 0xA || c == 0xD || c == 0x85
             || (c >= 0xA0 && c <= 0xD7FF) || (c >= 0xE000 && c <= 0xFFFD)
             || (c >= 0x10000 && c <= 0x10FFFF);
@@ -124,12 +125,10 @@ public final class StreamReader {
      * @return {@link Mark} of the current position or null otherwise
      */
     public Mark getMark() {
-        if (useMarks) {
-            return new Mark(name, this.index, this.line, this.column, this.codePointsWindow,
-                this.pointer);
-        } else {
+        if (!useMarks) {
             return null;
         }
+        return new Mark(name, index, line, column, codePointsWindow, pointer);
     }
 
     /**
@@ -153,10 +152,10 @@ public final class StreamReader {
             if (CharConstants.LINEBR.has(c)
                 // do not count CR if it is followed by LF
                 || (c == '\r' && (ensureEnoughData() && codePointsWindow[pointer] != '\n'))) {
-                this.line++;
-                this.column = 0;
+                line++;
+                column = 0;
             } else if (c != 0xFEFF) {
-                this.column++;
+                column++;
             }
         }
     }
@@ -167,7 +166,7 @@ public final class StreamReader {
      * @return the next code point or 0 if empty
      */
     public int peek() {
-        return (ensureEnoughData()) ? codePointsWindow[pointer] : 0;
+        return ensureEnoughData() ? codePointsWindow[pointer] : 0;
     }
 
     /**
@@ -177,7 +176,7 @@ public final class StreamReader {
      * @return the next index-th code point or 0 if empty
      */
     public int peek(int index) {
-        return (ensureEnoughData(index)) ? codePointsWindow[pointer + index] : 0;
+        return ensureEnoughData(index) ? codePointsWindow[pointer + index] : 0;
     }
 
     /**
@@ -190,9 +189,9 @@ public final class StreamReader {
         if (length == 0) {
             return "";
         } else if (ensureEnoughData(length)) {
-            return new String(this.codePointsWindow, pointer, length);
+            return new String(codePointsWindow, pointer, length);
         } else {
-            return new String(this.codePointsWindow, pointer, Math.min(length, dataLength - pointer));
+            return new String(codePointsWindow, pointer, Math.min(length, dataLength - pointer));
         }
     }
 
@@ -204,10 +203,10 @@ public final class StreamReader {
      */
     public String prefixForward(int length) {
         final String prefix = prefix(length);
-        this.pointer += length;
+        pointer += length;
         moveIndices(length);
         // prefix never contains new line characters
-        this.column += length;
+        column += length;
         return prefix;
     }
 
@@ -227,7 +226,7 @@ public final class StreamReader {
         if (!eof && pointer + size >= dataLength) {
             update();
         }
-        return (this.pointer + size) < dataLength;
+        return pointer + size < dataLength;
     }
 
     /**
@@ -260,7 +259,7 @@ public final class StreamReader {
      * @return the index in the codePointsWindow where new code points should start to be written
      */
     private int prepareWindowFor(int read) {
-        int cpIndex = (dataLength - pointer);
+        int cpIndex = dataLength - pointer;
         codePointsWindow = Arrays.copyOfRange(codePointsWindow, pointer, dataLength + read);
         return cpIndex;
     }
@@ -274,8 +273,7 @@ public final class StreamReader {
     private int extendIfTrailingHighSurrogate(int read) throws IOException {
         if (Character.isHighSurrogate(buffer[read - 1])) {
             if (stream.read(buffer, read, 1) == -1) {
-                throw new ReaderException(name, index + read, buffer[read - 1],
-                    "The last char is HighSurrogate (no LowSurrogate detected).");
+                throw new ReaderException(name, index + read, buffer[read - 1], "The last char is HighSurrogate (no LowSurrogate detected).");
             }
             read++;
         }
@@ -296,8 +294,7 @@ public final class StreamReader {
             codePointsWindow[cpIndex] = codePoint;
             if (!isPrintable(codePoint)) {
                 // index + cpIndex is the absolute position of this code point
-                throw new ReaderException(name, index + cpIndex, codePoint,
-                    "special characters are not allowed");
+                throw new ReaderException(name, index + cpIndex, codePoint, "special characters are not allowed");
             }
             i += Character.charCount(codePoint);
             cpIndex++;
@@ -313,8 +310,8 @@ public final class StreamReader {
     }
 
     private void moveIndices(int length) {
-        this.index += length;
-        this.documentIndex += length;
+        index += length;
+        documentIndex += length;
     }
 
     /**

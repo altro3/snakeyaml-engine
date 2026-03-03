@@ -57,56 +57,56 @@ public class CanonicalParser implements Parser {
 
     // stream: STREAM-START document* STREAM-END
     private void parseStream() {
-        scanner.getToken(Token.ID.StreamStart);
+        scanner.getToken(Token.Id.StreamStart);
         events.add(new StreamStartEvent(null, null));
-        while (!scanner.checkToken(Token.ID.StreamEnd)) {
-            if (scanner.checkToken(Token.ID.Directive, Token.ID.DocumentStart)) {
+        while (!scanner.checkToken(Token.Id.StreamEnd)) {
+            if (scanner.checkToken(Token.Id.Directive, Token.Id.DocumentStart)) {
                 parseDocument();
             } else {
                 throw new CanonicalException("Document is expected, got " + scanner.tokens.get(0) + " in " + label);
             }
         }
-        scanner.getToken(Token.ID.StreamEnd);
+        scanner.getToken(Token.Id.StreamEnd);
         events.add(new StreamEndEvent(null, null));
     }
 
     // document: DIRECTIVE? DOCUMENT-START node
     private void parseDocument() {
-        if (scanner.checkToken(Token.ID.Directive)) {
-            scanner.getToken(Token.ID.Directive);
+        if (scanner.checkToken(Token.Id.Directive)) {
+            scanner.getToken(Token.Id.Directive);
         }
-        scanner.getToken(Token.ID.DocumentStart);
+        scanner.getToken(Token.Id.DocumentStart);
         events.add(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap(), null, null));
         parseNode();
-        if (scanner.checkToken(Token.ID.DocumentEnd)) {
-            scanner.getToken(Token.ID.DocumentEnd);
+        if (scanner.checkToken(Token.Id.DocumentEnd)) {
+            scanner.getToken(Token.Id.DocumentEnd);
         }
         events.add(new DocumentEndEvent(true, null, null));
     }
 
     // node: ALIAS | ANCHOR? TAG? (SCALAR|sequence|mapping)
     private void parseNode() {
-        if (scanner.checkToken(Token.ID.Alias)) {
+        if (scanner.checkToken(Token.Id.Alias)) {
             var token = (AliasToken) scanner.next();
             events.add(new AliasEvent(token.getValue(), null, null));
         } else {
             Anchor anchor = null;
-            if (scanner.checkToken(Token.ID.Anchor)) {
+            if (scanner.checkToken(Token.Id.Anchor)) {
                 var token = (AnchorToken) scanner.next();
                 anchor = token.getValue();
             }
             String tag = null;
-            if (scanner.checkToken(Token.ID.Tag)) {
+            if (scanner.checkToken(Token.Id.Tag)) {
                 var token = (TagToken) scanner.next();
                 tag = token.getValue().handle() + token.getValue().suffix();
             }
-            if (scanner.checkToken(Token.ID.Scalar)) {
+            if (scanner.checkToken(Token.Id.Scalar)) {
                 var token = (ScalarToken) scanner.next();
                 events.add(new ScalarEvent(anchor, tag, new ImplicitTuple(false, false), token.getValue(), ScalarStyle.PLAIN, null, null));
-            } else if (scanner.checkToken(Token.ID.FlowSequenceStart)) {
+            } else if (scanner.checkToken(Token.Id.FlowSequenceStart)) {
                 events.add(new SequenceStartEvent(anchor, Tag.SEQ.getValue(), false, FlowStyle.AUTO, null, null));
                 parseSequence();
-            } else if (scanner.checkToken(Token.ID.FlowMappingStart)) {
+            } else if (scanner.checkToken(Token.Id.FlowMappingStart)) {
                 events.add(new MappingStartEvent(anchor, Tag.MAP.getValue(), false, FlowStyle.AUTO, null, null));
                 parseMapping();
             } else {
@@ -117,41 +117,41 @@ public class CanonicalParser implements Parser {
 
     // sequence: SEQUENCE-START (node (ENTRY node)*)? ENTRY? SEQUENCE-END
     private void parseSequence() {
-        scanner.getToken(Token.ID.FlowSequenceStart);
-        if (!scanner.checkToken(Token.ID.FlowSequenceEnd)) {
+        scanner.getToken(Token.Id.FlowSequenceStart);
+        if (!scanner.checkToken(Token.Id.FlowSequenceEnd)) {
             parseNode();
-            while (!scanner.checkToken(Token.ID.FlowSequenceEnd)) {
-                scanner.getToken(Token.ID.FlowEntry);
-                if (!scanner.checkToken(Token.ID.FlowSequenceEnd)) {
+            while (!scanner.checkToken(Token.Id.FlowSequenceEnd)) {
+                scanner.getToken(Token.Id.FlowEntry);
+                if (!scanner.checkToken(Token.Id.FlowSequenceEnd)) {
                     parseNode();
                 }
             }
         }
-        scanner.getToken(Token.ID.FlowSequenceEnd);
+        scanner.getToken(Token.Id.FlowSequenceEnd);
         events.add(new SequenceEndEvent(null, null));
     }
 
     // mapping: MAPPING-START (map_entry (ENTRY map_entry)*)? ENTRY? MAPPING-END
     private void parseMapping() {
-        scanner.getToken(Token.ID.FlowMappingStart);
-        if (!scanner.checkToken(Token.ID.FlowMappingEnd)) {
+        scanner.getToken(Token.Id.FlowMappingStart);
+        if (!scanner.checkToken(Token.Id.FlowMappingEnd)) {
             parseMapEntry();
-            while (!scanner.checkToken(Token.ID.FlowMappingEnd)) {
-                scanner.getToken(Token.ID.FlowEntry);
-                if (!scanner.checkToken(Token.ID.FlowMappingEnd)) {
+            while (!scanner.checkToken(Token.Id.FlowMappingEnd)) {
+                scanner.getToken(Token.Id.FlowEntry);
+                if (!scanner.checkToken(Token.Id.FlowMappingEnd)) {
                     parseMapEntry();
                 }
             }
         }
-        scanner.getToken(Token.ID.FlowMappingEnd);
+        scanner.getToken(Token.Id.FlowMappingEnd);
         events.add(new MappingEndEvent(null, null));
     }
 
     // map_entry: KEY node VALUE node
     private void parseMapEntry() {
-        scanner.getToken(Token.ID.Key);
+        scanner.getToken(Token.Id.Key);
         parseNode();
-        scanner.getToken(Token.ID.Value);
+        scanner.getToken(Token.Id.Value);
         parseNode();
     }
 
