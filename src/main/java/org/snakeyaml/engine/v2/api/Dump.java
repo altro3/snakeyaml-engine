@@ -13,16 +13,16 @@
  */
 package org.snakeyaml.engine.v2.api;
 
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.representer.BaseRepresenter;
 import org.snakeyaml.engine.v2.representer.StandardRepresenter;
 import org.snakeyaml.engine.v2.serializer.Serializer;
+
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Common way to serialize any Java instance(s). The instance is stateful. Only one of the 'dump'
@@ -45,7 +45,7 @@ public class Dump {
      *
      * @param settings - configuration
      */
-    public Dump(DumpSettings settings) {
+    public Dump(@NonNull DumpSettings settings) {
         this(settings, new StandardRepresenter(settings));
     }
 
@@ -55,9 +55,7 @@ public class Dump {
      * @param settings - configuration
      * @param representer - custom representer
      */
-    public Dump(DumpSettings settings, BaseRepresenter representer) {
-        Objects.requireNonNull(settings, "DumpSettings cannot be null");
-        Objects.requireNonNull(representer, "Representer cannot be null");
+    public Dump(@NonNull DumpSettings settings, @NonNull BaseRepresenter representer) {
         this.settings = settings;
         this.representer = representer;
     }
@@ -69,10 +67,8 @@ public class Dump {
      * @param instancesIterator - instances to serialize
      * @param streamDataWriter - destination I/O writer
      */
-    public void dumpAll(Iterator<?> instancesIterator, StreamDataWriter streamDataWriter) {
-        Objects.requireNonNull(instancesIterator, "Iterator cannot be null");
-        Objects.requireNonNull(streamDataWriter, "StreamDataWriter cannot be null");
-        Serializer serializer = new Serializer(settings, new Emitter(settings, streamDataWriter));
+    public void dumpAll(@NonNull Iterator<?> instancesIterator, @NonNull StreamDataWriter streamDataWriter) {
+        var serializer = new Serializer(settings, new Emitter(settings, streamDataWriter));
         serializer.emitStreamStart();
         while (instancesIterator.hasNext()) {
             Object instance = instancesIterator.next();
@@ -88,7 +84,7 @@ public class Dump {
      * @param yaml - instance to serialize
      * @param streamDataWriter - destination I/O writer
      */
-    public void dump(Object yaml, StreamDataWriter streamDataWriter) {
+    public void dump(@NonNull Object yaml, @NonNull StreamDataWriter streamDataWriter) {
         Iterator<?> iter = Collections.singleton(yaml).iterator();
         dumpAll(iter, streamDataWriter);
     }
@@ -100,8 +96,8 @@ public class Dump {
      * @param instancesIterator - instances to serialize
      * @return String representation of the YAML stream
      */
-    public String dumpAllToString(Iterator<?> instancesIterator) {
-        StreamToStringWriter writer = new StreamToStringWriter();
+    public String dumpAllToString(@NonNull Iterator<?> instancesIterator) {
+        var writer = new StreamToStringWriter();
         dumpAll(instancesIterator, writer);
         return writer.toString();
     }
@@ -113,8 +109,8 @@ public class Dump {
      * @param yaml - instance to serialize
      * @return String representation of the YAML stream
      */
-    public String dumpToString(Object yaml) {
-        StreamToStringWriter writer = new StreamToStringWriter();
+    public String dumpToString(@NonNull Object yaml) {
+        var writer = new StreamToStringWriter();
         dump(yaml, writer);
         return writer.toString();
     }
@@ -125,22 +121,19 @@ public class Dump {
      * @param node - YAML node to be serialized to YAML document
      * @param streamDataWriter - stream to write to
      */
-    public void dumpNode(Node node, StreamDataWriter streamDataWriter) {
-        Objects.requireNonNull(node, "Node cannot be null");
-        Objects.requireNonNull(streamDataWriter, "StreamDataWriter cannot be null");
-        Serializer serializer = new Serializer(settings, new Emitter(settings, streamDataWriter));
+    public void dumpNode(@NonNull Node node, @NonNull StreamDataWriter streamDataWriter) {
+        var serializer = new Serializer(settings, new Emitter(settings, streamDataWriter));
         serializer.emitStreamStart();
         serializer.serializeDocument(node);
         serializer.emitStreamEnd();
     }
-}
 
+    /**
+     * Internal helper class to support dumping to String
+     */
+    static class StreamToStringWriter extends StringWriter implements StreamDataWriter {
 
-/**
- * Internal helper class to support dumping to String
- */
-class StreamToStringWriter extends StringWriter implements StreamDataWriter {
-
+    }
 }
 
 

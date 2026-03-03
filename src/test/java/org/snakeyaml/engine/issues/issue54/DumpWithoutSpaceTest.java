@@ -32,42 +32,43 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 @org.junit.jupiter.api.Tag("fast")
 public class DumpWithoutSpaceTest {
-  @Test
-  @DisplayName("The document does not have a space after the *1 alias")
-  void failToParseWithoutSpaceAfterAlias() {
-    try {
-      Object obj = parse("--- &1\nhash:\n  :one: true\n  :two: true\n  *1: true");
-      fail();
-    } catch (Exception e) {
-      assertTrue(e.getMessage().contains("could not find expected ':'"));
+
+    @Test
+    @DisplayName("The document does not have a space after the *1 alias")
+    void failToParseWithoutSpaceAfterAlias() {
+        try {
+            Object obj = parse("--- &1\nhash:\n  :one: true\n  :two: true\n  *1: true");
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("could not find expected ':'"));
+        }
     }
-  }
 
-  @Test
-  @DisplayName("The output does include a space after the *1 alias")
-  void parseWithSpaceAfterAlias() {
-    Object obj = parse("--- &1\nhash:\n  :one: true\n  :two: true\n  *1 : true");
-    assertNotNull(obj);
-  }
+    @Test
+    @DisplayName("The output does include a space after the *1 alias")
+    void parseWithSpaceAfterAlias() {
+        Object obj = parse("--- &1\nhash:\n  :one: true\n  :two: true\n  *1 : true");
+        assertNotNull(obj);
+    }
 
-  private Object parse(String data) {
-    LoadSettings loadSettings =
-        LoadSettings.builder().setAllowRecursiveKeys(true).setAllowNonScalarKeys(true).build();
-    Load load = new Load(loadSettings);
-    return load.loadFromString(data);
-  }
+    private Object parse(String data) {
+        LoadSettings loadSettings =
+            LoadSettings.builder().setAllowRecursiveKeys(true).setAllowNonScalarKeys(true).build();
+        Load load = new Load(loadSettings);
+        return load.loadFromString(data);
+    }
 
-  @Test
-  @DisplayName("Dump and load an alias")
-  void parseOwnOutput() {
-    HashMap<Object, Boolean> map = new HashMap<>();
-    map.put(":one", true);
-    map.put(map, true);
-    DumpSettings dumpSettings = DumpSettings.builder().build();
-    Dump dump = new Dump(dumpSettings);
-    String output = dump.dumpToString(map);
-    assertEquals("&id001\n" + ":one: true\n" + "*id001 : true\n", output);
-    Object recursive = parse(output);
-    assertNotNull(recursive);
-  }
+    @Test
+    @DisplayName("Dump and load an alias")
+    void parseOwnOutput() {
+        HashMap<Object, Boolean> map = new HashMap<>();
+        map.put(":one", true);
+        map.put(map, true);
+        DumpSettings dumpSettings = DumpSettings.builder().build();
+        Dump dump = new Dump(dumpSettings);
+        String output = dump.dumpToString(map);
+        assertEquals("&id001\n" + ":one: true\n" + "*id001 : true\n", output);
+        Object recursive = parse(output);
+        assertNotNull(recursive);
+    }
 }

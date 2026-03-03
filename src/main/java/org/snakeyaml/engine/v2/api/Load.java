@@ -13,17 +13,17 @@
  */
 package org.snakeyaml.engine.v2.api;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Iterator;
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.composer.Composer;
 import org.snakeyaml.engine.v2.constructor.BaseConstructor;
 import org.snakeyaml.engine.v2.constructor.StandardConstructor;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Iterator;
 
 /**
  * Common way to load Java instance(s). This class is not thread-safe. Which means that all the
@@ -51,9 +51,7 @@ public class Load {
      * @param settings - configuration
      * @param constructor - custom YAML constructor
      */
-    public Load(LoadSettings settings, BaseConstructor constructor) {
-        Objects.requireNonNull(settings, "LoadSettings cannot be null");
-        Objects.requireNonNull(constructor, "BaseConstructor cannot be null");
+    public Load(@NonNull LoadSettings settings, @NonNull BaseConstructor constructor) {
         this.settings = settings;
         this.constructor = constructor;
     }
@@ -104,7 +102,7 @@ public class Load {
      * Load with provided Composer
      *
      * @param composer - the component to create the Node
-     * @return deserialised YAML document
+     * @return deserialized YAML document
      */
     protected Object loadOne(Composer composer) {
         Node nodeOptional = composer.getSingleNode();
@@ -118,8 +116,7 @@ public class Load {
      *     data)
      * @return parsed Java instance
      */
-    public Object loadFromInputStream(InputStream yamlStream) {
-        Objects.requireNonNull(yamlStream, "InputStream cannot be null");
+    public Object loadFromInputStream(@NonNull InputStream yamlStream) {
         return loadOne(createComposer(yamlStream));
     }
 
@@ -129,8 +126,7 @@ public class Load {
      * @param yamlReader - data to load from (BOM must not be present)
      * @return parsed Java instance
      */
-    public Object loadFromReader(Reader yamlReader) {
-        Objects.requireNonNull(yamlReader, "Reader cannot be null");
+    public Object loadFromReader(@NonNull Reader yamlReader) {
         return loadOne(createComposer(yamlReader));
     }
 
@@ -141,8 +137,7 @@ public class Load {
      * @return parsed Java instance
      * @throws org.snakeyaml.engine.v2.exceptions.YamlEngineException if the YAML is not valid
      */
-    public Object loadFromString(String yaml) {
-        Objects.requireNonNull(yaml, "String cannot be null");
+    public Object loadFromString(@NonNull String yaml) {
         return loadOne(createComposer(yaml));
     }
 
@@ -161,10 +156,8 @@ public class Load {
      *     from the data)
      * @return an Iterable over the parsed Java objects in this stream in proper sequence
      */
-    public Iterable<Object> loadAllFromInputStream(InputStream yamlStream) {
-        Objects.requireNonNull(yamlStream, "InputStream cannot be null");
-        Composer composer =
-            createComposer(new StreamReader(settings, new YamlUnicodeReader(yamlStream)));
+    public Iterable<Object> loadAllFromInputStream(@NonNull InputStream yamlStream) {
+        Composer composer = createComposer(new StreamReader(settings, new YamlUnicodeReader(yamlStream)));
         return loadAll(composer);
     }
 
@@ -175,8 +168,7 @@ public class Load {
      * @param yamlReader - YAML data to load from (BOM must not be present)
      * @return an Iterable over the parsed Java objects in this stream in proper sequence
      */
-    public Iterable<Object> loadAllFromReader(Reader yamlReader) {
-        Objects.requireNonNull(yamlReader, "Reader cannot be null");
+    public Iterable<Object> loadAllFromReader(@NonNull Reader yamlReader) {
         Composer composer = createComposer(new StreamReader(settings, yamlReader));
         return loadAll(composer);
     }
@@ -189,8 +181,7 @@ public class Load {
      * @param yaml - YAML data to load from (BOM must not be present)
      * @return an Iterable over the parsed Java objects in this stream in proper sequence
      */
-    public Iterable<Object> loadAllFromString(String yaml) {
-        Objects.requireNonNull(yaml, "String cannot be null");
+    public Iterable<Object> loadAllFromString(@NonNull String yaml) {
         Composer composer = createComposer(new StreamReader(settings, yaml));
         return loadAll(composer);
     }
@@ -204,7 +195,7 @@ public class Load {
         }
 
         @Override
-        public Iterator<Object> iterator() {
+        public @NonNull Iterator<Object> iterator() {
             return iterator;
         }
     }

@@ -13,17 +13,18 @@
  */
 package org.snakeyaml.engine.v2.api.lowlevel;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.Iterator;
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.YamlUnicodeReader;
 import org.snakeyaml.engine.v2.events.Event;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Read the input stream and parse the content into events (opposite for Present or Emit)
@@ -50,8 +51,7 @@ public class Parse {
      * @return parsed events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Iterable<Event> parseInputStream(InputStream yaml) {
-        Objects.requireNonNull(yaml, "InputStream cannot be null");
+    public Iterable<Event> parseInputStream(@NonNull InputStream yaml) {
         return () -> new ParserImpl(settings, new StreamReader(settings, new YamlUnicodeReader(yaml)));
     }
 
@@ -63,8 +63,7 @@ public class Parse {
      * @return parsed events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Iterable<Event> parseReader(Reader yaml) {
-        Objects.requireNonNull(yaml, "Reader cannot be null");
+    public Iterable<Event> parseReader(@NonNull Reader yaml) {
         return () -> new ParserImpl(settings, new StreamReader(settings, yaml));
     }
 
@@ -75,12 +74,12 @@ public class Parse {
      * @return parsed events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Iterable<Event> parseString(String yaml) {
+    public Iterable<Event> parseString(@NonNull String yaml) {
         Objects.requireNonNull(yaml, "String cannot be null");
         // do not use lambda to keep Iterable and Iterator visible
         return new Iterable<>() {
             @Override
-            public Iterator<Event> iterator() {
+            public @NonNull Iterator<Event> iterator() {
                 return new ParserImpl(settings, new StreamReader(settings, new StringReader(yaml)));
             }
         };

@@ -24,23 +24,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Tag("fast")
 class EventTest {
 
-  @Test
-  void testToString() {
-    var alias = new AliasEvent(new Anchor("id1"));
-    assertEquals("=ALI *id1", alias.toString());
-  }
+    @Test
+    void testToString() {
+        var alias = new AliasEvent(new Anchor("id1"));
+        assertEquals("=ALI *id1", alias.toString());
+    }
 
-  @Test
-  void bothMarks() {
-    Mark fake = new Mark("a", 0, 0, 0, new int[0], 0);
-    Mark present = fake;
-    Mark empty = null;
-    NullPointerException exception =
-        assertThrows(NullPointerException.class, () -> new StreamStartEvent(empty, present));
-    assertEquals("Both marks must be either present or absent.", exception.getMessage());
-    // the other way around
-    NullPointerException exception2 =
-        assertThrows(NullPointerException.class, () -> new StreamStartEvent(present, empty));
-    assertEquals("Both marks must be either present or absent.", exception2.getMessage());
-  }
+    @Test
+    void bothMarks() {
+        Mark fake = new Mark("a", 0, 0, 0, new int[0], 0);
+        Mark present = fake;
+        Mark empty = null;
+        NullPointerException exception =
+            assertThrows(NullPointerException.class, () -> new StreamStartEvent(empty, present));
+        assertEquals("Both marks must be either present or absent.", exception.getMessage());
+        // the other way around
+        NullPointerException exception2 =
+            assertThrows(NullPointerException.class, () -> new StreamStartEvent(present, empty));
+        assertEquals("Both marks must be either present or absent.", exception2.getMessage());
+    }
 }

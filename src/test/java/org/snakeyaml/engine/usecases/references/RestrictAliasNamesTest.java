@@ -24,15 +24,15 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 @Tag("fast")
 public class RestrictAliasNamesTest {
 
-  @Test
-  public void testAliasFromRuby() {
-    try {
-      LoadSettings settings = LoadSettings.builder().build();
-      Load yamlProcessor = new Load(settings);
-      yamlProcessor.loadFromString("Exclude: **/*_old.rb");
-      fail("Should not accept Alias **/*_old.rb");
-    } catch (Exception e) {
-      assertTrue(e.getMessage().contains("unexpected character found *(42)"));
+    @Test
+    public void testAliasFromRuby() {
+        try {
+            LoadSettings settings = LoadSettings.builder().build();
+            Load yamlProcessor = new Load(settings);
+            yamlProcessor.loadFromString("Exclude: **/*_old.rb");
+            fail("Should not accept Alias **/*_old.rb");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("unexpected character found *(42)"));
+        }
     }
-  }
 }

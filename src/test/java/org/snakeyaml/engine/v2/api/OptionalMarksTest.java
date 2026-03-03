@@ -30,35 +30,35 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("fast")
 class OptionalMarksTest {
 
-  @Test
-  @DisplayName("Compose: no marks")
-  void composeWithoutMarks() {
-    SuiteData data = SuiteUtils.getOne("2AUY");
-    var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
-    Node node = new Compose(settings).composeString("{a: 4}");
-    assertNotNull(node);
-  }
+    @Test
+    @DisplayName("Compose: no marks")
+    void composeWithoutMarks() {
+        SuiteData data = SuiteUtils.getOne("2AUY");
+        var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
+        Node node = new Compose(settings).composeString("{a: 4}");
+        assertNotNull(node);
+    }
 
-  @Test
-  @DisplayName("Compose: failure with marks")
-  void composeErrorWithoutMarks2() {
-    SuiteData data = SuiteUtils.getOne("2AUY");
-    var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(true).build();
-    var exception =
-        assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
-    assertTrue(exception.getMessage().contains("line 1, column 7:"),
-        "The error must contain Mark data.");
-  }
+    @Test
+    @DisplayName("Compose: failure with marks")
+    void composeErrorWithoutMarks2() {
+        SuiteData data = SuiteUtils.getOne("2AUY");
+        var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(true).build();
+        var exception =
+            assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
+        assertTrue(exception.getMessage().contains("line 1, column 7:"),
+            "The error must contain Mark data.");
+    }
 
 
-  @Test
-  @DisplayName("Compose: failure without marks")
-  void composeErrorWithoutMarks() {
-    SuiteData data = SuiteUtils.getOne("2AUY");
-    var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
-    var exception =
-        assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
-    assertEquals("expected '<document start>', but found '}'\n", exception.getMessage());
-  }
+    @Test
+    @DisplayName("Compose: failure without marks")
+    void composeErrorWithoutMarks() {
+        SuiteData data = SuiteUtils.getOne("2AUY");
+        var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
+        var exception =
+            assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
+        assertEquals("expected '<document start>', but found '}'\n", exception.getMessage());
+    }
 }
 

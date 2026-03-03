@@ -26,52 +26,53 @@ import org.snakeyaml.engine.v2.nodes.Node;
  */
 @org.junit.jupiter.api.Tag("fast")
 class CommentAfterAliasTest {
-  private final LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
 
-  @Test
-  @DisplayName("Issue 68: inline")
-  void testCommentAfterAlias3() {
-    var compose = new Compose(loadSettings);
-    String input = "field_with_alias: &alias_name # inline comment 1\n  555";
-    Node node = compose.composeString(input);
-    assertNotNull(node);
-  }
+    private final LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
 
-  @Test
-  @DisplayName("Issue 68: block comment and flat after")
-  void testCommentAfterAlias1() {
-    var compose = new Compose(loadSettings);
-    String input =
-        "field_with_alias: &alias_name\n# separate line comment following the alias\n    555";
-    Node node = compose.composeString(input);
-    assertNotNull(node);
-  }
+    @Test
+    @DisplayName("Issue 68: inline")
+    void testCommentAfterAlias3() {
+        var compose = new Compose(loadSettings);
+        String input = "field_with_alias: &alias_name # inline comment 1\n  555";
+        Node node = compose.composeString(input);
+        assertNotNull(node);
+    }
 
-  @Test
-  @DisplayName("Issue 68: block comment and nested after")
-  void testCommentAfterAlias() {
-    Compose compose = new Compose(loadSettings);
-    String input =
-        "field_with_alias: &alias_name\n# separate line comment following the alias\n    nested_field: nested_value";
-    Node node = compose.composeString(input);
-    assertNotNull(node);
-  }
+    @Test
+    @DisplayName("Issue 68: block comment and flat after")
+    void testCommentAfterAlias1() {
+        var compose = new Compose(loadSettings);
+        String input =
+            "field_with_alias: &alias_name\n# separate line comment following the alias\n    555";
+        Node node = compose.composeString(input);
+        assertNotNull(node);
+    }
 
-  @Test
-  @DisplayName("Issue 68: tag with inline comment")
-  void testCommentAfterTag() {
-    Compose compose = new Compose(loadSettings);
-    String input = "key: !!str # comment\n  value";
-    Node node = compose.composeString(input);
-    assertNotNull(node);
-  }
+    @Test
+    @DisplayName("Issue 68: block comment and nested after")
+    void testCommentAfterAlias() {
+        Compose compose = new Compose(loadSettings);
+        String input =
+            "field_with_alias: &alias_name\n# separate line comment following the alias\n    nested_field: nested_value";
+        Node node = compose.composeString(input);
+        assertNotNull(node);
+    }
 
-  @Test
-  @DisplayName("Issue 68: anchor and tag with comment")
-  void testCommentAfterAnchorAndTag() {
-    Compose compose = new Compose(loadSettings);
-    String input = "key: &anchor !!str # comment\n  value";
-    Node node = compose.composeString(input);
-    assertNotNull(node);
-  }
+    @Test
+    @DisplayName("Issue 68: tag with inline comment")
+    void testCommentAfterTag() {
+        Compose compose = new Compose(loadSettings);
+        String input = "key: !!str # comment\n  value";
+        Node node = compose.composeString(input);
+        assertNotNull(node);
+    }
+
+    @Test
+    @DisplayName("Issue 68: anchor and tag with comment")
+    void testCommentAfterAnchorAndTag() {
+        Compose compose = new Compose(loadSettings);
+        String input = "key: &anchor !!str # comment\n  value";
+        Node node = compose.composeString(input);
+        assertNotNull(node);
+    }
 }

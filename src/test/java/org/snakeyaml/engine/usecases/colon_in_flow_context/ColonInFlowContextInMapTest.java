@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -24,26 +25,26 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 @org.junit.jupiter.api.Tag("fast")
 class ColonInFlowContextInMapTest {
 
-  @Test
-  void withSeparation() {
-    Load loader = new Load(LoadSettings.builder().build());
-    Map<String, Integer> map = (Map<String, Integer>) loader.loadFromString("{a: 1}");
-    assertEquals(Integer.valueOf(1), map.get("a"));
-  }
+    @Test
+    void withSeparation() {
+        Load loader = new Load(LoadSettings.builder().build());
+        Map<String, Integer> map = (Map<String, Integer>) loader.loadFromString("{a: 1}");
+        assertEquals(Integer.valueOf(1), map.get("a"));
+    }
 
-  @Test
-  void withoutEmptyValue() {
-    Load loader = new Load(LoadSettings.builder().build());
-    Map<String, Integer> map = (Map<String, Integer>) loader.loadFromString("{a:}");
-    assertTrue(map.containsKey("a"));
-  }
+    @Test
+    void withoutEmptyValue() {
+        Load loader = new Load(LoadSettings.builder().build());
+        Map<String, Integer> map = (Map<String, Integer>) loader.loadFromString("{a:}");
+        assertTrue(map.containsKey("a"));
+    }
 
-  @Test
-  void withoutSeparation() {
-    Load loader = new Load(LoadSettings.builder().build());
-    Map<String, Integer> map = (Map<String, Integer>) loader.loadFromString("{a:1}");
-    assertTrue(map.containsKey("a:1"));
-  }
+    @Test
+    void withoutSeparation() {
+        Load loader = new Load(LoadSettings.builder().build());
+        Map<String, Integer> map = (Map<String, Integer>) loader.loadFromString("{a:1}");
+        assertTrue(map.containsKey("a:1"));
+    }
 }
 
 

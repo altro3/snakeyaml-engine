@@ -26,9 +26,8 @@ import java.util.Set;
 
 import static org.snakeyaml.engine.v2.nodes.Tag.MERGE;
 
-
 /**
- * Utility to process merge keys (https://yaml.org/type/merge.html) of the MappingNode
+ * Utility to process merge keys (<a href="https://yaml.org/type/merge.html">link</a>) of the MappingNode
  */
 public abstract class MergeUtils {
 
@@ -51,7 +50,7 @@ public abstract class MergeUtils {
      * Implements the YAML merge key feature by examining the nodes within the provided {@code node}
      * and merging keys from referenced by "merge key" map(s) into the current mapping as per the YAML
      * specification. Handling of duplicate keys is defined by the order of appearance in the mapping
-     * node, with priority given to the keys defined in {@code node} and the the earliest occurrences
+     * node, with priority given to the keys defined in {@code node} and the earliest occurrences
      * in the merging ones.
      * </p>
      *

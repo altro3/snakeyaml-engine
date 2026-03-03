@@ -40,106 +40,106 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @org.junit.jupiter.api.Tag("fast")
 class EventRepresentationTest {
 
-  @Test
-  @DisplayName("Represent StreamStartEvent")
-  void testStreamStartEvent() {
-    var event = new StreamStartEvent();
-    var representation = new EventRepresentation(event);
-    assertTrue(representation.isSameAs("+STR"));
-    assertFalse(representation.isSameAs("-STR"));
-    assertFalse(representation.isSameAs("=VAL"));
-  }
+    @Test
+    @DisplayName("Represent StreamStartEvent")
+    void testStreamStartEvent() {
+        var event = new StreamStartEvent();
+        var representation = new EventRepresentation(event);
+        assertTrue(representation.isSameAs("+STR"));
+        assertFalse(representation.isSameAs("-STR"));
+        assertFalse(representation.isSameAs("=VAL"));
+    }
 
-  @Test
-  @DisplayName("Represent StreamEndEvent")
-  void testStreamEndEvent() {
-    var event = new StreamEndEvent();
-    var representation = new EventRepresentation(event);
-    assertTrue(representation.isSameAs("-STR"));
-    assertFalse(representation.isSameAs("+STR"));
-  }
+    @Test
+    @DisplayName("Represent StreamEndEvent")
+    void testStreamEndEvent() {
+        var event = new StreamEndEvent();
+        var representation = new EventRepresentation(event);
+        assertTrue(representation.isSameAs("-STR"));
+        assertFalse(representation.isSameAs("+STR"));
+    }
 
-  @Test
-  @DisplayName("Represent AliasEvent")
-  void testAliasEvent() {
-    var event = new AliasEvent(new Anchor("a"));
-    var representation = new EventRepresentation(event);
-    assertTrue(representation.isSameAs("=ALI *a"));
-    assertTrue(representation.isSameAs("=ALI *b"));
-    assertTrue(representation.isSameAs("=ALI *002"));
-    assertFalse(representation.isSameAs("=ALI &002"));
-    assertFalse(representation.isSameAs("+STR"));
-  }
+    @Test
+    @DisplayName("Represent AliasEvent")
+    void testAliasEvent() {
+        var event = new AliasEvent(new Anchor("a"));
+        var representation = new EventRepresentation(event);
+        assertTrue(representation.isSameAs("=ALI *a"));
+        assertTrue(representation.isSameAs("=ALI *b"));
+        assertTrue(representation.isSameAs("=ALI *002"));
+        assertFalse(representation.isSameAs("=ALI &002"));
+        assertFalse(representation.isSameAs("+STR"));
+    }
 
-  @Test
-  @DisplayName("Represent DocumentStartEvent")
-  void testDocumentStartEvent() {
-    valid(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap()),
-        "+DOC ---");
-    valid(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap()), "+DOC");
-    valid(new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap()), "+DOC");
-    valid(new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap()),
-        "+DOC ---");
-  }
+    @Test
+    @DisplayName("Represent DocumentStartEvent")
+    void testDocumentStartEvent() {
+        valid(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap()),
+            "+DOC ---");
+        valid(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap()), "+DOC");
+        valid(new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap()), "+DOC");
+        valid(new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap()),
+            "+DOC ---");
+    }
 
-  @Test
-  @DisplayName("Represent DocumentEndEvent")
-  void testDocumentEndEvent() {
-    valid(new DocumentEndEvent(true), "-DOC ...");
-    valid(new DocumentEndEvent(true), "-DOC");
-    invalid(new DocumentEndEvent(true), "+DOC ---");
-  }
+    @Test
+    @DisplayName("Represent DocumentEndEvent")
+    void testDocumentEndEvent() {
+        valid(new DocumentEndEvent(true), "-DOC ...");
+        valid(new DocumentEndEvent(true), "-DOC");
+        invalid(new DocumentEndEvent(true), "+DOC ---");
+    }
 
-  @Test
-  @DisplayName("Represent SequenceStartEvent")
-  void testSequenceStartEvent() {
-    valid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.FLOW),
-        "+SEQ [] &a <ttt>");
-    valid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ &a <ttt>");
-    invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK),
-        "+SEQ *a <ttt>");
-    invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ &a <t>");
-    invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ <ttt>");
-    invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ *a");
-  }
+    @Test
+    @DisplayName("Represent SequenceStartEvent")
+    void testSequenceStartEvent() {
+        valid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.FLOW),
+            "+SEQ [] &a <ttt>");
+        valid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ &a <ttt>");
+        invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK),
+            "+SEQ *a <ttt>");
+        invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ &a <t>");
+        invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ <ttt>");
+        invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ *a");
+    }
 
-  @Test
-  @DisplayName("Represent SequenceEndEvent")
-  void testSequenceEndEvent() {
-    valid(new SequenceEndEvent(), "-SEQ");
-    invalid(new SequenceEndEvent(), "-MAP");
-  }
+    @Test
+    @DisplayName("Represent SequenceEndEvent")
+    void testSequenceEndEvent() {
+        valid(new SequenceEndEvent(), "-SEQ");
+        invalid(new SequenceEndEvent(), "-MAP");
+    }
 
-  @Test
-  @DisplayName("Represent ScalarEvent")
-  void testScalarEvent() {
-    valid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
-        ScalarStyle.FOLDED), "=VAL &a <ttt> >v1");
-    invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
-        ScalarStyle.PLAIN), "=VAL <ttt> >v1");
-    invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
-        ScalarStyle.PLAIN), "=VAL &a >v1");
-    invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
-        ScalarStyle.PLAIN), "=VAL &a <ttt>");
-    invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
-        ScalarStyle.PLAIN), "=VAL &a <ttt> |v1");
-  }
+    @Test
+    @DisplayName("Represent ScalarEvent")
+    void testScalarEvent() {
+        valid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+            ScalarStyle.FOLDED), "=VAL &a <ttt> >v1");
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+            ScalarStyle.PLAIN), "=VAL <ttt> >v1");
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+            ScalarStyle.PLAIN), "=VAL &a >v1");
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+            ScalarStyle.PLAIN), "=VAL &a <ttt>");
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+            ScalarStyle.PLAIN), "=VAL &a <ttt> |v1");
+    }
 
-  @Test
-  @DisplayName("Represent MappingStartEvent")
-  void testMappingStartEvent() {
-    invalid(new MappingStartEvent(new Anchor("a"), "ttt", false, FlowStyle.FLOW), "+MAP");
-    valid(new MappingStartEvent(null, Tag.MAP.getValue(), false, FlowStyle.FLOW), "+MAP");
-    valid(new MappingStartEvent(null, null, false, FlowStyle.FLOW), "+MAP");
-  }
+    @Test
+    @DisplayName("Represent MappingStartEvent")
+    void testMappingStartEvent() {
+        invalid(new MappingStartEvent(new Anchor("a"), "ttt", false, FlowStyle.FLOW), "+MAP");
+        valid(new MappingStartEvent(null, Tag.MAP.getValue(), false, FlowStyle.FLOW), "+MAP");
+        valid(new MappingStartEvent(null, null, false, FlowStyle.FLOW), "+MAP");
+    }
 
-  private void valid(Event event, String expectation) {
-    var representation = new EventRepresentation(event);
-    assertTrue(representation.isSameAs(expectation));
-  }
+    private void valid(Event event, String expectation) {
+        var representation = new EventRepresentation(event);
+        assertTrue(representation.isSameAs(expectation));
+    }
 
-  private void invalid(Event event, String expectation) {
-    var representation = new EventRepresentation(event);
-    assertFalse(representation.isSameAs(expectation));
-  }
+    private void invalid(Event event, String expectation) {
+        var representation = new EventRepresentation(event);
+        assertFalse(representation.isSameAs(expectation));
+    }
 }

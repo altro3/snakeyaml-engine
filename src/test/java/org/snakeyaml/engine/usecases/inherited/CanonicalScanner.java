@@ -44,318 +44,318 @@ import static java.util.Map.entry;
 
 public class CanonicalScanner implements Scanner {
 
-  private static final String DIRECTIVE = "%YAML 1.2";
-  public static final Map<Character, String> ESCAPE_REPLACEMENTS;
-  private static final Map<Character, Integer> ESCAPE_CODES;
+    private static final String DIRECTIVE = "%YAML 1.2";
+    public static final Map<Character, String> ESCAPE_REPLACEMENTS;
+    private static final Map<Character, Integer> ESCAPE_CODES;
 
-  static {
-    // ASCII null
-    ESCAPE_REPLACEMENTS = Map.ofEntries(entry('0', "\0"),
-        // ASCII bell
-        entry('a', "\u0007"),
-        // ASCII backspace
-        entry('b', "\u0008"),
-        // ASCII horizontal tab
-        entry('t', "\u0009"),
-        // ASCII newline (line feed; &#92;n maps to 0x0A)
-        entry('n', "\n"),
-        // ASCII vertical tab
-        entry('v', "\u000B"),
-        // ASCII form-feed
-        entry('f', "\u000C"),
-        // carriage-return (&#92;r maps to 0x0D)
-        entry('r', "\r"),
-        // ASCII escape character (Esc)
-        entry('e', "\u001B"),
-        // ASCII space
-        entry(' ', "\u0020"),
-        // ASCII double-quote
-        entry('"', "\""),
-        // ASCII backslash
-        entry('\\', "\\"),
-        // Unicode next line
-        entry('N', "\u0085"),
-        // Unicode non-breaking-space
-        entry('_', "\u00A0"));
+    static {
+        // ASCII null
+        ESCAPE_REPLACEMENTS = Map.ofEntries(entry('0', "\0"),
+            // ASCII bell
+            entry('a', "\u0007"),
+            // ASCII backspace
+            entry('b', "\u0008"),
+            // ASCII horizontal tab
+            entry('t', "\u0009"),
+            // ASCII newline (line feed; &#92;n maps to 0x0A)
+            entry('n', "\n"),
+            // ASCII vertical tab
+            entry('v', "\u000B"),
+            // ASCII form-feed
+            entry('f', "\u000C"),
+            // carriage-return (&#92;r maps to 0x0D)
+            entry('r', "\r"),
+            // ASCII escape character (Esc)
+            entry('e', "\u001B"),
+            // ASCII space
+            entry(' ', "\u0020"),
+            // ASCII double-quote
+            entry('"', "\""),
+            // ASCII backslash
+            entry('\\', "\\"),
+            // Unicode next line
+            entry('N', "\u0085"),
+            // Unicode non-breaking-space
+            entry('_', "\u00A0"));
 
-    ESCAPE_CODES = Map.of('x', 2, // 8-bit Unicode
-        'u', 4, // 16-bit Unicode
-        'U', 8 // 32-bit Unicode (Supplementary characters are supported)
-    );
-  }
-
-  private final String data;
-  private final String label;
-  private final Mark mark;
-  public List<Token> tokens;
-  private int index;
-  private boolean scanned;
-
-  public CanonicalScanner(String data, String label) {
-    this.data = data + "\0";
-    this.label = label;
-    this.index = 0;
-    this.tokens = new ArrayList<>();
-    this.scanned = false;
-    this.mark = new Mark("test", 0, 0, 0, data.toCharArray(), 0);
-  }
-
-  @Override
-  public boolean checkToken(Token.ID... choices) {
-    if (!scanned) {
-      scan();
+        ESCAPE_CODES = Map.of('x', 2, // 8-bit Unicode
+            'u', 4, // 16-bit Unicode
+            'U', 8 // 32-bit Unicode (Supplementary characters are supported)
+        );
     }
-    if (!tokens.isEmpty()) {
-      if (choices.length == 0) {
-        return true;
-      }
-      Token first = this.tokens.get(0);
-      for (Token.ID choice : choices) {
-        if (first.getTokenId() == choice) {
-          return true;
+
+    private final String data;
+    private final String label;
+    private final Mark mark;
+    public List<Token> tokens;
+    private int index;
+    private boolean scanned;
+
+    public CanonicalScanner(String data, String label) {
+        this.data = data + "\0";
+        this.label = label;
+        this.index = 0;
+        this.tokens = new ArrayList<>();
+        this.scanned = false;
+        this.mark = new Mark("test", 0, 0, 0, data.toCharArray(), 0);
+    }
+
+    @Override
+    public boolean checkToken(Token.ID... choices) {
+        if (!scanned) {
+            scan();
         }
-      }
+        if (!tokens.isEmpty()) {
+            if (choices.length == 0) {
+                return true;
+            }
+            Token first = this.tokens.get(0);
+            for (Token.ID choice : choices) {
+                if (first.getTokenId() == choice) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
-    return false;
-  }
 
-  @Override
-  public Token peekToken() {
-    if (!scanned) {
-      scan();
+    @Override
+    public Token peekToken() {
+        if (!scanned) {
+            scan();
+        }
+        if (!tokens.isEmpty()) {
+            return this.tokens.get(0);
+        }
+        return null;
     }
-    if (!tokens.isEmpty()) {
-      return this.tokens.get(0);
+
+    @Override
+    public boolean hasNext() {
+        return checkToken();
     }
-    return null;
-  }
 
-  @Override
-  public boolean hasNext() {
-    return checkToken();
-  }
-
-  public Token next() {
-    if (!scanned) {
-      scan();
+    public Token next() {
+        if (!scanned) {
+            scan();
+        }
+        return this.tokens.remove(0);
     }
-    return this.tokens.remove(0);
-  }
 
-  @Override
-  public void resetDocumentIndex() {
-    this.index = 0;
-  }
-
-  public Token getToken(Token.ID choice) {
-    Token token = next();
-    if (choice != null && token.getTokenId() != choice) {
-      throw new CanonicalException("unexpected token " + token);
+    @Override
+    public void resetDocumentIndex() {
+        this.index = 0;
     }
-    return token;
-  }
 
-  private void scan() {
-    this.tokens.add(new StreamStartToken(mark, mark));
-    boolean stop = false;
-    while (!stop) {
-      findToken();
-      int c = data.codePointAt(index);
-      switch (c) {
-        case '\0':
-          tokens.add(new StreamEndToken(mark, mark));
-          stop = true;
-          break;
-
-        case '%':
-          tokens.add(scanDirective());
-          break;
-
-        case '-':
-          if ("---".equals(data.substring(index, index + 3))) {
-            index += 3;
-            tokens.add(new DocumentStartToken(mark, mark));
-          }
-          break;
-
-        case '.':
-          if ("...".equals(data.substring(index, index + 3))) {
-            index += 3;
-            tokens.add(new DocumentEndToken(mark, mark));
-          }
-          break;
-
-        case '[':
-          index++;
-          tokens.add(new FlowSequenceStartToken(mark, mark));
-          break;
-
-        case '{':
-          index++;
-          tokens.add(new FlowMappingStartToken(mark, mark));
-          break;
-
-        case ']':
-          index++;
-          tokens.add(new FlowSequenceEndToken(mark, mark));
-          break;
-
-        case '}':
-          index++;
-          tokens.add(new FlowMappingEndToken(mark, mark));
-          break;
-
-        case '?':
-          index++;
-          tokens.add(new KeyToken(mark, mark));
-          break;
-
-        case ':':
-          index++;
-          tokens.add(new ValueToken(mark, mark));
-          break;
-
-        case ',':
-          index++;
-          tokens.add(new FlowEntryToken(mark, mark));
-          break;
-
-        case '*':
-          tokens.add(scanAlias());
-          break;
-
-        case '&':
-          tokens.add(scanAlias());
-          break;
-
-        case '!':
-          tokens.add(scanTag());
-          break;
-
-        case '"':
-          tokens.add(scanScalar());
-          break;
-
-        default:
-          throw new CanonicalException("invalid token: " + (char) c + " in " + label);
-      }
+    public Token getToken(Token.ID choice) {
+        Token token = next();
+        if (choice != null && token.getTokenId() != choice) {
+            throw new CanonicalException("unexpected token " + token);
+        }
+        return token;
     }
-    scanned = true;
-  }
 
-  private Token scanDirective() {
-    String chunk1 = data.substring(index, index + DIRECTIVE.length());
-    char chunk2 = data.charAt(index + DIRECTIVE.length());
-    if (DIRECTIVE.equals(chunk1) && "\n\0".indexOf(chunk2) != -1) {
-      index += DIRECTIVE.length();
-      var implicit = new ArrayList<Integer>(2);
-      implicit.add(1);
-      implicit.add(1);
-      return new DirectiveToken<>(DirectiveToken.YAML_DIRECTIVE, implicit, mark, mark);
-    } else {
-      throw new CanonicalException("invalid directive: " + chunk1 + " " + chunk2 + " in " + label);
-    }
-  }
+    private void scan() {
+        this.tokens.add(new StreamStartToken(mark, mark));
+        boolean stop = false;
+        while (!stop) {
+            findToken();
+            int c = data.codePointAt(index);
+            switch (c) {
+                case '\0':
+                    tokens.add(new StreamEndToken(mark, mark));
+                    stop = true;
+                    break;
 
-  private Token scanAlias() {
-    boolean isTokenClassAlias;
-    final int c = data.codePointAt(index);
-    isTokenClassAlias = c == '*';
-    index += Character.charCount(c);
-    int start = index;
-    while (", \n\0".indexOf(data.charAt(index)) == -1) {
-      index++;
-    }
-    String value = data.substring(start, index);
-    Token token;
-    if (isTokenClassAlias) {
-      token = new AliasToken(new Anchor(value), mark, mark);
-    } else {
-      token = new AnchorToken(new Anchor(value), mark, mark);
-    }
-    return token;
-  }
+                case '%':
+                    tokens.add(scanDirective());
+                    break;
 
-  private Token scanTag() {
-    index += Character.charCount(data.codePointAt(index));
-    int start = index;
-    while (" \n\0".indexOf(data.charAt(index)) == -1) {
-      index++;
-    }
-    String value = data.substring(start, index);
-    if (value.isEmpty()) {
-      value = "!";
-    } else if (value.charAt(0) == '!') {
-      value = Tag.PREFIX + value.substring(1);
-    } else if (value.charAt(0) == '<' && value.charAt(value.length() - 1) == '>') {
-      value = value.substring(1, value.length() - 1);
-    } else {
-      value = "!" + value;
-    }
-    return new TagToken(new TagTuple("", value), mark, mark);
-  }
+                case '-':
+                    if ("---".equals(data.substring(index, index + 3))) {
+                        index += 3;
+                        tokens.add(new DocumentStartToken(mark, mark));
+                    }
+                    break;
 
-  private Token scanScalar() {
-    index += Character.charCount(data.codePointAt(index));
-    StringBuilder chunks = new StringBuilder();
-    int start = index;
-    boolean ignoreSpaces = false;
-    while (data.charAt(index) != '"') {
-      if (data.charAt(index) == '\\') {
-        ignoreSpaces = false;
-        chunks.append(data, start, index);
-        index += Character.charCount(data.codePointAt(index));
-        int c = data.codePointAt(index);
-        index += Character.charCount(data.codePointAt(index));
-        if (c == '\n') {
-          ignoreSpaces = true;
-        } else if (!Character.isSupplementaryCodePoint(c) && ESCAPE_CODES.containsKey((char) c)) {
-          int length = ESCAPE_CODES.get((char) c);
-          int code = Integer.parseInt(data.substring(index, index + length), 16);
-          chunks.append((char) code);
-          index += length;
+                case '.':
+                    if ("...".equals(data.substring(index, index + 3))) {
+                        index += 3;
+                        tokens.add(new DocumentEndToken(mark, mark));
+                    }
+                    break;
+
+                case '[':
+                    index++;
+                    tokens.add(new FlowSequenceStartToken(mark, mark));
+                    break;
+
+                case '{':
+                    index++;
+                    tokens.add(new FlowMappingStartToken(mark, mark));
+                    break;
+
+                case ']':
+                    index++;
+                    tokens.add(new FlowSequenceEndToken(mark, mark));
+                    break;
+
+                case '}':
+                    index++;
+                    tokens.add(new FlowMappingEndToken(mark, mark));
+                    break;
+
+                case '?':
+                    index++;
+                    tokens.add(new KeyToken(mark, mark));
+                    break;
+
+                case ':':
+                    index++;
+                    tokens.add(new ValueToken(mark, mark));
+                    break;
+
+                case ',':
+                    index++;
+                    tokens.add(new FlowEntryToken(mark, mark));
+                    break;
+
+                case '*':
+                    tokens.add(scanAlias());
+                    break;
+
+                case '&':
+                    tokens.add(scanAlias());
+                    break;
+
+                case '!':
+                    tokens.add(scanTag());
+                    break;
+
+                case '"':
+                    tokens.add(scanScalar());
+                    break;
+
+                default:
+                    throw new CanonicalException("invalid token: " + (char) c + " in " + label);
+            }
+        }
+        scanned = true;
+    }
+
+    private Token scanDirective() {
+        String chunk1 = data.substring(index, index + DIRECTIVE.length());
+        char chunk2 = data.charAt(index + DIRECTIVE.length());
+        if (DIRECTIVE.equals(chunk1) && "\n\0".indexOf(chunk2) != -1) {
+            index += DIRECTIVE.length();
+            var implicit = new ArrayList<Integer>(2);
+            implicit.add(1);
+            implicit.add(1);
+            return new DirectiveToken<>(DirectiveToken.YAML_DIRECTIVE, implicit, mark, mark);
         } else {
-          if (Character.isSupplementaryCodePoint(c) || !ESCAPE_REPLACEMENTS.containsKey((char) c)) {
-            throw new CanonicalException("invalid escape code");
-          }
-          chunks.append(ESCAPE_REPLACEMENTS.get((char) c));
+            throw new CanonicalException("invalid directive: " + chunk1 + " " + chunk2 + " in " + label);
         }
-        start = index;
-      } else if (data.charAt(index) == '\n') {
-        chunks.append(data, start, index);
-        chunks.append(" ");
-        index += Character.charCount(data.codePointAt(index));
-        start = index;
-        ignoreSpaces = true;
-      } else if (ignoreSpaces && data.charAt(index) == ' ') {
-        index += Character.charCount(data.codePointAt(index));
-        start = index;
-      } else {
-        ignoreSpaces = false;
-        index += Character.charCount(data.codePointAt(index));
-      }
     }
-    chunks.append(data, start, index);
-    index += Character.charCount(data.codePointAt(index));
-    return new ScalarToken(chunks.toString(), false, mark, mark);
-  }
 
-  private void findToken() {
-    boolean found = false;
-    while (!found) {
-      while (" \t".indexOf(data.charAt(index)) != -1) {
-        index++;
-      }
-      if (data.charAt(index) == '#') {
-        while (data.charAt(index) != '\n') {
-          index++;
+    private Token scanAlias() {
+        boolean isTokenClassAlias;
+        final int c = data.codePointAt(index);
+        isTokenClassAlias = c == '*';
+        index += Character.charCount(c);
+        int start = index;
+        while (", \n\0".indexOf(data.charAt(index)) == -1) {
+            index++;
         }
-      }
-      if (data.charAt(index) == '\n') {
-        index++;
-      } else {
-        found = true;
-      }
+        String value = data.substring(start, index);
+        Token token;
+        if (isTokenClassAlias) {
+            token = new AliasToken(new Anchor(value), mark, mark);
+        } else {
+            token = new AnchorToken(new Anchor(value), mark, mark);
+        }
+        return token;
     }
-  }
+
+    private Token scanTag() {
+        index += Character.charCount(data.codePointAt(index));
+        int start = index;
+        while (" \n\0".indexOf(data.charAt(index)) == -1) {
+            index++;
+        }
+        String value = data.substring(start, index);
+        if (value.isEmpty()) {
+            value = "!";
+        } else if (value.charAt(0) == '!') {
+            value = Tag.PREFIX + value.substring(1);
+        } else if (value.charAt(0) == '<' && value.charAt(value.length() - 1) == '>') {
+            value = value.substring(1, value.length() - 1);
+        } else {
+            value = "!" + value;
+        }
+        return new TagToken(new TagTuple("", value), mark, mark);
+    }
+
+    private Token scanScalar() {
+        index += Character.charCount(data.codePointAt(index));
+        StringBuilder chunks = new StringBuilder();
+        int start = index;
+        boolean ignoreSpaces = false;
+        while (data.charAt(index) != '"') {
+            if (data.charAt(index) == '\\') {
+                ignoreSpaces = false;
+                chunks.append(data, start, index);
+                index += Character.charCount(data.codePointAt(index));
+                int c = data.codePointAt(index);
+                index += Character.charCount(data.codePointAt(index));
+                if (c == '\n') {
+                    ignoreSpaces = true;
+                } else if (!Character.isSupplementaryCodePoint(c) && ESCAPE_CODES.containsKey((char) c)) {
+                    int length = ESCAPE_CODES.get((char) c);
+                    int code = Integer.parseInt(data.substring(index, index + length), 16);
+                    chunks.append((char) code);
+                    index += length;
+                } else {
+                    if (Character.isSupplementaryCodePoint(c) || !ESCAPE_REPLACEMENTS.containsKey((char) c)) {
+                        throw new CanonicalException("invalid escape code");
+                    }
+                    chunks.append(ESCAPE_REPLACEMENTS.get((char) c));
+                }
+                start = index;
+            } else if (data.charAt(index) == '\n') {
+                chunks.append(data, start, index);
+                chunks.append(" ");
+                index += Character.charCount(data.codePointAt(index));
+                start = index;
+                ignoreSpaces = true;
+            } else if (ignoreSpaces && data.charAt(index) == ' ') {
+                index += Character.charCount(data.codePointAt(index));
+                start = index;
+            } else {
+                ignoreSpaces = false;
+                index += Character.charCount(data.codePointAt(index));
+            }
+        }
+        chunks.append(data, start, index);
+        index += Character.charCount(data.codePointAt(index));
+        return new ScalarToken(chunks.toString(), false, mark, mark);
+    }
+
+    private void findToken() {
+        boolean found = false;
+        while (!found) {
+            while (" \t".indexOf(data.charAt(index)) != -1) {
+                index++;
+            }
+            if (data.charAt(index) == '#') {
+                while (data.charAt(index) != '\n') {
+                    index++;
+                }
+            }
+            if (data.charAt(index) == '\n') {
+                index++;
+            } else {
+                found = true;
+            }
+        }
+    }
 }

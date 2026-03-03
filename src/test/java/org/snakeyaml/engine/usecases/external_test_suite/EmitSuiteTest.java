@@ -29,27 +29,27 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @org.junit.jupiter.api.Tag("fast")
 class EmitSuiteTest {
 
-  private final List<SuiteData> all = SuiteUtils.getAll().stream()
-      .filter(data -> !SuiteUtils.deviationsWithSuccess.contains(data.getName()))
-      .filter(data -> !SuiteUtils.deviationsWithError.contains(data.getName()))
-      .collect(Collectors.toList());
+    private final List<SuiteData> all = SuiteUtils.getAll().stream()
+        .filter(data -> !SuiteUtils.deviationsWithSuccess.contains(data.getName()))
+        .filter(data -> !SuiteUtils.deviationsWithError.contains(data.getName()))
+        .collect(Collectors.toList());
 
-  @Test
-  @DisplayName("Emit test suite")
-  void runAll() {
-    for (SuiteData data : all) {
-      ParseResult result = SuiteUtils.parseData(data);
-      if (data.hasError()) {
-        assertNotNull(result.getError(), "Expected error, but got none in file " + data.getName()
-            + ", " + data.getLabel() + "\n" + result.getEvents());
-      } else {
-        var emit = new Present(DumpSettings.builder().build());
-        // emit without errors
-        String yaml = emit.emitToString(result.getEvents().iterator());
-        // eat your own dog food
-        new Compose(LoadSettings.builder().build()).composeAllFromString(yaml);
-      }
+    @Test
+    @DisplayName("Emit test suite")
+    void runAll() {
+        for (SuiteData data : all) {
+            ParseResult result = SuiteUtils.parseData(data);
+            if (data.hasError()) {
+                assertNotNull(result.getError(), "Expected error, but got none in file " + data.getName()
+                    + ", " + data.getLabel() + "\n" + result.getEvents());
+            } else {
+                var emit = new Present(DumpSettings.builder().build());
+                // emit without errors
+                String yaml = emit.emitToString(result.getEvents().iterator());
+                // eat your own dog food
+                new Compose(LoadSettings.builder().build()).composeAllFromString(yaml);
+            }
+        }
     }
-  }
 }
 

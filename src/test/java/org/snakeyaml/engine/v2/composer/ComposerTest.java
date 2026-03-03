@@ -30,37 +30,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("fast")
 class ComposerTest {
 
-  @Test
-  @DisplayName("Fail to Compose one document when more documents are provided.")
-  void composeOne() {
-    var c = new Compose(LoadSettings.builder().build());
-    var exception = assertThrows(ComposerException.class, () -> c.composeString("a\n---\nb\n"));
-    assertTrue(exception.getMessage().contains("expected a single document in the stream"));
-    assertTrue(exception.getMessage().contains("but found another document"));
-  }
+    @Test
+    @DisplayName("Fail to Compose one document when more documents are provided.")
+    void composeOne() {
+        var c = new Compose(LoadSettings.builder().build());
+        var exception = assertThrows(ComposerException.class, () -> c.composeString("a\n---\nb\n"));
+        assertTrue(exception.getMessage().contains("expected a single document in the stream"));
+        assertTrue(exception.getMessage().contains("but found another document"));
+    }
 
-  @Test
-  void failToComposeUnknownAlias() {
-    var c = new Compose(LoadSettings.builder().build());
-    var exception = assertThrows(ComposerException.class, () -> c.composeString("[a, *id b]"));
-    assertTrue(exception.getMessage().contains("found undefined alias id"), exception.getMessage());
-  }
+    @Test
+    void failToComposeUnknownAlias() {
+        var c = new Compose(LoadSettings.builder().build());
+        var exception = assertThrows(ComposerException.class, () -> c.composeString("[a, *id b]"));
+        assertTrue(exception.getMessage().contains("found undefined alias id"), exception.getMessage());
+    }
 
-  @Test
-  void failToComposeNonScalarKey() {
-    var c = new Compose(LoadSettings.builder().build());
-    var exception =
-        assertThrows(YamlEngineException.class, () -> c.composeString("{ [1,2]: value}"));
-    assertEquals("Non scalar key is detected but it is not configured to be allowed.",
-        exception.getMessage());
-  }
+    @Test
+    void failToComposeNonScalarKey() {
+        var c = new Compose(LoadSettings.builder().build());
+        var exception =
+            assertThrows(YamlEngineException.class, () -> c.composeString("{ [1,2]: value}"));
+        assertEquals("Non scalar key is detected but it is not configured to be allowed.",
+            exception.getMessage());
+    }
 
-  @Test
-  void composeAnchor() {
-    var data = "--- &113\n{name: Bill, age: 18}";
-    var compose = new Compose(LoadSettings.builder().build());
-    Node node = compose.composeString(data);
-    assertNotNull(node);
-    assertEquals("113", node.getAnchor().getValue());
-  }
+    @Test
+    void composeAnchor() {
+        var data = "--- &113\n{name: Bill, age: 18}";
+        var compose = new Compose(LoadSettings.builder().build());
+        Node node = compose.composeString(data);
+        assertNotNull(node);
+        assertEquals("113", node.getAnchor().getValue());
+    }
 }

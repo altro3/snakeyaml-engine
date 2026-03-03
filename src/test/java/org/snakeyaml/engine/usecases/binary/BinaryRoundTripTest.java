@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -41,66 +42,66 @@ import org.snakeyaml.engine.v2.representer.StandardRepresenter;
 @org.junit.jupiter.api.Tag("fast")
 public class BinaryRoundTripTest {
 
-  @Test
-  public void testBinary() throws UnsupportedEncodingException {
-    Dump dumper =
-        new Dump(DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.BINARY).build());
-    String source = "\u0096";
-    String serialized = dumper.dumpToString(source);
-    assertEquals("!!binary |-\n" + "  wpY=\n", serialized);
-    // parse back to bytes
-    Load loader = new Load(LoadSettings.builder().build());
-    byte[] deserialized = (byte[]) loader.loadFromString(serialized);
-    assertEquals(source, new String(deserialized, StandardCharsets.UTF_8));
-  }
+    @Test
+    public void testBinary() throws UnsupportedEncodingException {
+        Dump dumper =
+            new Dump(DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.BINARY).build());
+        String source = "\u0096";
+        String serialized = dumper.dumpToString(source);
+        assertEquals("!!binary |-\n" + "  wpY=\n", serialized);
+        // parse back to bytes
+        Load loader = new Load(LoadSettings.builder().build());
+        byte[] deserialized = (byte[]) loader.loadFromString(serialized);
+        assertEquals(source, new String(deserialized, StandardCharsets.UTF_8));
+    }
 
-  @Test
-  public void testBinaryNode() {
-    String source = "\u0096";
-    var standardRepresenter = new StandardRepresenter(
-        DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.BINARY).build());
-    var scalar = (ScalarNode) standardRepresenter.represent(source);
-    // check Node
-    assertEquals(org.snakeyaml.engine.v2.nodes.Tag.BINARY, scalar.getTag());
-    assertEquals(NodeType.SCALAR, scalar.getNodeType());
-    assertEquals("wpY=", scalar.getValue());
-    // check Event
-    Serialize serialize = new Serialize(DumpSettings.builder().build());
-    List<Event> eventsIter = serialize.serializeOne(scalar);
-    List<Event> events = eventsIter.subList(0, eventsIter.size());
-    assertEquals(5, events.size());
-    var data = (ScalarEvent) events.get(2);
-    assertEquals(Tag.BINARY.toString(), data.getTag());
-    assertEquals(ScalarStyle.LITERAL, data.getScalarStyle());
-    assertEquals("wpY=", data.getValue());
-    ImplicitTuple implicit = data.getImplicit();
-    assertFalse(implicit.canOmitTagInPlainScalar());
-    assertFalse(implicit.canOmitTagInNonPlainScalar());
-  }
+    @Test
+    public void testBinaryNode() {
+        String source = "\u0096";
+        var standardRepresenter = new StandardRepresenter(
+            DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.BINARY).build());
+        var scalar = (ScalarNode) standardRepresenter.represent(source);
+        // check Node
+        assertEquals(org.snakeyaml.engine.v2.nodes.Tag.BINARY, scalar.getTag());
+        assertEquals(NodeType.SCALAR, scalar.getNodeType());
+        assertEquals("wpY=", scalar.getValue());
+        // check Event
+        Serialize serialize = new Serialize(DumpSettings.builder().build());
+        List<Event> eventsIter = serialize.serializeOne(scalar);
+        List<Event> events = eventsIter.subList(0, eventsIter.size());
+        assertEquals(5, events.size());
+        var data = (ScalarEvent) events.get(2);
+        assertEquals(Tag.BINARY.toString(), data.getTag());
+        assertEquals(ScalarStyle.LITERAL, data.getScalarStyle());
+        assertEquals("wpY=", data.getValue());
+        ImplicitTuple implicit = data.getImplicit();
+        assertFalse(implicit.canOmitTagInPlainScalar());
+        assertFalse(implicit.canOmitTagInNonPlainScalar());
+    }
 
-  @Test
-  public void testStrNode() {
-    var standardRepresenter = new StandardRepresenter(DumpSettings.builder().build());
-    String source = "\u0096";
-    var scalar = (ScalarNode) standardRepresenter.represent(source);
-    Node node = standardRepresenter.represent(source);
-    assertEquals(Tag.STR, node.getTag());
-    assertEquals(NodeType.SCALAR, node.getNodeType());
-    assertEquals("\u0096", scalar.getValue());
-  }
+    @Test
+    public void testStrNode() {
+        var standardRepresenter = new StandardRepresenter(DumpSettings.builder().build());
+        String source = "\u0096";
+        var scalar = (ScalarNode) standardRepresenter.represent(source);
+        Node node = standardRepresenter.represent(source);
+        assertEquals(Tag.STR, node.getTag());
+        assertEquals(NodeType.SCALAR, node.getNodeType());
+        assertEquals("\u0096", scalar.getValue());
+    }
 
-  @Test
-  public void testRoundTripBinary() {
-    var dumper =
-        new Dump(DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.ESCAPE).build());
-    var toSerialized = new HashMap<String, String>();
-    toSerialized.put("key", "a\u0096b");
-    String output = dumper.dumpToString(toSerialized);
-    assertEquals("{key: \"a\\x96b\"}\n", output);
-    var loader = new Load(LoadSettings.builder().build());
-    @SuppressWarnings("unchecked")
-    var parsed = (Map<String, String>) loader.loadFromString(output);
-    assertEquals(toSerialized.get("key"), parsed.get("key"));
-    assertEquals(toSerialized, parsed);
-  }
+    @Test
+    public void testRoundTripBinary() {
+        var dumper =
+            new Dump(DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.ESCAPE).build());
+        var toSerialized = new HashMap<String, String>();
+        toSerialized.put("key", "a\u0096b");
+        String output = dumper.dumpToString(toSerialized);
+        assertEquals("{key: \"a\\x96b\"}\n", output);
+        var loader = new Load(LoadSettings.builder().build());
+        @SuppressWarnings("unchecked")
+        var parsed = (Map<String, String>) loader.loadFromString(output);
+        assertEquals(toSerialized.get("key"), parsed.get("key"));
+        assertEquals(toSerialized, parsed);
+    }
 }

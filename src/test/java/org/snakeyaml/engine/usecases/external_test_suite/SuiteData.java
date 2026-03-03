@@ -17,41 +17,41 @@ import java.util.List;
 
 public class SuiteData {
 
-  private final String name;
-  private final String label;
-  private final String input;
-  private final List<String> events;
-  private final Boolean error;
+    private final String name;
+    private final String label;
+    private final String input;
+    private final List<String> events;
+    private final Boolean error;
 
-  public SuiteData(String name, String label, String input, List<String> events, Boolean error) {
-    this.name = name;
-    this.label = label;
-    this.input = input;
-    this.events = events;
-    this.error = error;
-  }
+    public SuiteData(String name, String label, String input, List<String> events, Boolean error) {
+        this.name = name;
+        this.label = label;
+        this.input = input;
+        this.events = events;
+        this.error = error;
+    }
 
-  public SuiteData(String name, String label, String input, List<String> events) {
-    this(name, label, input, events, false);
-  }
+    public SuiteData(String name, String label, String input, List<String> events) {
+        this(name, label, input, events, false);
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String getLabel() {
-    return label;
-  }
+    public String getLabel() {
+        return label;
+    }
 
-  public String getInput() {
-    return input;
-  }
+    public String getInput() {
+        return input;
+    }
 
-  public List<String> getEvents() {
-    return events;
-  }
+    public List<String> getEvents() {
+        return events;
+    }
 
-  public Boolean hasError() {
-    return error;
-  }
+    public Boolean hasError() {
+        return error;
+    }
 }

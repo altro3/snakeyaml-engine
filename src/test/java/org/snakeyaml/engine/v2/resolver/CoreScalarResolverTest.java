@@ -23,13 +23,13 @@ import org.snakeyaml.engine.v2.nodes.Tag;
 @org.junit.jupiter.api.Tag("fast")
 class CoreScalarResolverTest {
 
-  private final ScalarResolver scalarResolver = new CoreScalarResolver(true);
+    private final ScalarResolver scalarResolver = new CoreScalarResolver(true);
 
-  @Test
-  void resolveImplicitInteger() {
-    assertTrue(CoreScalarResolver.INT.matcher("0o1010").matches());
-    assertFalse(CoreScalarResolver.INT.matcher("0b1010").matches());
+    @Test
+    void resolveImplicitInteger() {
+        assertTrue(CoreScalarResolver.INT.matcher("0o1010").matches());
+        assertFalse(CoreScalarResolver.INT.matcher("0b1010").matches());
 
-    assertEquals(Tag.STR, scalarResolver.resolve("0b1010", true));
-  }
+        assertEquals(Tag.STR, scalarResolver.resolve("0b1010", true));
+    }
 }

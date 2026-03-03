@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -35,41 +36,41 @@ import org.snakeyaml.engine.v2.util.TestUtils;
 @org.junit.jupiter.api.Tag("fast")
 public class EmitCommentAndSpacesTest {
 
-  @Test
-  @DisplayName("Issue 39: extra space added")
-  void emitCommentWithEvent() {
-    LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
-    String input = TestUtils.getResource("issues/issue39-input.yaml");
-    Parser parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
-    DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
-    StreamDataWriter writer = new StreamToStringWriter();
-    Emitter emitter = new Emitter(settings, writer);
-    while (parser.hasNext()) {
-      Event event = parser.next();
-      emitter.emit(event);
+    @Test
+    @DisplayName("Issue 39: extra space added")
+    void emitCommentWithEvent() {
+        LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
+        String input = TestUtils.getResource("issues/issue39-input.yaml");
+        Parser parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
+        DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
+        StreamDataWriter writer = new StreamToStringWriter();
+        Emitter emitter = new Emitter(settings, writer);
+        while (parser.hasNext()) {
+            Event event = parser.next();
+            emitter.emit(event);
+        }
+        assertNotEquals(input, writer.toString());
     }
-    assertNotEquals(input, writer.toString());
-  }
 
-  @Test
-  @DisplayName("Issue 39: extra space added - small example")
-  void emitCommentWithEventSmall() {
-    LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
-    String input = "first:\n  second: abc\n  \n  \n\n";
-    Parser parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
-    DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
-    StreamDataWriter writer = new StreamToStringWriter();
-    Emitter emitter = new Emitter(settings, writer);
-    List<Event> events = new ArrayList<Event>();
-    while (parser.hasNext()) {
-      Event event = parser.next();
-      events.add(event);
-      emitter.emit(event);
+    @Test
+    @DisplayName("Issue 39: extra space added - small example")
+    void emitCommentWithEventSmall() {
+        LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
+        String input = "first:\n  second: abc\n  \n  \n\n";
+        Parser parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
+        DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
+        StreamDataWriter writer = new StreamToStringWriter();
+        Emitter emitter = new Emitter(settings, writer);
+        List<Event> events = new ArrayList<Event>();
+        while (parser.hasNext()) {
+            Event event = parser.next();
+            events.add(event);
+            emitter.emit(event);
+        }
+        assertEquals(14, events.size());
+        assertEquals("abc", ((ScalarEvent) events.get(6)).getValue());
+        // assertEquals(input, writer.toString());
     }
-    assertEquals(14, events.size());
-    assertEquals("abc", ((ScalarEvent) events.get(6)).getValue());
-    // assertEquals(input, writer.toString());
-  }
 }
 
 

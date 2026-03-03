@@ -24,29 +24,30 @@ import org.snakeyaml.engine.v2.nodes.Node;
 
 @org.junit.jupiter.api.Tag("fast")
 public class CommentAfterScalarTest {
-  private final LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
 
-  @Test
-  @DisplayName("Respect inline comment for '!!str # comment'")
-  void testInLineCommentForScalarNode() {
-    var compose = new Compose(loadSettings);
-    Node node = compose.composeString("!!str # comment");
-    assertNotNull(node);
-    assertEquals(1, node.getInLineComments().size());
-    assertEquals(" comment", node.getInLineComments().stream().findFirst().get().getValue());
-  }
+    private final LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
 
-  @Test
-  @DisplayName("Respect inline and block comments for '!!str # comment\n# block comment1'")
-  void testInLineCommentForScalarNode2() {
-    var compose = new Compose(loadSettings);
-    Node node = compose.composeString("!!str # comment\n# block comment1\n# block comment2");
-    assertNotNull(node);
-    assertEquals(1, node.getInLineComments().size());
-    assertEquals(" comment", node.getInLineComments().stream().findFirst().get().getValue());
-    assertEquals(2, node.getBlockComments().size());
-    assertEquals(" block comment1", node.getBlockComments().stream().findFirst().get().getValue());
-    assertEquals(" block comment2",
-        node.getBlockComments().stream().skip(1).findFirst().get().getValue());
-  }
+    @Test
+    @DisplayName("Respect inline comment for '!!str # comment'")
+    void testInLineCommentForScalarNode() {
+        var compose = new Compose(loadSettings);
+        Node node = compose.composeString("!!str # comment");
+        assertNotNull(node);
+        assertEquals(1, node.getInLineComments().size());
+        assertEquals(" comment", node.getInLineComments().stream().findFirst().get().value());
+    }
+
+    @Test
+    @DisplayName("Respect inline and block comments for '!!str # comment\n# block comment1'")
+    void testInLineCommentForScalarNode2() {
+        var compose = new Compose(loadSettings);
+        Node node = compose.composeString("!!str # comment\n# block comment1\n# block comment2");
+        assertNotNull(node);
+        assertEquals(1, node.getInLineComments().size());
+        assertEquals(" comment", node.getInLineComments().stream().findFirst().get().value());
+        assertEquals(2, node.getBlockComments().size());
+        assertEquals(" block comment1", node.getBlockComments().stream().findFirst().get().value());
+        assertEquals(" block comment2",
+            node.getBlockComments().stream().skip(1).findFirst().get().value());
+    }
 }

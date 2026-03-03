@@ -14,5 +14,5 @@
 package org.snakeyaml.engine.v2.representer;
 
 public enum FormatEnum {
-  YAML, JSON
+    YAML, JSON
 }

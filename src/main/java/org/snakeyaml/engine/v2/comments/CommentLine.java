@@ -13,20 +13,23 @@
  */
 package org.snakeyaml.engine.v2.comments;
 
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.events.CommentEvent;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
  * A comment line. Maybe a block comment, blank line, or inline comment.
  */
-public class CommentLine {
-
-    private final Mark startMark;
-    private final Mark endMark;
-    private final String value;
-    private final CommentType commentType;
+public record CommentLine(
+    @NonNull
+    Mark startMark,
+    @NonNull
+    Mark endMark,
+    @NonNull
+    String value,
+    @NonNull
+    CommentType commentType
+) {
 
     /**
      * Create
@@ -38,62 +41,18 @@ public class CommentLine {
     }
 
     /**
-     * Create
-     *
-     * @param startMark - start
-     * @param endMark - end
-     * @param value - the comment
-     * @param commentType - the type
-     */
-    public CommentLine(Mark startMark, Mark endMark, String value, CommentType commentType) {
-        Objects.requireNonNull(startMark);
-        this.startMark = startMark;
-        Objects.requireNonNull(endMark);
-        this.endMark = endMark;
-        Objects.requireNonNull(value);
-        this.value = value;
-        Objects.requireNonNull(commentType);
-        this.commentType = commentType;
-    }
-
-    /**
-     * getter
-     *
-     * @return end position
-     */
-    public Mark getEndMark() {
-        return endMark;
-    }
-
-    /**
-     * getter
-     *
-     * @return start position
-     */
-    public Mark getStartMark() {
-        return startMark;
-    }
-
-    /**
-     * getter
-     *
-     * @return type of it
-     */
-    public CommentType getCommentType() {
-        return commentType;
-    }
-
-    /**
      * Value of this comment.
      *
      * @return comment's value.
      */
-    public String getValue() {
+    @Override
+    public String value() {
         return value;
     }
 
+    @NonNull
+    @Override
     public String toString() {
-        return "<" + this.getClass().getName() + " (type=" + getCommentType() + ", value=" + getValue()
-            + ")>";
+        return "<" + this.getClass().getName() + " (type=" + commentType() + ", value=" + value() + ")>";
     }
 }

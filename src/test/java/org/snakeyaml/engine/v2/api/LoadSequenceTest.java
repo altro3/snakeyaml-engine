@@ -25,48 +25,48 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Tag("fast")
 class LoadSequenceTest {
 
-  @Test
-  @DisplayName("Empty list [] is parsed")
-  void parseEmptyList() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var list = (List<Integer>) load.loadFromString("[]");
-    assertEquals(List.of(), list);
-  }
+    @Test
+    @DisplayName("Empty list [] is parsed")
+    void parseEmptyList() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var list = (List<Integer>) load.loadFromString("[]");
+        assertEquals(List.of(), list);
+    }
 
-  @Test
-  @DisplayName("list [2] is parsed")
-  void parseList1() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var list = (List<Integer>) load.loadFromString("[2]");
-    assertEquals(List.of(2), list);
-  }
+    @Test
+    @DisplayName("list [2] is parsed")
+    void parseList1() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var list = (List<Integer>) load.loadFromString("[2]");
+        assertEquals(List.of(2), list);
+    }
 
-  @Test
-  @DisplayName("list [2,3] is parsed")
-  void parseList2() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var list = (List<Integer>) load.loadFromString("[2,3]");
-    assertEquals(List.of(2, 3), list);
-  }
+    @Test
+    @DisplayName("list [2,3] is parsed")
+    void parseList2() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var list = (List<Integer>) load.loadFromString("[2,3]");
+        assertEquals(List.of(2, 3), list);
+    }
 
-  @Test
-  @DisplayName("list [2,a,true] is parsed")
-  void parseList3() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var list = (List<Object>) load.loadFromString("[2,a,true]");
-    assertEquals(List.of(2, "a", Boolean.TRUE), list);
-  }
+    @Test
+    @DisplayName("list [2,a,true] is parsed")
+    void parseList3() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var list = (List<Object>) load.loadFromString("[2,a,true]");
+        assertEquals(List.of(2, "a", Boolean.TRUE), list);
+    }
 
-  @Test
-  @DisplayName("list is parsed")
-  void parseList4() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var list = (List<Object>) load.loadFromString(TestUtils.getResource("load/list1.yaml"));
-    assertEquals(List.of("a", "bb", "ccc", "dddd"), list);
-  }
+    @Test
+    @DisplayName("list is parsed")
+    void parseList4() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var list = (List<Object>) load.loadFromString(TestUtils.getResource("load/list1.yaml"));
+        assertEquals(List.of("a", "bb", "ccc", "dddd"), list);
+    }
 }

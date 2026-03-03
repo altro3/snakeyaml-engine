@@ -20,33 +20,34 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.snakeyaml.engine.v2.events.Event;
 
 public abstract class TestUtils {
 
-  public static String getResource(String theName) {
-    InputStream inputStream = getResourceAsStream(theName);
-    return new BufferedReader(new InputStreamReader(inputStream)).lines()
-        .collect(Collectors.joining("\n", "", "\n"));
-  }
-
-  public static InputStream getResourceAsStream(String theName) {
-    InputStream inputStream =
-        Thread.currentThread().getContextClassLoader().getResourceAsStream(theName);
-    if (inputStream == null) {
-      throw new RuntimeException("Resource not found: " + theName);
+    public static String getResource(String theName) {
+        InputStream inputStream = getResourceAsStream(theName);
+        return new BufferedReader(new InputStreamReader(inputStream)).lines()
+            .collect(Collectors.joining("\n", "", "\n"));
     }
-    return inputStream;
-  }
 
-  public static void compareEvents(List<Event> list1, List<Event> list2) {
-    assertEquals(list1.size(), list2.size());
-    for (Event event1 : list1) {
-      Event event2 = list2.remove(0);
-      String ev1 = event1.toString();
-      String ev2 = event2.toString();
-      assertEquals(ev1, ev2);
+    public static InputStream getResourceAsStream(String theName) {
+        InputStream inputStream =
+            Thread.currentThread().getContextClassLoader().getResourceAsStream(theName);
+        if (inputStream == null) {
+            throw new RuntimeException("Resource not found: " + theName);
+        }
+        return inputStream;
     }
-  }
+
+    public static void compareEvents(List<Event> list1, List<Event> list2) {
+        assertEquals(list1.size(), list2.size());
+        for (Event event1 : list1) {
+            Event event2 = list2.remove(0);
+            String ev1 = event1.toString();
+            String ev2 = event2.toString();
+            assertEquals(ev1, ev2);
+        }
+    }
 
 }

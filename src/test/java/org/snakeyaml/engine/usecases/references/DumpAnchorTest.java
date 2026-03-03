@@ -32,21 +32,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @org.junit.jupiter.api.Tag("fast")
 public class DumpAnchorTest {
 
-  @Test
-  public void test_anchor_test() {
-    var str = TestUtils.getResource("anchor/issue481.yaml");
-    var compose = new Compose(LoadSettings.builder().build());
-    Node node = compose.composeReader(new StringReader(str));
+    @Test
+    public void test_anchor_test() {
+        var str = TestUtils.getResource("anchor/issue481.yaml");
+        var compose = new Compose(LoadSettings.builder().build());
+        Node node = compose.composeReader(new StringReader(str));
 
-    var setting = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK)
-        .setAnchorGenerator(Node::getAnchor).build();
-    var yaml = new Dump(setting);
+        var setting = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setAnchorGenerator(Node::getAnchor).build();
+        var yaml = new Dump(setting);
 
-    var writer = new MyDumperWriter();
-    yaml.dumpNode(node, writer);
-    assertEquals(str, writer.toString());
-  }
+        var writer = new MyDumperWriter();
+        yaml.dumpNode(node, writer);
+        assertEquals(str, writer.toString());
+    }
 
-  static class MyDumperWriter extends StringWriter implements StreamDataWriter {
-  }
+    static class MyDumperWriter extends StringWriter implements StreamDataWriter {
+
+    }
 }

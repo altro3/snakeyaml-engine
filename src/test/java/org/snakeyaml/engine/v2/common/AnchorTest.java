@@ -25,41 +25,41 @@ import org.snakeyaml.engine.v2.exceptions.EmitterException;
 @Tag("fast")
 class AnchorTest {
 
-  @Test
-  @DisplayName("Anchor cannot be null")
-  void testNull() {
-    NullPointerException exception =
-        assertThrows(NullPointerException.class, () -> new Anchor(null));
-    assertNull(exception.getMessage());
-  }
+    @Test
+    @DisplayName("Anchor cannot be null")
+    void testNull() {
+        NullPointerException exception =
+            assertThrows(NullPointerException.class, () -> new Anchor(null));
+        assertNull(exception.getMessage());
+    }
 
-  @Test
-  @DisplayName("Anchor cannot be empty")
-  void testEmpty() {
-    IllegalArgumentException exception =
-        assertThrows(IllegalArgumentException.class, () -> new Anchor(""));
-    assertEquals("Empty anchor.", exception.getMessage());
-  }
+    @Test
+    @DisplayName("Anchor cannot be empty")
+    void testEmpty() {
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> new Anchor(""));
+        assertEquals("Empty anchor.", exception.getMessage());
+    }
 
-  @Test
-  @DisplayName("Anchor cannot contain a space")
-  void testSpaces() {
-    EmitterException exception = assertThrows(EmitterException.class, () -> new Anchor("an chor"));
-    assertEquals("Anchor may not contain spaces: an chor", exception.getMessage());
-  }
+    @Test
+    @DisplayName("Anchor cannot contain a space")
+    void testSpaces() {
+        EmitterException exception = assertThrows(EmitterException.class, () -> new Anchor("an chor"));
+        assertEquals("Anchor may not contain spaces: an chor", exception.getMessage());
+    }
 
-  @Test
-  @DisplayName("Anchor cannot contains some characters")
-  void testAllInvalid() {
-    assertEquals("Invalid character '[' in the anchor: anchor[", checkChar('[').getMessage());
-    assertEquals("Invalid character ']' in the anchor: anchor]", checkChar(']').getMessage());
-    assertEquals("Invalid character '{' in the anchor: anchor{", checkChar('{').getMessage());
-    assertEquals("Invalid character '}' in the anchor: anchor}", checkChar('}').getMessage());
-    assertEquals("Invalid character '*' in the anchor: anchor*", checkChar('*').getMessage());
-    assertEquals("Invalid character '&' in the anchor: anchor&", checkChar('&').getMessage());
-  }
+    @Test
+    @DisplayName("Anchor cannot contains some characters")
+    void testAllInvalid() {
+        assertEquals("Invalid character '[' in the anchor: anchor[", checkChar('[').getMessage());
+        assertEquals("Invalid character ']' in the anchor: anchor]", checkChar(']').getMessage());
+        assertEquals("Invalid character '{' in the anchor: anchor{", checkChar('{').getMessage());
+        assertEquals("Invalid character '}' in the anchor: anchor}", checkChar('}').getMessage());
+        assertEquals("Invalid character '*' in the anchor: anchor*", checkChar('*').getMessage());
+        assertEquals("Invalid character '&' in the anchor: anchor&", checkChar('&').getMessage());
+    }
 
-  private EmitterException checkChar(Character ch) {
-    return assertThrows(EmitterException.class, () -> new Anchor("anchor" + ch));
-  }
+    private EmitterException checkChar(Character ch) {
+        return assertThrows(EmitterException.class, () -> new Anchor("anchor" + ch));
+    }
 }

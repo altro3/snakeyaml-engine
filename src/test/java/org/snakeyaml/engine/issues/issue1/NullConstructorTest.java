@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.Load;
@@ -28,35 +29,35 @@ import org.snakeyaml.engine.v2.nodes.Tag;
 @org.junit.jupiter.api.Tag("fast")
 class NullConstructorTest {
 
-  @Test
-  void customConstructorMustBeCalledWithoutNode() {
-    Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
-    tagConstructors.put(Tag.NULL, new MyConstructNull());
-    LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
-    Load loader = new Load(settings);
-    assertNotNull(loader.loadFromString(""), "Expected MyConstructNull to be called.");
-    assertEquals("absent", loader.loadFromString(""), "Expected MyConstructNull to be called.");
-  }
-
-  @Test
-  void customConstructorMustBeCalledWithNode() {
-    Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
-    tagConstructors.put(Tag.NULL, new MyConstructNull());
-    LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
-    Load loader = new Load(settings);
-    assertEquals("present", loader.loadFromString("!!null null"),
-        "Expected MyConstructNull to be called.");
-  }
-
-  private class MyConstructNull implements ConstructNode {
-
-    @Override
-    public Object construct(Node node) {
-      if (node == null) {
-        return "absent";
-      } else {
-        return "present";
-      }
+    @Test
+    void customConstructorMustBeCalledWithoutNode() {
+        Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
+        tagConstructors.put(Tag.NULL, new MyConstructNull());
+        LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
+        Load loader = new Load(settings);
+        assertNotNull(loader.loadFromString(""), "Expected MyConstructNull to be called.");
+        assertEquals("absent", loader.loadFromString(""), "Expected MyConstructNull to be called.");
     }
-  }
+
+    @Test
+    void customConstructorMustBeCalledWithNode() {
+        Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
+        tagConstructors.put(Tag.NULL, new MyConstructNull());
+        LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
+        Load loader = new Load(settings);
+        assertEquals("present", loader.loadFromString("!!null null"),
+            "Expected MyConstructNull to be called.");
+    }
+
+    private class MyConstructNull implements ConstructNode {
+
+        @Override
+        public Object construct(Node node) {
+            if (node == null) {
+                return "absent";
+            } else {
+                return "present";
+            }
+        }
+    }
 }

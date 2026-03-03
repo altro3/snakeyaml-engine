@@ -1,0 +1,28 @@
+plugins {
+    id("java-library")
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+group = "org.snakeyaml"
+
+dependencies {
+
+    compileOnly(libs.jspecify)
+
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.guava)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
+tasks.compileJava {
+    options.encoding = "UTF-8"
+}

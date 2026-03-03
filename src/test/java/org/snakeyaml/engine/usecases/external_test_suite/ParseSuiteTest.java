@@ -31,70 +31,70 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @org.junit.jupiter.api.Tag("fast")
 class ParseSuiteTest {
 
-  private final List<SuiteData> all =
-      // TODO FIXME JEF9-02 is not according to the spec
-      SuiteUtils.getAll().stream().filter(data -> !data.getName().equals("JEF9-02"))
-          .collect(Collectors.toList());
+    private final List<SuiteData> all =
+        // TODO FIXME JEF9-02 is not according to the spec
+        SuiteUtils.getAll().stream().filter(data -> !data.getName().equals("JEF9-02"))
+            .collect(Collectors.toList());
 
-  /**
-   * This test is used to debug one test (which is given explicitly)
-   */
-  @Test
-  @DisplayName("Parse: Run one test")
-  void runOne() {
-    var data = SuiteUtils.getOne("Y79Y-002");
-    var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
-    Iterable<Event> iterable = new Parse(settings).parseString(data.getInput());
-    for (Event event : iterable) {
-      assertNotNull(event);
-      // System.out.println(event);
-    }
-  }
-
-  @Test
-  @DisplayName("Run comprehensive test suite")
-  void runAll() {
-    for (SuiteData data : all) {
-      ParseResult result = SuiteUtils.parseData(data);
-      boolean shouldFail = data.hasError();
-      if (SuiteUtils.deviationsWithSuccess.contains(data.getName())
-          || SuiteUtils.deviationsWithError.contains(data.getName())) {
-        shouldFail = !shouldFail;
-      }
-      if (shouldFail) {
-        assertNotNull(result.getError(), "Expected error, but got none in file " + data.getName()
-            + ", " + data.getLabel() + "\n" + result.getEvents());
-      } else {
-        assertNull(result.getError(), "Testcase: " + data.getName() + "; label: " + data.getLabel()
-            + "\nExpected NO error, but got: " + result.getError());
-        List<ParsePair> pairs =
-            Streams.zip(data.getEvents().stream(), result.getEvents().stream(), ParsePair::new)
-                .collect(Collectors.toList());
-        for (ParsePair pair : pairs) {
-          var representation = new EventRepresentation(pair.getEvent());
-          assertEquals(pair.getExpected(), representation.getRepresentation(),
-              "Failure in " + data.getName());
+    /**
+     * This test is used to debug one test (which is given explicitly)
+     */
+    @Test
+    @DisplayName("Parse: Run one test")
+    void runOne() {
+        var data = SuiteUtils.getOne("Y79Y-002");
+        var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
+        Iterable<Event> iterable = new Parse(settings).parseString(data.getInput());
+        for (Event event : iterable) {
+            assertNotNull(event);
+            // System.out.println(event);
         }
-      }
-    }
-  }
-
-  static class ParsePair {
-
-    private final String expected;
-    private final Event event;
-
-    public ParsePair(String expected, Event event) {
-      this.expected = expected;
-      this.event = event;
     }
 
-    public String getExpected() {
-      return expected;
+    @Test
+    @DisplayName("Run comprehensive test suite")
+    void runAll() {
+        for (SuiteData data : all) {
+            ParseResult result = SuiteUtils.parseData(data);
+            boolean shouldFail = data.hasError();
+            if (SuiteUtils.deviationsWithSuccess.contains(data.getName())
+                || SuiteUtils.deviationsWithError.contains(data.getName())) {
+                shouldFail = !shouldFail;
+            }
+            if (shouldFail) {
+                assertNotNull(result.getError(), "Expected error, but got none in file " + data.getName()
+                    + ", " + data.getLabel() + "\n" + result.getEvents());
+            } else {
+                assertNull(result.getError(), "Testcase: " + data.getName() + "; label: " + data.getLabel()
+                    + "\nExpected NO error, but got: " + result.getError());
+                List<ParsePair> pairs =
+                    Streams.zip(data.getEvents().stream(), result.getEvents().stream(), ParsePair::new)
+                        .collect(Collectors.toList());
+                for (ParsePair pair : pairs) {
+                    var representation = new EventRepresentation(pair.getEvent());
+                    assertEquals(pair.getExpected(), representation.getRepresentation(),
+                        "Failure in " + data.getName());
+                }
+            }
+        }
     }
 
-    public Event getEvent() {
-      return event;
+    static class ParsePair {
+
+        private final String expected;
+        private final Event event;
+
+        public ParsePair(String expected, Event event) {
+            this.expected = expected;
+            this.event = event;
+        }
+
+        public String getExpected() {
+            return expected;
+        }
+
+        public Event getEvent() {
+            return event;
+        }
     }
-  }
 }

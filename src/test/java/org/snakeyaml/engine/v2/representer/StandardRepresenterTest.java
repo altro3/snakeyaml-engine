@@ -17,10 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.collect.TreeRangeSet;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -34,51 +36,51 @@ import org.snakeyaml.engine.v2.nodes.SequenceNode;
 @Tag("fast")
 class StandardRepresenterTest {
 
-  private final StandardRepresenter standardRepresenter =
-      new StandardRepresenter(DumpSettings.builder().build());
+    private final StandardRepresenter standardRepresenter =
+        new StandardRepresenter(DumpSettings.builder().build());
 
-  @Test
-  @DisplayName("Represent unknown class")
-  void representUnknownClass() {
-    YamlEngineException exception = assertThrows(YamlEngineException.class,
-        () -> standardRepresenter.represent(TreeRangeSet.create()));
-    assertEquals("Representer is not defined for class com.google.common.collect.TreeRangeSet",
-        exception.getMessage());
-  }
+    @Test
+    @DisplayName("Represent unknown class")
+    void representUnknownClass() {
+        YamlEngineException exception = assertThrows(YamlEngineException.class,
+            () -> standardRepresenter.represent(TreeRangeSet.create()));
+        assertEquals("Representer is not defined for class com.google.common.collect.TreeRangeSet",
+            exception.getMessage());
+    }
 
-  @Test
-  @DisplayName("Represent Enum as node with global tag")
-  void representEnum() {
-    Node node = standardRepresenter.represent(FormatEnum.JSON);
-    assertEquals("tag:yaml.org,2002:org.snakeyaml.engine.v2.representer.FormatEnum",
-        node.getTag().getValue());
-  }
+    @Test
+    @DisplayName("Represent Enum as node with global tag")
+    void representEnum() {
+        Node node = standardRepresenter.represent(FormatEnum.JSON);
+        assertEquals("tag:yaml.org,2002:org.snakeyaml.engine.v2.representer.FormatEnum",
+            node.getTag().getValue());
+    }
 
-  @Test
-  @DisplayName("Represent Iterator as node with global tag")
-  void representIterator() {
-    var listOfStrings = List.of("hello", "world");
-    Iterator<String> iterator = listOfStrings.iterator();
-    Node node = standardRepresenter.represent(iterator);
-    assertEquals("tag:yaml.org,2002:seq", node.getTag().getValue());
-    var seq = (SequenceNode) node;
-    assertEquals(2, seq.getValue().size());
-    seq.getValue().forEach(n -> assertEquals("tag:yaml.org,2002:str", n.getTag().getValue()));
-    // dump
-    var dumper = new Dump(DumpSettings.builder().build());
-    assertEquals("[hello, world]\n", dumper.dumpToString(listOfStrings.iterator()));
-  }
+    @Test
+    @DisplayName("Represent Iterator as node with global tag")
+    void representIterator() {
+        var listOfStrings = List.of("hello", "world");
+        Iterator<String> iterator = listOfStrings.iterator();
+        Node node = standardRepresenter.represent(iterator);
+        assertEquals("tag:yaml.org,2002:seq", node.getTag().getValue());
+        var seq = (SequenceNode) node;
+        assertEquals(2, seq.getValue().size());
+        seq.getValue().forEach(n -> assertEquals("tag:yaml.org,2002:str", n.getTag().getValue()));
+        // dump
+        var dumper = new Dump(DumpSettings.builder().build());
+        assertEquals("[hello, world]\n", dumper.dumpToString(listOfStrings.iterator()));
+    }
 
-  @Test
-  @DisplayName("Represent Set as node")
-  void representSet() {
-    var setOfStrings = new TreeSet<>(Set.of("bbb", "aaa"));
-    Node node = standardRepresenter.represent(setOfStrings);
-    assertEquals("tag:yaml.org,2002:set", node.getTag().getValue());
-    var seq = (MappingNode) node;
-    assertEquals(2, seq.getValue().size());
-    // dump
-    var dumper = new Dump(DumpSettings.builder().build());
-    assertEquals("[aaa, bbb]\n", dumper.dumpToString(setOfStrings.iterator()));
-  }
+    @Test
+    @DisplayName("Represent Set as node")
+    void representSet() {
+        var setOfStrings = new TreeSet<>(Set.of("bbb", "aaa"));
+        Node node = standardRepresenter.represent(setOfStrings);
+        assertEquals("tag:yaml.org,2002:set", node.getTag().getValue());
+        var seq = (MappingNode) node;
+        assertEquals(2, seq.getValue().size());
+        // dump
+        var dumper = new Dump(DumpSettings.builder().build());
+        assertEquals("[aaa, bbb]\n", dumper.dumpToString(setOfStrings.iterator()));
+    }
 }

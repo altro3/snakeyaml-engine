@@ -1,9 +1,0 @@
-TODO (without any priority)
-
-``* Documentation
-* findbugs, pmd, sonarqube
-* coverage
-* parse Optional (non scalar)
-* parse Iterator
-* parse Enum
-

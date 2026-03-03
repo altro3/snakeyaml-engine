@@ -13,144 +13,334 @@
  */
 package org.snakeyaml.engine.v2.api;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.UnaryOperator;
-
 import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.env.EnvConfig;
+import org.snakeyaml.engine.v2.exceptions.YamlVersionException;
 import org.snakeyaml.engine.v2.nodes.Tag;
+import org.snakeyaml.engine.v2.schema.JsonSchema;
 import org.snakeyaml.engine.v2.schema.Schema;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.IntFunction;
+import java.util.function.UnaryOperator;
 
 /**
  * Immutable configuration for loading. Description for all the fields can be found in the builder
  */
-public final class LoadSettings {
-
-    private final String label;
-    private final Map<Tag, ConstructNode> tagConstructors;
-    private final IntFunction<List<Object>> defaultList;
-    private final IntFunction<Set<Object>> defaultSet;
-    private final IntFunction<Map<Object, Object>> defaultMap;
-    private final UnaryOperator<SpecVersion> versionFunction;
-    private final Integer bufferSize;
-    private final boolean allowDuplicateKeys;
-    private final boolean allowRecursiveKeys;
-    private final boolean parseComments;
-    private final int maxAliasesForCollections;
-    private final boolean useMarks;
-    private final EnvConfig envConfig;
-    private final int codePointLimit;
-    private final Schema schema;
-    private final boolean allowNonScalarKeys;
-
+public record LoadSettings(
+    String label,
+    Map<Tag, ConstructNode> tagConstructors,
+    IntFunction<List<Object>> defaultList,
+    IntFunction<Set<Object>> defaultSet,
+    IntFunction<Map<Object, Object>> defaultMap,
+    UnaryOperator<SpecVersion> versionFunction,
+    Integer bufferSize,
+    boolean allowDuplicateKeys,
+    boolean allowRecursiveKeys,
+    boolean parseComments,
+    int maxAliasesForCollections,
+    boolean useMarks,
+    EnvConfig envConfig,
+    int codePointLimit,
+    Schema schema,
+    boolean allowNonScalarKeys,
     // general
-    private final Map<SettingKey, Object> customProperties;
-
-    LoadSettings(String label, Map<Tag, ConstructNode> tagConstructors,
-                 IntFunction<List<Object>> defaultList, IntFunction<Set<Object>> defaultSet,
-                 IntFunction<Map<Object, Object>> defaultMap, UnaryOperator<SpecVersion> versionFunction,
-                 Integer bufferSize, boolean allowDuplicateKeys, boolean allowRecursiveKeys,
-                 int maxAliasesForCollections, boolean useMarks, Map<SettingKey, Object> customProperties,
-                 EnvConfig envConfig, boolean parseComments, int codePointLimit, Schema schema,
-                 boolean allowNonScalarKeys) {
-        this.label = label;
-        this.tagConstructors = tagConstructors;
-        this.defaultList = defaultList;
-        this.defaultSet = defaultSet;
-        this.defaultMap = defaultMap;
-        this.versionFunction = versionFunction;
-        this.bufferSize = bufferSize;
-        this.allowDuplicateKeys = allowDuplicateKeys;
-        this.allowRecursiveKeys = allowRecursiveKeys;
-        this.parseComments = parseComments;
-        this.maxAliasesForCollections = maxAliasesForCollections;
-        this.useMarks = useMarks;
-        this.customProperties = customProperties;
-        this.envConfig = envConfig;
-        this.codePointLimit = codePointLimit;
-        this.schema = schema;
-        this.allowNonScalarKeys = allowNonScalarKeys;
-    }
+    Map<SettingKey, Object> customProperties
+) {
 
     /**
      * Create the builder
      *
      * @return the builder to fill the configuration options
      */
-    public static LoadSettingsBuilder builder() {
-        return new LoadSettingsBuilder();
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public String getLabel() {
-        return label;
-    }
+    /**
+     * Builder pattern implementation for LoadSettings
+     */
+    public static final class Builder {
 
-    public Map<Tag, ConstructNode> getTagConstructors() {
-        return tagConstructors;
-    }
+        private String label = "reader";
+        private Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
+        private IntFunction<List<Object>> defaultList = ArrayList::new; // same as new ArrayList(initSize)
+        private IntFunction<Set<Object>> defaultSet = LinkedHashSet::new; // same as new LinkedHashSet(initSize)
+        private IntFunction<Map<Object, Object>> defaultMap = LinkedHashMap::new; // same as new LinkedHashMap(initSize)
+        private UnaryOperator<SpecVersion> versionFunction = version -> {
+            if (version.getMajor() != 1) {
+                throw new YamlVersionException(version);
+            }
+            return version;
+        };
+        private Integer bufferSize = 1024;
+        private boolean allowDuplicateKeys;
+        private boolean allowRecursiveKeys;
+        private boolean parseComments;
+        private int maxAliasesForCollections = 50;
+        private boolean useMarks = true;
+        private EnvConfig envConfig; // no ENV substitution by default
+        private int codePointLimit = 3 * 1024 * 1024; // 3 MB
+        private Schema schema = new JsonSchema();
+        private boolean allowNonScalarKeys;
+        private final Map<SettingKey, Object> customProperties = new HashMap<>();
 
-    public IntFunction<List<Object>> getDefaultList() {
-        return defaultList;
-    }
+        /**
+         * Label for the input data. Can be used to improve the error message.
+         *
+         * @param label - meaningful label to indicate the input source
+         * @return the builder with the provided value
+         */
+        public Builder setLabel(String label) {
+            Objects.requireNonNull(label, "label cannot be null");
+            this.label = label;
+            return this;
+        }
 
-    public IntFunction<Set<Object>> getDefaultSet() {
-        return defaultSet;
-    }
+        /**
+         * Provide constructors for the specified tags.
+         *
+         * @param tagConstructors - the map from a Tag to its constructor
+         * @return the builder with the provided value
+         */
+        public Builder setTagConstructors(Map<Tag, ConstructNode> tagConstructors) {
+            this.tagConstructors = tagConstructors;
+            return this;
+        }
 
-    public IntFunction<Map<Object, Object>> getDefaultMap() {
-        return defaultMap;
-    }
+        /**
+         * Provide default List implementation. {@link ArrayList} is used if nothing provided.
+         *
+         * @param defaultList - specified List implementation (as a function from init size)
+         * @return the builder with the provided value
+         */
+        public Builder setDefaultList(IntFunction<List<Object>> defaultList) {
+            Objects.requireNonNull(defaultList, "defaultList cannot be null");
+            this.defaultList = defaultList;
+            return this;
+        }
 
-    public Integer getBufferSize() {
-        return bufferSize;
-    }
+        /**
+         * Provide default Set implementation. {@link LinkedHashSet} is used if nothing provided.
+         *
+         * @param defaultSet - specified Set implementation (as a function from init size)
+         * @return the builder with the provided value
+         */
+        public Builder setDefaultSet(IntFunction<Set<Object>> defaultSet) {
+            Objects.requireNonNull(defaultSet, "defaultSet cannot be null");
+            this.defaultSet = defaultSet;
+            return this;
+        }
 
-    public boolean getAllowDuplicateKeys() {
-        return allowDuplicateKeys;
-    }
+        /**
+         * Provide default Map implementation. {@link LinkedHashMap} is used if nothing provided.
+         *
+         * @param defaultMap - specified Map implementation (as a function from init size)
+         * @return the builder with the provided value
+         */
+        public Builder setDefaultMap(IntFunction<Map<Object, Object>> defaultMap) {
+            Objects.requireNonNull(defaultMap, "defaultMap cannot be null");
+            this.defaultMap = defaultMap;
+            return this;
+        }
 
-    public boolean getAllowRecursiveKeys() {
-        return allowRecursiveKeys;
-    }
+        /**
+         * Buffer size for incoming data stream. If the incoming stream is already buffered, then changing
+         * the buffer does not improve the performance
+         *
+         * @param bufferSize - buffer size (in bytes) for input data
+         * @return the builder with the provided value
+         */
+        public Builder setBufferSize(Integer bufferSize) {
+            this.bufferSize = bufferSize;
+            return this;
+        }
 
-    public boolean getUseMarks() {
-        return useMarks;
-    }
+        /**
+         * YAML 1.2 does require unique keys. To support the backwards compatibility it is possible to
+         * select what should happen when non-unique keys are detected.
+         *
+         * @param allowDuplicateKeys - if true, then the non-unique keys in a mapping are allowed (last
+         *     key wins). False by default.
+         * @return the builder with the provided value
+         */
+        public Builder setAllowDuplicateKeys(boolean allowDuplicateKeys) {
+            this.allowDuplicateKeys = allowDuplicateKeys;
+            return this;
+        }
 
-    public Function<SpecVersion, SpecVersion> getVersionFunction() {
-        return versionFunction;
-    }
+        /**
+         * Allow only non-recursive keys for maps and sets. By default, is it not allowed. Even though
+         * YAML allows to use anything as a key, it may cause unexpected issues when loading recursive
+         * structures.
+         *
+         * @param allowRecursiveKeys - true to allow recursive structures as keys
+         * @return the builder with the provided value
+         */
+        public Builder setAllowRecursiveKeys(boolean allowRecursiveKeys) {
+            this.allowRecursiveKeys = allowRecursiveKeys;
+            return this;
+        }
 
-    public Object getCustomProperty(SettingKey key) {
-        return customProperties.get(key);
-    }
+        /**
+         * Restrict the number of aliases for collection nodes to prevent a Billion laughs attack. The
+         * purpose of this setting is to force SnakeYAML to fail before a lot of CPU and memory resources
+         * are allocated for the parser. Aliases for scalar nodes do not count because they do not grow
+         * exponentially.
+         *
+         * @param maxAliasesForCollections - max number of aliases. More than 50 might be very dangerous.
+         *     Default is 50
+         * @return the builder with the provided value
+         */
+        public Builder setMaxAliasesForCollections(int maxAliasesForCollections) {
+            this.maxAliasesForCollections = maxAliasesForCollections;
+            return this;
+        }
 
-    public int getMaxAliasesForCollections() {
-        return maxAliasesForCollections;
-    }
+        /**
+         * Marks are only used for error messages. But they require a lot of memory. True by default.
+         *
+         * @param useMarks - use false to save resources but use less informative error messages (no line
+         *     and context)
+         * @return the builder with the provided value
+         */
+        public Builder setUseMarks(boolean useMarks) {
+            this.useMarks = useMarks;
+            return this;
+        }
 
-    public EnvConfig getEnvConfig() {
-        return envConfig;
-    }
+        /**
+         * Manage YAML directive value which defines the version of the YAML specification. This parser
+         * supports YAML 1.2 but it can parse most of YAML 1.1 and YAML 1.0
+         * <p>
+         * This function allows to control the version management. For instance if the document contains
+         * old version the parser can be adapted to compensate the problem. Or it can fail to indicate
+         * that the incoming version is not supported.
+         *
+         * @param versionFunction - define the way to manage the YAML version. By default, 1.* versions
+         *     are accepted and treated as YAML 1.2. Other versions fail to parse (YamlVersionException
+         *     is thown)
+         * @return the builder with the provided value
+         */
+        public Builder setVersionFunction(UnaryOperator<SpecVersion> versionFunction) {
+            Objects.requireNonNull(versionFunction, "versionFunction cannot be null");
+            this.versionFunction = versionFunction;
+            return this;
+        }
 
-    public boolean getParseComments() {
-        return parseComments;
-    }
+        /**
+         * Define EnvConfig to parse ENV format. If not set explicitly the variable substitution is not
+         * applied.
+         *
+         * @param envConfig - non-empty configuration to substitute variables
+         * @return the builder with the provided value
+         * @see <a href=
+         *     "https://bitbucket.org/snakeyaml/snakeyaml-engine/wiki/Documentation#markdown-header-env-variable-substitution">Variable
+         *     substitution</a>
+         */
+        public Builder setEnvConfig(EnvConfig envConfig) {
+            this.envConfig = envConfig;
+            return this;
+        }
 
-    public int getCodePointLimit() {
-        return codePointLimit;
-    }
+        /**
+         * Provide a custom property to be used later
+         *
+         * @param key - the key
+         * @param value - the value behind the key
+         * @return the builder with the provided value
+         */
+        public Builder setCustomProperty(SettingKey key, Object value) {
+            customProperties.put(key, value);
+            return this;
+        }
 
-    public Schema getSchema() {
-        return schema;
-    }
+        /**
+         * Parse comments to the presentation tree (Node). False by default
+         *
+         * @param parseComments - use true to parse comments to the presentation tree (Node)
+         * @return the builder with the provided value
+         */
+        public Builder setParseComments(boolean parseComments) {
+            this.parseComments = parseComments;
+            return this;
+        }
 
-    public boolean getAllowNonScalarKeys() {
-        return allowNonScalarKeys;
+        /**
+         * The max number of code points for every input YAML document in the stream. Please be aware that
+         * the byte limit depends on the encoding. The presence of the document indicators '---' or/and
+         * '...' will affect the doc size (even though they do not belong to the document content)
+         *
+         * @param codePointLimit - the max allowed size of a single YAML document in a stream
+         * @return the builder with the provided value
+         */
+        public Builder setCodePointLimit(int codePointLimit) {
+            this.codePointLimit = codePointLimit;
+            return this;
+        }
+
+        /**
+         * Provide either recommended or custom
+         * <a href="https://yaml.org/spec/1.2.2/#chapter-10-recommended-schemas">schema</a> instead of
+         * default * {@link org.snakeyaml.engine.v2.schema.CoreSchema} These 3 are available
+         * {@link org.snakeyaml.engine.v2.schema.FailsafeSchema},
+         * {@link org.snakeyaml.engine.v2.schema.JsonSchema},
+         * {@link org.snakeyaml.engine.v2.schema.CoreSchema}.
+         *
+         * @param schema to be used for parsing
+         * @return the builder with the provided value
+         */
+        public Builder setSchema(Schema schema) {
+            this.schema = schema;
+            return this;
+        }
+
+        /**
+         * Non-scalar keys in a mapping may cause issues when used with an untrusted source. Since using a
+         * collection as a key in mapping is a relatively rare use case (and it is not supported in JSON),
+         * this possibility is switched off by default (even though it is a standard feature of YAML)
+         *
+         * @param allowNonScalarKeys - true when any collection may be a key in a mapping
+         * @return the builder with the provided value
+         */
+        public Builder setAllowNonScalarKeys(boolean allowNonScalarKeys) {
+            this.allowNonScalarKeys = allowNonScalarKeys;
+            return this;
+        }
+
+        /**
+         * Build immutable LoadSettings
+         *
+         * @return immutable LoadSettings
+         */
+        public LoadSettings build() {
+            return new LoadSettings(
+                label,
+                tagConstructors,
+                defaultList,
+                defaultSet,
+                defaultMap,
+                versionFunction,
+                bufferSize,
+                allowDuplicateKeys,
+                allowRecursiveKeys,
+                parseComments,
+                maxAliasesForCollections,
+                useMarks,
+                envConfig,
+                codePointLimit,
+                schema,
+                allowNonScalarKeys,
+                customProperties
+            );
+        }
     }
 }
 

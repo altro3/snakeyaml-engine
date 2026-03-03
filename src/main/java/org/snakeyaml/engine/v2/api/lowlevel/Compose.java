@@ -13,18 +13,18 @@
  */
 package org.snakeyaml.engine.v2.api.lowlevel;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.Iterator;
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.YamlUnicodeReader;
 import org.snakeyaml.engine.v2.composer.Composer;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.Iterator;
 
 /**
  * Helper to compose input stream to Node
@@ -38,8 +38,7 @@ public class Compose {
      *
      * @param settings - configuration
      */
-    public Compose(LoadSettings settings) {
-        Objects.requireNonNull(settings, "LoadSettings cannot be null");
+    public Compose(@NonNull LoadSettings settings) {
         this.settings = settings;
     }
 
@@ -51,8 +50,7 @@ public class Compose {
      * @return parsed {@link Node} if available
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Node composeReader(Reader yaml) {
-        Objects.requireNonNull(yaml, "Reader cannot be null");
+    public Node composeReader(@NonNull Reader yaml) {
         return new Composer(settings, new ParserImpl(settings, new StreamReader(settings, yaml)))
             .getSingleNode();
     }
@@ -65,10 +63,8 @@ public class Compose {
      * @return parsed {@link Node} if available
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Node composeInputStream(InputStream yaml) {
-        Objects.requireNonNull(yaml, "InputStream cannot be null");
-        return new Composer(settings,
-            new ParserImpl(settings, new StreamReader(settings, new YamlUnicodeReader(yaml))))
+    public Node composeInputStream(@NonNull InputStream yaml) {
+        return new Composer(settings, new ParserImpl(settings, new StreamReader(settings, new YamlUnicodeReader(yaml))))
             .getSingleNode();
     }
 
@@ -79,10 +75,8 @@ public class Compose {
      * @return parsed {@link Node} if available
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Node composeString(String yaml) {
-        Objects.requireNonNull(yaml, "String cannot be null");
-        return new Composer(settings,
-            new ParserImpl(settings, new StreamReader(settings, new StringReader(yaml))))
+    public Node composeString(@NonNull String yaml) {
+        return new Composer(settings, new ParserImpl(settings, new StreamReader(settings, new StringReader(yaml))))
             .getSingleNode();
     }
 
@@ -95,8 +89,7 @@ public class Compose {
      * @return parsed root Nodes for all the specified YAML documents
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Iterable<Node> composeAllFromReader(Reader yaml) {
-        Objects.requireNonNull(yaml, "Reader cannot be null");
+    public Iterable<Node> composeAllFromReader(@NonNull Reader yaml) {
         return () -> new Composer(settings, new ParserImpl(settings, new StreamReader(settings, yaml)));
     }
 
@@ -108,10 +101,8 @@ public class Compose {
      * @return parsed root Nodes for all the specified YAML documents
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Iterable<Node> composeAllFromInputStream(InputStream yaml) {
-        Objects.requireNonNull(yaml, "InputStream cannot be null");
-        return () -> new Composer(settings,
-            new ParserImpl(settings, new StreamReader(settings, new YamlUnicodeReader(yaml))));
+    public Iterable<Node> composeAllFromInputStream(@NonNull InputStream yaml) {
+        return () -> new Composer(settings, new ParserImpl(settings, new StreamReader(settings, new YamlUnicodeReader(yaml))));
     }
 
     /**
@@ -121,14 +112,12 @@ public class Compose {
      * @return parsed root Nodes for all the specified YAML documents
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public Iterable<Node> composeAllFromString(String yaml) {
-        Objects.requireNonNull(yaml, "String cannot be null");
+    public Iterable<Node> composeAllFromString(@NonNull String yaml) {
         // do not use lambda to keep Iterable and Iterator visible
         return new Iterable<>() {
             @Override
-            public Iterator<Node> iterator() {
-                return new Composer(settings,
-                    new ParserImpl(settings, new StreamReader(settings, new StringReader(yaml))));
+            public @NonNull Iterator<Node> iterator() {
+                return new Composer(settings, new ParserImpl(settings, new StreamReader(settings, new StringReader(yaml))));
             }
         };
     }

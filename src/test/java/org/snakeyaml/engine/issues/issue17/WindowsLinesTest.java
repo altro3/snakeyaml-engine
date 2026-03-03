@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -24,13 +25,13 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 @org.junit.jupiter.api.Tag("fast")
 public class WindowsLinesTest {
 
-  @Test
-  void parseWindowsNewLine() {
-    Load loader = new Load(LoadSettings.builder().build());
-    String source = "parent:\r\n  key: value";
-    // System.out.println(source);
-    Map<String, String> list = (Map<String, String>) loader.loadFromString(source);
-    assertEquals(1, list.size());
-    assertNotNull(list.get("parent"));
-  }
+    @Test
+    void parseWindowsNewLine() {
+        Load loader = new Load(LoadSettings.builder().build());
+        String source = "parent:\r\n  key: value";
+        // System.out.println(source);
+        Map<String, String> list = (Map<String, String>) loader.loadFromString(source);
+        assertEquals(1, list.size());
+        assertNotNull(list.get("parent"));
+    }
 }

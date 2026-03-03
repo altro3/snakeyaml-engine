@@ -26,10 +26,10 @@ import org.snakeyaml.engine.v2.nodes.Tag;
  */
 public class EnvTagTest {
 
-  @Test
-  public void testImplicitResolverForEnvConstructor() {
-    var loader = new Compose(LoadSettings.builder().build());
-    Node loaded = loader.composeString("${PATH}");
-    assertEquals(Tag.ENV_TAG, loaded.getTag());
-  }
+    @Test
+    public void testImplicitResolverForEnvConstructor() {
+        var loader = new Compose(LoadSettings.builder().build());
+        Node loaded = loader.composeString("${PATH}");
+        assertEquals(Tag.ENV_TAG, loaded.getTag());
+    }
 }

@@ -31,86 +31,86 @@ import java.util.Arrays;
  */
 public class EventRepresentation {
 
-  private final Event event;
+    private final Event event;
 
-  public EventRepresentation(Event event) {
-    this.event = event;
-  }
-
-  public String getRepresentation() {
-    return event.toString();
-  }
-
-
-  public boolean isSameAs(String eventData) {
-
-    var splitted = Arrays.asList(eventData.split(" "));
-    if (!event.toString().startsWith(splitted.get(0))) {
-      return false;
+    public EventRepresentation(Event event) {
+        this.event = event;
     }
-    /*
-     * if (event instanceof DocumentStartEvent) { DocumentStartEvent e = (DocumentStartEvent) event;
-     * if (e.isExplicit()) { if (split.size() != 2 || !split.get(1).equals("---")) return false; }
-     * else { if (split.size() != 1) return false; } } if (event instanceof DocumentEndEvent) {
-     * DocumentEndEvent e = (DocumentEndEvent) event; if (e.isExplicit()) { if (split.size() != 2 ||
-     * !split.get(1).equals("...")) return false; } else { if (split.size() != 1) return false; } }
-     */
-    if (event instanceof MappingStartEvent) {
-      var e = (CollectionStartEvent) event;
-      boolean tagIsPresent = e.getTag() != null;
-      String mapTag = Tag.MAP.getValue();
-      if (tagIsPresent && !mapTag.equals(e.getTag())) {
-        String last = splitted.get(splitted.size() - 1);
-        if (!last.equals("<" + e.getTag() + ">")) {
-          return false;
-        }
-      }
+
+    public String getRepresentation() {
+        return event.toString();
     }
-    if (event instanceof SequenceStartEvent) {
-      var e = (SequenceStartEvent) event;
-      if (e.getTag() != null && !Tag.SEQ.getValue().equals(e.getTag())) {
-        String last = splitted.get(splitted.size() - 1);
-        if (!last.equals("<" + e.getTag() + ">")) {
-          return false;
-        }
-      }
-    }
-    if (event instanceof NodeEvent) {
-      var e = (NodeEvent) event;
-      if (e.getAnchor() != null) {
-        int indexOfAlias = 1;
-        if (event.getEventId().equals(Event.ID.SequenceStart)
-            || event.getEventId().equals(Event.ID.MappingStart)) {
-          var start = (CollectionStartEvent) event;
-          if (start.getFlowStyle() == FlowStyle.FLOW) {
-            indexOfAlias = 2;
-          }
-        }
-        if (event instanceof AliasEvent) {
-          if (!splitted.get(indexOfAlias).startsWith("*")) {
+
+
+    public boolean isSameAs(String eventData) {
+
+        var splitted = Arrays.asList(eventData.split(" "));
+        if (!event.toString().startsWith(splitted.get(0))) {
             return false;
-          }
-        } else {
-          if (!splitted.get(indexOfAlias).startsWith("&")) {
-            return false;
-          }
         }
-      }
-    }
-    if (event instanceof ScalarEvent) {
-      var e = (ScalarEvent) event;
-      if (e.getTag() != null) {
-        String tag = e.getTag();
-        ImplicitTuple implicit = e.getImplicit();
-        if (implicit.bothFalse()) {
-          if (!eventData.contains("<" + tag + ">")) {
-            return false;
-          }
+        /*
+         * if (event instanceof DocumentStartEvent) { DocumentStartEvent e = (DocumentStartEvent) event;
+         * if (e.isExplicit()) { if (split.size() != 2 || !split.get(1).equals("---")) return false; }
+         * else { if (split.size() != 1) return false; } } if (event instanceof DocumentEndEvent) {
+         * DocumentEndEvent e = (DocumentEndEvent) event; if (e.isExplicit()) { if (split.size() != 2 ||
+         * !split.get(1).equals("...")) return false; } else { if (split.size() != 1) return false; } }
+         */
+        if (event instanceof MappingStartEvent) {
+            var e = (CollectionStartEvent) event;
+            boolean tagIsPresent = e.getTag() != null;
+            String mapTag = Tag.MAP.getValue();
+            if (tagIsPresent && !mapTag.equals(e.getTag())) {
+                String last = splitted.get(splitted.size() - 1);
+                if (!last.equals("<" + e.getTag() + ">")) {
+                    return false;
+                }
+            }
         }
-      }
-      String end = e.getScalarStyle() + e.escapedValue();
-      return eventData.endsWith(end);
+        if (event instanceof SequenceStartEvent) {
+            var e = (SequenceStartEvent) event;
+            if (e.getTag() != null && !Tag.SEQ.getValue().equals(e.getTag())) {
+                String last = splitted.get(splitted.size() - 1);
+                if (!last.equals("<" + e.getTag() + ">")) {
+                    return false;
+                }
+            }
+        }
+        if (event instanceof NodeEvent) {
+            var e = (NodeEvent) event;
+            if (e.getAnchor() != null) {
+                int indexOfAlias = 1;
+                if (event.getEventId().equals(Event.ID.SequenceStart)
+                    || event.getEventId().equals(Event.ID.MappingStart)) {
+                    var start = (CollectionStartEvent) event;
+                    if (start.getFlowStyle() == FlowStyle.FLOW) {
+                        indexOfAlias = 2;
+                    }
+                }
+                if (event instanceof AliasEvent) {
+                    if (!splitted.get(indexOfAlias).startsWith("*")) {
+                        return false;
+                    }
+                } else {
+                    if (!splitted.get(indexOfAlias).startsWith("&")) {
+                        return false;
+                    }
+                }
+            }
+        }
+        if (event instanceof ScalarEvent) {
+            var e = (ScalarEvent) event;
+            if (e.getTag() != null) {
+                String tag = e.getTag();
+                ImplicitTuple implicit = e.getImplicit();
+                if (implicit.bothFalse()) {
+                    if (!eventData.contains("<" + tag + ">")) {
+                        return false;
+                    }
+                }
+            }
+            String end = e.getScalarStyle() + e.escapedValue();
+            return eventData.endsWith(end);
+        }
+        return true;
     }
-    return true;
-  }
 }

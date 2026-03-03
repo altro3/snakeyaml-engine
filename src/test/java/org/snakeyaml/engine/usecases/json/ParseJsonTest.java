@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
@@ -27,30 +28,30 @@ import org.snakeyaml.engine.v2.util.TestUtils;
 @org.junit.jupiter.api.Tag("fast")
 public class ParseJsonTest {
 
-  /**
-   * <a href=
-   * "https://bitbucket.org/snakeyaml/snakeyaml/issues/1110/exception-during-parse-of-tab-idented-json">cf-app</a>
-   */
-  @Test
-  @DisplayName("Parse JSON with TABs")
-  public void testJsonWithTabs() {
-    String str = TestUtils.getResource("json/mtad.yaml");
-    LoadSettings options = LoadSettings.builder().build();
-    Load load = new Load(options);
-    Map<String, Object> obj = (Map<String, Object>) load.loadFromString(str);
-    assertEquals(4, obj.size());
-    assertTrue(obj.containsKey("_schema-version"));
-  }
+    /**
+     * <a href=
+     * "https://bitbucket.org/snakeyaml/snakeyaml/issues/1110/exception-during-parse-of-tab-idented-json">cf-app</a>
+     */
+    @Test
+    @DisplayName("Parse JSON with TABs")
+    public void testJsonWithTabs() {
+        String str = TestUtils.getResource("json/mtad.yaml");
+        LoadSettings options = LoadSettings.builder().build();
+        Load load = new Load(options);
+        Map<String, Object> obj = (Map<String, Object>) load.loadFromString(str);
+        assertEquals(4, obj.size());
+        assertTrue(obj.containsKey("_schema-version"));
+    }
 
-  @Test
-  @DisplayName("Parse JSON with TABs, small")
-  public void testJsonWithTabsSmall() {
-    String str = TestUtils.getResource("json/leading-tab.yaml");
-    LoadSettings options = LoadSettings.builder().build();
-    Load load = new Load(options);
-    Map<String, Object> obj = (Map<String, Object>) load.loadFromString(str);
-    assertEquals(3, obj.size());
-    assertTrue(obj.containsKey("modules"));
-  }
+    @Test
+    @DisplayName("Parse JSON with TABs, small")
+    public void testJsonWithTabsSmall() {
+        String str = TestUtils.getResource("json/leading-tab.yaml");
+        LoadSettings options = LoadSettings.builder().build();
+        Load load = new Load(options);
+        Map<String, Object> obj = (Map<String, Object>) load.loadFromString(str);
+        assertEquals(3, obj.size());
+        assertTrue(obj.containsKey("modules"));
+    }
 }
 

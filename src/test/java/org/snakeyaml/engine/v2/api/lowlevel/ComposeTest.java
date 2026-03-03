@@ -27,32 +27,32 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @Tag("fast")
 class ComposeTest {
 
-  @Test
-  void composeEmptyReader() {
-    var compose = new Compose(LoadSettings.builder().build());
-    Node node = compose.composeReader(new StringReader(""));
-    assertNull(node);
-  }
+    @Test
+    void composeEmptyReader() {
+        var compose = new Compose(LoadSettings.builder().build());
+        Node node = compose.composeReader(new StringReader(""));
+        assertNull(node);
+    }
 
-  @Test
-  void composeEmptyInputStream() {
-    var compose = new Compose(LoadSettings.builder().build());
-    Node node = compose.composeInputStream(new ByteArrayInputStream("".getBytes()));
-    assertNull(node);
-  }
+    @Test
+    void composeEmptyInputStream() {
+        var compose = new Compose(LoadSettings.builder().build());
+        Node node = compose.composeInputStream(new ByteArrayInputStream("".getBytes()));
+        assertNull(node);
+    }
 
-  @Test
-  void composeAllFromEmptyReader() {
-    var compose = new Compose(LoadSettings.builder().build());
-    Iterable<Node> nodes = compose.composeAllFromReader(new StringReader(""));
-    assertFalse(nodes.iterator().hasNext());
-  }
+    @Test
+    void composeAllFromEmptyReader() {
+        var compose = new Compose(LoadSettings.builder().build());
+        Iterable<Node> nodes = compose.composeAllFromReader(new StringReader(""));
+        assertFalse(nodes.iterator().hasNext());
+    }
 
-  @Test
-  void composeAllFromEmptyInputStream() {
-    var compose = new Compose(LoadSettings.builder().build());
-    Iterable<Node> nodes =
-        compose.composeAllFromInputStream(new ByteArrayInputStream("".getBytes()));
-    assertFalse(nodes.iterator().hasNext());
-  }
+    @Test
+    void composeAllFromEmptyInputStream() {
+        var compose = new Compose(LoadSettings.builder().build());
+        Iterable<Node> nodes =
+            compose.composeAllFromInputStream(new ByteArrayInputStream("".getBytes()));
+        assertFalse(nodes.iterator().hasNext());
+    }
 }

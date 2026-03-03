@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.Load;
@@ -37,81 +38,81 @@ import org.snakeyaml.engine.v2.schema.JsonSchema;
 @org.junit.jupiter.api.Tag("fast")
 public class TimestampTagTest {
 
-  // this is an example of the tag from YAML 1.1 spec. It can be anything else
-  public static final Tag myTimeTag = new Tag(Tag.PREFIX + "timestamp");
+    // this is an example of the tag from YAML 1.1 spec. It can be anything else
+    public static final Tag myTimeTag = new Tag(Tag.PREFIX + "timestamp");
 
-  @Test
-  public void testExplicitTag() {
-    Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
-    tagConstructors.put(myTimeTag, new TimestampConstructor());
-    LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
-    Load loader = new Load(settings);
-    LocalDateTime obj =
-        (LocalDateTime) loader.loadFromString("!!timestamp 2020-03-24T12:34:00.333");
-    assertEquals(LocalDateTime.of(2020, 3, 24, 12, 34, 00, 333000000), obj);
-  }
-
-  @Test
-  public void testImplicitTag() {
-    LoadSettings settings = LoadSettings.builder().setSchema(new TimestampSchema()).build();
-    Load loader = new Load(settings);
-    LocalDateTime obj = (LocalDateTime) loader.loadFromString("2020-03-24T12:34:00.333");
-    assertEquals(LocalDateTime.of(2020, 3, 24, 12, 34, 00, 333000000), obj);
-  }
-
-  @Test
-  public void testImplicitTagInMap() {
-    LoadSettings settings = LoadSettings.builder().setSchema(new TimestampSchema()).build();
-    Load loader = new Load(settings);
-    Map<String, LocalDateTime> map =
-        (Map<String, LocalDateTime>) loader.loadFromString("time: 2020-03-24T13:44:10.333");
-    LocalDateTime time = map.get("time");
-    assertEquals(LocalDateTime.of(2020, 3, 24, 13, 44, 10, 333000000), time);
-  }
-
-  public static final class TimestampConstructor implements ConstructNode {
-
-    @Override
-    public Object construct(Node node) {
-      ScalarNode scalar = (ScalarNode) node;
-      // the parsing depends on what should be parsed and to which object
-      // examples can be found in SnakeYAML tests for the YAML 1.1 types format
-      return LocalDateTime.parse(scalar.getValue());
-    }
-  }
-
-  /**
-   * This is required to support implicit tags
-   */
-  public static final class MyScalarResolver extends JsonScalarResolver {
-
-    // this is taken from YAML 1.1 types
-    // it can be changed to represent the business case
-    public static final Pattern TIMESTAMP = Pattern.compile(
-        "^(?:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]?-[0-9][0-9]?(?:[Tt]|[ \t]+)[0-9][0-9]?:[0-9][0-9]:[0-9][0-9](?:\\.[0-9]*)?(?:[ \t]*(?:Z|[-+][0-9][0-9]?(?::[0-9][0-9])?))?)$");
-
-    @Override
-    public Tag resolve(String value, Boolean implicit) {
-      if (TIMESTAMP.matcher(value).matches()) {
-        return myTimeTag;
-      } else {
-        return super.resolve(value, implicit);
-      }
-    }
-  }
-
-  public static final class TimestampSchema extends JsonSchema {
-
-    @Override
-    public ScalarResolver getScalarResolver() {
-      return new MyScalarResolver();
+    @Test
+    public void testExplicitTag() {
+        Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
+        tagConstructors.put(myTimeTag, new TimestampConstructor());
+        LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
+        Load loader = new Load(settings);
+        LocalDateTime obj =
+            (LocalDateTime) loader.loadFromString("!!timestamp 2020-03-24T12:34:00.333");
+        assertEquals(LocalDateTime.of(2020, 3, 24, 12, 34, 00, 333000000), obj);
     }
 
-    @Override
-    public Map<Tag, ConstructNode> getSchemaTagConstructors() {
-      Map<Tag, ConstructNode> parent = super.getSchemaTagConstructors();
-      parent.put(myTimeTag, new TimestampConstructor());
-      return parent;
+    @Test
+    public void testImplicitTag() {
+        LoadSettings settings = LoadSettings.builder().setSchema(new TimestampSchema()).build();
+        Load loader = new Load(settings);
+        LocalDateTime obj = (LocalDateTime) loader.loadFromString("2020-03-24T12:34:00.333");
+        assertEquals(LocalDateTime.of(2020, 3, 24, 12, 34, 00, 333000000), obj);
     }
-  }
+
+    @Test
+    public void testImplicitTagInMap() {
+        LoadSettings settings = LoadSettings.builder().setSchema(new TimestampSchema()).build();
+        Load loader = new Load(settings);
+        Map<String, LocalDateTime> map =
+            (Map<String, LocalDateTime>) loader.loadFromString("time: 2020-03-24T13:44:10.333");
+        LocalDateTime time = map.get("time");
+        assertEquals(LocalDateTime.of(2020, 3, 24, 13, 44, 10, 333000000), time);
+    }
+
+    public static final class TimestampConstructor implements ConstructNode {
+
+        @Override
+        public Object construct(Node node) {
+            ScalarNode scalar = (ScalarNode) node;
+            // the parsing depends on what should be parsed and to which object
+            // examples can be found in SnakeYAML tests for the YAML 1.1 types format
+            return LocalDateTime.parse(scalar.getValue());
+        }
+    }
+
+    /**
+     * This is required to support implicit tags
+     */
+    public static final class MyScalarResolver extends JsonScalarResolver {
+
+        // this is taken from YAML 1.1 types
+        // it can be changed to represent the business case
+        public static final Pattern TIMESTAMP = Pattern.compile(
+            "^(?:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]?-[0-9][0-9]?(?:[Tt]|[ \t]+)[0-9][0-9]?:[0-9][0-9]:[0-9][0-9](?:\\.[0-9]*)?(?:[ \t]*(?:Z|[-+][0-9][0-9]?(?::[0-9][0-9])?))?)$");
+
+        @Override
+        public Tag resolve(String value, Boolean implicit) {
+            if (TIMESTAMP.matcher(value).matches()) {
+                return myTimeTag;
+            } else {
+                return super.resolve(value, implicit);
+            }
+        }
+    }
+
+    public static final class TimestampSchema extends JsonSchema {
+
+        @Override
+        public ScalarResolver getScalarResolver() {
+            return new MyScalarResolver();
+        }
+
+        @Override
+        public Map<Tag, ConstructNode> getSchemaTagConstructors() {
+            Map<Tag, ConstructNode> parent = super.getSchemaTagConstructors();
+            parent.put(myTimeTag, new TimestampConstructor());
+            return parent;
+        }
+    }
 }

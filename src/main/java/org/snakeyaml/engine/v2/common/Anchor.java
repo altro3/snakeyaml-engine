@@ -13,31 +13,29 @@
  */
 package org.snakeyaml.engine.v2.common;
 
-import java.util.HashSet;
+import org.jspecify.annotations.NonNull;
+import org.snakeyaml.engine.v2.exceptions.EmitterException;
+
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.snakeyaml.engine.v2.exceptions.EmitterException;
 
 /**
  * Value inside Anchor and Alias
  */
 public class Anchor {
 
-    private static final Set<Character> INVALID_ANCHOR = new HashSet<>();
+    private static final Set<Character> INVALID_ANCHOR = Set.of(
+        '[',
+        ']',
+        '{',
+        '}',
+        ',',
+        '*',
+        '&'
+    );
     private static final Pattern SPACES_PATTERN = Pattern.compile("\\s");
-
-    static {
-        INVALID_ANCHOR.add('[');
-        INVALID_ANCHOR.add(']');
-        INVALID_ANCHOR.add('{');
-        INVALID_ANCHOR.add('}');
-        INVALID_ANCHOR.add(',');
-        INVALID_ANCHOR.add('*');
-        INVALID_ANCHOR.add('&');
-    }
 
     private final String value;
 
@@ -46,8 +44,7 @@ public class Anchor {
      *
      * @param value - the anchor value
      */
-    public Anchor(String value) {
-        Objects.requireNonNull(value);
+    public Anchor(@NonNull String value) {
         if (value.isEmpty()) {
             throw new IllegalArgumentException("Empty anchor.");
         }
@@ -74,11 +71,6 @@ public class Anchor {
     }
 
     @Override
-    public String toString() {
-        return value;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -93,5 +85,10 @@ public class Anchor {
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return value;
     }
 }

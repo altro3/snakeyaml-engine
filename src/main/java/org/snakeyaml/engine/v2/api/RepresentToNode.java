@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.api;
 
-
 import org.snakeyaml.engine.v2.nodes.Node;
 
 /**

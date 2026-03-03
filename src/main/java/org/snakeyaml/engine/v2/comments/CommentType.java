@@ -28,5 +28,5 @@ public enum CommentType {
     /**
      * ending the line
      */
-    IN_LINE
+    IN_LINE,
 }

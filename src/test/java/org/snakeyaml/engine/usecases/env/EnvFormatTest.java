@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.resolver.JsonScalarResolver;
 
@@ -36,95 +37,95 @@ import org.snakeyaml.engine.v2.resolver.JsonScalarResolver;
 @org.junit.jupiter.api.Tag("fast")
 public class EnvFormatTest {
 
-  public static final Pattern ENV_FORMAT = JsonScalarResolver.ENV_FORMAT;
+    public static final Pattern ENV_FORMAT = JsonScalarResolver.ENV_FORMAT;
 
-  @Test
-  public void testMatchBasic() {
-    assertTrue(ENV_FORMAT.matcher("${V}").matches());
-    assertTrue(ENV_FORMAT.matcher("${PATH}").matches());
-    assertTrue(ENV_FORMAT.matcher("${VARIABLE}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE }").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE}").matches());
-    assertTrue(ENV_FORMAT.matcher("${\tVARIABLE  }").matches());
+    @Test
+    public void testMatchBasic() {
+        assertTrue(ENV_FORMAT.matcher("${V}").matches());
+        assertTrue(ENV_FORMAT.matcher("${PATH}").matches());
+        assertTrue(ENV_FORMAT.matcher("${VARIABLE}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE }").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE}").matches());
+        assertTrue(ENV_FORMAT.matcher("${\tVARIABLE  }").matches());
 
-    Matcher matcher = ENV_FORMAT.matcher("${VARIABLE}");
-    matcher.matches();
-    assertEquals("VARIABLE", matcher.group(1));
-    assertNull(matcher.group(3));
-    assertNull(matcher.group(2));
+        Matcher matcher = ENV_FORMAT.matcher("${VARIABLE}");
+        matcher.matches();
+        assertEquals("VARIABLE", matcher.group(1));
+        assertNull(matcher.group(3));
+        assertNull(matcher.group(2));
 
-    assertFalse(ENV_FORMAT.matcher("${VARI ABLE}").matches());
-  }
+        assertFalse(ENV_FORMAT.matcher("${VARI ABLE}").matches());
+    }
 
-  @Test
-  public void testMatchDefault() {
-    assertTrue(ENV_FORMAT.matcher("${VARIABLE-default}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE-default}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE-default }").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE-default}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE-}").matches());
+    @Test
+    public void testMatchDefault() {
+        assertTrue(ENV_FORMAT.matcher("${VARIABLE-default}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE-default}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE-default }").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE-default}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE-}").matches());
 
-    Matcher matcher = ENV_FORMAT.matcher("${VARIABLE-default}");
-    matcher.matches();
-    assertEquals("VARIABLE", matcher.group(1));
-    assertEquals("default", matcher.group(3));
-    assertEquals("-", matcher.group(2));
+        Matcher matcher = ENV_FORMAT.matcher("${VARIABLE-default}");
+        matcher.matches();
+        assertEquals("VARIABLE", matcher.group(1));
+        assertEquals("default", matcher.group(3));
+        assertEquals("-", matcher.group(2));
 
-    assertFalse(ENV_FORMAT.matcher("${VARIABLE -default}").matches());
-    assertFalse(ENV_FORMAT.matcher("${VARIABLE - default}").matches());
-    assertFalse(ENV_FORMAT.matcher("${VARIABLE -default}").matches());
-  }
+        assertFalse(ENV_FORMAT.matcher("${VARIABLE -default}").matches());
+        assertFalse(ENV_FORMAT.matcher("${VARIABLE - default}").matches());
+        assertFalse(ENV_FORMAT.matcher("${VARIABLE -default}").matches());
+    }
 
-  @Test
-  public void testMatchDefaultOrEmpty() {
-    assertTrue(ENV_FORMAT.matcher("${VARIABLE:-default}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE:-default }").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE:-}").matches());
+    @Test
+    public void testMatchDefaultOrEmpty() {
+        assertTrue(ENV_FORMAT.matcher("${VARIABLE:-default}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE:-default }").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE:-}").matches());
 
-    Matcher matcher = ENV_FORMAT.matcher("${VARIABLE:-default}");
-    matcher.matches();
-    assertEquals("VARIABLE", matcher.group(1));
-    assertEquals("default", matcher.group(3));
-    assertEquals(":-", matcher.group(2));
+        Matcher matcher = ENV_FORMAT.matcher("${VARIABLE:-default}");
+        matcher.matches();
+        assertEquals("VARIABLE", matcher.group(1));
+        assertEquals("default", matcher.group(3));
+        assertEquals(":-", matcher.group(2));
 
-    assertFalse(ENV_FORMAT.matcher("${VARIABLE :-default}").matches());
-    assertFalse(ENV_FORMAT.matcher("${VARIABLE : -default}").matches());
-    assertFalse(ENV_FORMAT.matcher("${VARIABLE : - default}").matches());
-  }
+        assertFalse(ENV_FORMAT.matcher("${VARIABLE :-default}").matches());
+        assertFalse(ENV_FORMAT.matcher("${VARIABLE : -default}").matches());
+        assertFalse(ENV_FORMAT.matcher("${VARIABLE : - default}").matches());
+    }
 
-  @Test
-  public void testMatchErrorDefaultOrEmpty() {
-    assertTrue(ENV_FORMAT.matcher("${VARIABLE:?err}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?err }").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE:? }").matches());
+    @Test
+    public void testMatchErrorDefaultOrEmpty() {
+        assertTrue(ENV_FORMAT.matcher("${VARIABLE:?err}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?err }").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE:? }").matches());
 
-    Matcher matcher = ENV_FORMAT.matcher("${VARIABLE:?err}");
-    matcher.matches();
-    assertEquals("VARIABLE", matcher.group(1));
-    assertEquals("err", matcher.group(3));
-    assertEquals(":?", matcher.group(2));
+        Matcher matcher = ENV_FORMAT.matcher("${VARIABLE:?err}");
+        matcher.matches();
+        assertEquals("VARIABLE", matcher.group(1));
+        assertEquals("err", matcher.group(3));
+        assertEquals(":?", matcher.group(2));
 
-    assertFalse(ENV_FORMAT.matcher("${ VARIABLE :?err }").matches());
-    assertFalse(ENV_FORMAT.matcher("${ VARIABLE : ?err }").matches());
-    assertFalse(ENV_FORMAT.matcher("${ VARIABLE : ? err }").matches());
-  }
+        assertFalse(ENV_FORMAT.matcher("${ VARIABLE :?err }").matches());
+        assertFalse(ENV_FORMAT.matcher("${ VARIABLE : ?err }").matches());
+        assertFalse(ENV_FORMAT.matcher("${ VARIABLE : ? err }").matches());
+    }
 
-  @Test
-  public void testMatchErrorDefault() {
-    assertTrue(ENV_FORMAT.matcher("${VARIABLE?err}").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?err }").matches());
-    assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?}").matches());
+    @Test
+    public void testMatchErrorDefault() {
+        assertTrue(ENV_FORMAT.matcher("${VARIABLE?err}").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?err }").matches());
+        assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?}").matches());
 
-    Matcher matcher = ENV_FORMAT.matcher("${ VARIABLE?err }");
-    matcher.matches();
-    assertEquals("VARIABLE", matcher.group(1));
-    assertEquals("err", matcher.group(3));
-    assertEquals("?", matcher.group(2));
+        Matcher matcher = ENV_FORMAT.matcher("${ VARIABLE?err }");
+        matcher.matches();
+        assertEquals("VARIABLE", matcher.group(1));
+        assertEquals("err", matcher.group(3));
+        assertEquals("?", matcher.group(2));
 
-    assertFalse(ENV_FORMAT.matcher("${ VARIABLE ?err }").matches());
-    assertFalse(ENV_FORMAT.matcher("${ VARIABLE ?err }").matches());
-    assertFalse(ENV_FORMAT.matcher("${ VARIABLE ? err }").matches());
-  }
+        assertFalse(ENV_FORMAT.matcher("${ VARIABLE ?err }").matches());
+        assertFalse(ENV_FORMAT.matcher("${ VARIABLE ?err }").matches());
+        assertFalse(ENV_FORMAT.matcher("${ VARIABLE ? err }").matches());
+    }
 }

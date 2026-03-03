@@ -43,30 +43,30 @@ import org.snakeyaml.engine.v2.exceptions.ScannerException;
 @org.junit.jupiter.api.Tag("fast")
 public class FuzzYAMLRead50431Test {
 
-  LoadSettings settings = LoadSettings.builder().build();
-  Load load = new Load(settings);
+    LoadSettings settings = LoadSettings.builder().build();
+    Load load = new Load(settings);
 
-  @Test
-  public void testIncompleteValue() {
-    try {
-      load.loadFromString("\"\\UE30EEE");
-      fail("Invalid escape code in double quoted scalar should not be accepted");
-    } catch (ScannerException e) {
-      assertTrue(e.getMessage().contains("found unknown escape character E30EEE"), e.getMessage());
+    @Test
+    public void testIncompleteValue() {
+        try {
+            load.loadFromString("\"\\UE30EEE");
+            fail("Invalid escape code in double quoted scalar should not be accepted");
+        } catch (ScannerException e) {
+            assertTrue(e.getMessage().contains("found unknown escape character E30EEE"), e.getMessage());
+        }
     }
-  }
 
-  @Test
-  public void testProperValue() {
-    String parsed = (String) load.loadFromString("\"\\U0000003B\"");
-    assertEquals(1, parsed.length());
-    assertEquals("\u003B", parsed);
-  }
+    @Test
+    public void testProperValue() {
+        String parsed = (String) load.loadFromString("\"\\U0000003B\"");
+        assertEquals(1, parsed.length());
+        assertEquals("\u003B", parsed);
+    }
 
-  @Test
-  public void testNotQuoted() {
-    String parsed = (String) load.loadFromString("\\UE30EEE");
-    assertEquals(8, parsed.length());
-    assertEquals("\\UE30EEE", parsed);
-  }
+    @Test
+    public void testNotQuoted() {
+        String parsed = (String) load.loadFromString("\\UE30EEE");
+        assertEquals(8, parsed.length());
+        assertEquals("\\UE30EEE", parsed);
+    }
 }

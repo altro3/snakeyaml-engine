@@ -57,42 +57,42 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class ParseBenchmark {
 
-  @Param({"1000", "100000"})
-  private int entries;
-  private String yamlString;
-  private final Load load =
-      new Load(LoadSettings.builder().setCodePointLimit(Integer.MAX_VALUE).build());
-  private final Parse parse = new Parse(LoadSettings.builder().build());
-  private final Dump dump = new Dump(DumpSettings.builder().build());
+    @Param({"1000", "100000"})
+    private int entries;
+    private String yamlString;
+    private final Load load =
+        new Load(LoadSettings.builder().setCodePointLimit(Integer.MAX_VALUE).build());
+    private final Parse parse = new Parse(LoadSettings.builder().build());
+    private final Dump dump = new Dump(DumpSettings.builder().build());
 
-  public static void main(String[] args) throws RunnerException {
-    new Runner(new OptionsBuilder().include(ParseBenchmark.class.getSimpleName()).build()).run();
-  }
-
-  @Setup
-  public void setup() throws IOException {
-    Map<Integer, String> map = new HashMap<>(entries);
-    for (int i = 0; i < entries; i++) {
-      map.put(i, Integer.toString(i));
+    public static void main(String[] args) throws RunnerException {
+        new Runner(new OptionsBuilder().include(ParseBenchmark.class.getSimpleName()).build()).run();
     }
-    yamlString = dump.dumpToString(map);
-    System.out.printf("%nyaml bytes length: %d%n",
-        yamlString.getBytes(StandardCharsets.UTF_8).length);
-  }
 
-  @Benchmark
-  public int parse(Blackhole bh) throws IOException {
-    int count = 0;
-    for (Event event : parse.parseReader(new StringReader(yamlString))) {
-      bh.consume(event.getEventId());
-      count++;
+    @Setup
+    public void setup() throws IOException {
+        Map<Integer, String> map = new HashMap<>(entries);
+        for (int i = 0; i < entries; i++) {
+            map.put(i, Integer.toString(i));
+        }
+        yamlString = dump.dumpToString(map);
+        System.out.printf("%nyaml bytes length: %d%n",
+            yamlString.getBytes(StandardCharsets.UTF_8).length);
     }
-    return count;
-  }
 
-  @Benchmark
-  public Object load() throws IOException {
-    return load.loadFromString(yamlString);
-  }
+    @Benchmark
+    public int parse(Blackhole bh) throws IOException {
+        int count = 0;
+        for (Event event : parse.parseReader(new StringReader(yamlString))) {
+            bh.consume(event.getEventId());
+            count++;
+        }
+        return count;
+    }
+
+    @Benchmark
+    public Object load() throws IOException {
+        return load.loadFromString(yamlString);
+    }
 }
 

@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.RepresentToNode;
 import org.snakeyaml.engine.v2.common.FlowStyle;
@@ -130,7 +131,7 @@ public class StandardRepresenter extends BaseRepresenter {
         }
 
         @Override
-        public Iterator<Object> iterator() {
+        public @NonNull Iterator<Object> iterator() {
             return iter;
         }
     }

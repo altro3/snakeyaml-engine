@@ -28,13 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @org.junit.jupiter.api.Tag("fast")
 public class ExplicitRootTagTest {
 
-  @Test
-  public void testLocalTag() {
-    var settings = DumpSettings.builder().setExplicitRootTag(new Tag("!my-data")).build();
-    var map = new HashMap<String, String>();
-    map.put("foo", "bar");
-    var dump = new Dump(settings);
-    String output = dump.dumpToString(map);
-    assertEquals("!my-data {foo: bar}\n", output);
-  }
+    @Test
+    public void testLocalTag() {
+        var settings = DumpSettings.builder().setExplicitRootTag(new Tag("!my-data")).build();
+        var map = new HashMap<String, String>();
+        map.put("foo", "bar");
+        var dump = new Dump(settings);
+        String output = dump.dumpToString(map);
+        assertEquals("!my-data {foo: bar}\n", output);
+    }
 }

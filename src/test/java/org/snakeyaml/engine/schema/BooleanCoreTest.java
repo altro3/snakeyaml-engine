@@ -26,33 +26,33 @@ import org.snakeyaml.engine.v2.schema.CoreSchema;
 @org.junit.jupiter.api.Tag("fast")
 public class BooleanCoreTest {
 
-  Load loader = new Load(LoadSettings.builder().setSchema(new CoreSchema()).build());
+    Load loader = new Load(LoadSettings.builder().setSchema(new CoreSchema()).build());
 
-  @Test
-  void parseBoolean() {
-    // true | True | TRUE | false | False | FALSE
-    assertEquals(Boolean.TRUE, loader.loadFromString("true"));
-    assertEquals(Boolean.TRUE, loader.loadFromString("True"));
-    assertEquals(Boolean.TRUE, loader.loadFromString("TRUE"));
-    assertEquals(Boolean.FALSE, loader.loadFromString("false"));
-    assertEquals(Boolean.FALSE, loader.loadFromString("False"));
-    assertEquals(Boolean.FALSE, loader.loadFromString("FALSE"));
+    @Test
+    void parseBoolean() {
+        // true | True | TRUE | false | False | FALSE
+        assertEquals(Boolean.TRUE, loader.loadFromString("true"));
+        assertEquals(Boolean.TRUE, loader.loadFromString("True"));
+        assertEquals(Boolean.TRUE, loader.loadFromString("TRUE"));
+        assertEquals(Boolean.FALSE, loader.loadFromString("false"));
+        assertEquals(Boolean.FALSE, loader.loadFromString("False"));
+        assertEquals(Boolean.FALSE, loader.loadFromString("FALSE"));
 
-    // the ! non-specific tag
-    assertEquals("true", loader.loadFromString("! true"));
-  }
+        // the ! non-specific tag
+        assertEquals("true", loader.loadFromString("! true"));
+    }
 
-  @Test
-  @DisplayName("Dump special booleans in 1.1 but strings in 1.2")
-  void parseString() {
-    assertEquals("on", loader.loadFromString("on"));
-    assertEquals("yes", loader.loadFromString("yes"));
-  }
+    @Test
+    @DisplayName("Dump special booleans in 1.1 but strings in 1.2")
+    void parseString() {
+        assertEquals("on", loader.loadFromString("on"));
+        assertEquals("yes", loader.loadFromString("yes"));
+    }
 
-  @Test
-  void dumpBoolean() {
-    Dump dumper = new Dump(DumpSettings.builder().setSchema(new CoreSchema()).build());
-    assertEquals("true\n", dumper.dumpToString(Boolean.TRUE));
-    assertEquals("false\n", dumper.dumpToString(Boolean.FALSE));
-  }
+    @Test
+    void dumpBoolean() {
+        Dump dumper = new Dump(DumpSettings.builder().setSchema(new CoreSchema()).build());
+        assertEquals("true\n", dumper.dumpToString(Boolean.TRUE));
+        assertEquals("false\n", dumper.dumpToString(Boolean.FALSE));
+    }
 }

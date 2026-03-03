@@ -26,44 +26,44 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Tag("fast")
 class LoadMappingTest {
 
-  @Test
-  @DisplayName("Empty map {} is parsed")
-  void parseEmptyMap() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var map = (Map<Integer, Integer>) load.loadFromString("{}");
-    assertEquals(LoadSettings.builder().build().getDefaultMap().apply(0), map);
-  }
+    @Test
+    @DisplayName("Empty map {} is parsed")
+    void parseEmptyMap() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var map = (Map<Integer, Integer>) load.loadFromString("{}");
+        assertEquals(LoadSettings.builder().build().getDefaultMap().apply(0), map);
+    }
 
-  @Test
-  @DisplayName("map {a: 1} is parsed")
-  void parseMap1() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var map = (Map<String, Integer>) load.loadFromString("{a: 1}");
-    var expected = Map.of("a", 1);
-    assertEquals(expected, map);
-  }
+    @Test
+    @DisplayName("map {a: 1} is parsed")
+    void parseMap1() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var map = (Map<String, Integer>) load.loadFromString("{a: 1}");
+        var expected = Map.of("a", 1);
+        assertEquals(expected, map);
+    }
 
-  @Test
-  @DisplayName("map {a: 1, b: 2} is parsed")
-  void parseMap2() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var map = (Map<String, Object>) load.loadFromString("a: 1\nb: 2\nc:\n  - aaa\n  - bbb");
-    var expected = Map.of("a", 1, "b", 2, "c", List.of("aaa", "bbb"));
-    assertEquals(expected, map);
-    // assertEquals("{a=1, b=2, c=[aaa, bbb]}", map.toString());
-  }
+    @Test
+    @DisplayName("map {a: 1, b: 2} is parsed")
+    void parseMap2() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var map = (Map<String, Object>) load.loadFromString("a: 1\nb: 2\nc:\n  - aaa\n  - bbb");
+        var expected = Map.of("a", 1, "b", 2, "c", List.of("aaa", "bbb"));
+        assertEquals(expected, map);
+        // assertEquals("{a=1, b=2, c=[aaa, bbb]}", map.toString());
+    }
 
-  @Test
-  @DisplayName("map {x: 1, y: 2, z:3} is parsed")
-  void parseMap3() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var map = (Map<String, Integer>) load.loadFromString(TestUtils.getResource("load/map1.yaml"));
-    var expected = Map.of("x", 1, "y", 2, "z", 3);
-    assertEquals(expected, map);
-  }
+    @Test
+    @DisplayName("map {x: 1, y: 2, z:3} is parsed")
+    void parseMap3() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var map = (Map<String, Integer>) load.loadFromString(TestUtils.getResource("load/map1.yaml"));
+        var expected = Map.of("x", 1, "y", 2, "z", 3);
+        assertEquals(expected, map);
+    }
 
 }

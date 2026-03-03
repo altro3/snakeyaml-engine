@@ -42,31 +42,31 @@ import org.snakeyaml.engine.v2.exceptions.ScannerException;
 @org.junit.jupiter.api.Tag("fast")
 public class FuzzYAMLRead56902Test {
 
-  @Test
-  public void testHugeMinorValue() {
-    try {
-      LoadSettings settings = LoadSettings.builder().build();
-      Load yamlProcessor = new Load(settings);
-      yamlProcessor.loadFromString("%YAML 1.9224775801");
-      fail("Invalid escape code in double quoted scalar should not be accepted");
-    } catch (ScannerException e) {
-      assertTrue(e.getMessage().contains(
-          "found a number which cannot represent a valid version: 9224775801"), e.getMessage());
+    @Test
+    public void testHugeMinorValue() {
+        try {
+            LoadSettings settings = LoadSettings.builder().build();
+            Load yamlProcessor = new Load(settings);
+            yamlProcessor.loadFromString("%YAML 1.9224775801");
+            fail("Invalid escape code in double quoted scalar should not be accepted");
+        } catch (ScannerException e) {
+            assertTrue(e.getMessage().contains(
+                "found a number which cannot represent a valid version: 9224775801"), e.getMessage());
+        }
     }
-  }
 
-  @Test
-  public void testHugeMajorValue() {
-    try {
-      LoadSettings settings = LoadSettings.builder().build();
-      Load yamlProcessor = new Load(settings);
-      yamlProcessor.loadFromString("%YAML 100651234565.1");
-      fail("Invalid escape code in double quoted scalar should not be accepted");
-    } catch (ScannerException e) {
-      assertTrue(
-          e.getMessage()
-              .contains("found a number which cannot represent a valid version: 100651234565"),
-          e.getMessage());
+    @Test
+    public void testHugeMajorValue() {
+        try {
+            LoadSettings settings = LoadSettings.builder().build();
+            Load yamlProcessor = new Load(settings);
+            yamlProcessor.loadFromString("%YAML 100651234565.1");
+            fail("Invalid escape code in double quoted scalar should not be accepted");
+        } catch (ScannerException e) {
+            assertTrue(
+                e.getMessage()
+                    .contains("found a number which cannot represent a valid version: 100651234565"),
+                e.getMessage());
+        }
     }
-  }
 }

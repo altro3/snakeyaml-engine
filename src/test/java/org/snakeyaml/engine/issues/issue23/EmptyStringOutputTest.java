@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.StringWriter;
 import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -32,40 +33,40 @@ import org.snakeyaml.engine.v2.events.StreamStartEvent;
 @org.junit.jupiter.api.Tag("fast")
 public class EmptyStringOutputTest {
 
-  @Test
-  void outputEmptyString() {
-    Dump dumper = new Dump(DumpSettings.builder().build());
-    String output = dumper.dumpToString("");
-    assertEquals("''\n", output, "The output must NOT contain ---");
-  }
+    @Test
+    void outputEmptyString() {
+        Dump dumper = new Dump(DumpSettings.builder().build());
+        String output = dumper.dumpToString("");
+        assertEquals("''\n", output, "The output must NOT contain ---");
+    }
 
-  @Test
-  void outputEmptyStringWithExplicitStart() {
-    Dump dumper = new Dump(DumpSettings.builder().setExplicitStart(true).build());
-    String output = dumper.dumpToString("");
-    assertEquals("--- ''\n", output, "The output must contain ---");
-  }
+    @Test
+    void outputEmptyStringWithExplicitStart() {
+        Dump dumper = new Dump(DumpSettings.builder().setExplicitStart(true).build());
+        String output = dumper.dumpToString("");
+        assertEquals("--- ''\n", output, "The output must contain ---");
+    }
 
-  @Test
-  void outputEmptyStringWithEmitter() {
-    assertEquals("---", dump(""), "The output must contain ---");
-  }
+    @Test
+    void outputEmptyStringWithEmitter() {
+        assertEquals("---", dump(""), "The output must contain ---");
+    }
 
-  @Test
-  void outputStringWithEmitter() {
-    assertEquals("v1234512345", dump("v1234512345"), "The output must NOT contain ---");
-  }
+    @Test
+    void outputStringWithEmitter() {
+        assertEquals("v1234512345", dump("v1234512345"), "The output must NOT contain ---");
+    }
 
-  private String dump(String value) {
-    DumpSettings settings = DumpSettings.builder().build();
-    MyWriter writer = new MyWriter();
-    Emitter emitter = new Emitter(settings, writer);
-    emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
-    emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, false), value,
-        ScalarStyle.PLAIN, null, null));
-    return writer.toString();
-  }
+    private String dump(String value) {
+        DumpSettings settings = DumpSettings.builder().build();
+        MyWriter writer = new MyWriter();
+        Emitter emitter = new Emitter(settings, writer);
+        emitter.emit(new StreamStartEvent());
+        emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
+        emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, false), value,
+            ScalarStyle.PLAIN, null, null));
+        return writer.toString();
+    }
 }
 
 

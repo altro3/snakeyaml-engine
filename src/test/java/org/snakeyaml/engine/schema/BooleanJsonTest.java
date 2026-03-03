@@ -24,22 +24,22 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 @org.junit.jupiter.api.Tag("fast")
 public class BooleanJsonTest {
 
-  Load loader = new Load(LoadSettings.builder().build());
+    Load loader = new Load(LoadSettings.builder().build());
 
-  @Test
-  void parseBoolean() {
-    assertEquals(Boolean.TRUE, loader.loadFromString("true"));
-    assertEquals(Boolean.FALSE, loader.loadFromString("false"));
-    assertEquals("False", loader.loadFromString("False"));
-    assertEquals("True", loader.loadFromString("True"));
-    // the ! non-specific tag
-    assertEquals("true", loader.loadFromString("! true"));
-  }
+    @Test
+    void parseBoolean() {
+        assertEquals(Boolean.TRUE, loader.loadFromString("true"));
+        assertEquals(Boolean.FALSE, loader.loadFromString("false"));
+        assertEquals("False", loader.loadFromString("False"));
+        assertEquals("True", loader.loadFromString("True"));
+        // the ! non-specific tag
+        assertEquals("true", loader.loadFromString("! true"));
+    }
 
-  @Test
-  void dumpBoolean() {
-    Dump dumper = new Dump(DumpSettings.builder().build());
-    assertEquals("true\n", dumper.dumpToString(Boolean.TRUE));
-    assertEquals("false\n", dumper.dumpToString(Boolean.FALSE));
-  }
+    @Test
+    void dumpBoolean() {
+        Dump dumper = new Dump(DumpSettings.builder().build());
+        assertEquals("true\n", dumper.dumpToString(Boolean.TRUE));
+        assertEquals("false\n", dumper.dumpToString(Boolean.FALSE));
+    }
 }

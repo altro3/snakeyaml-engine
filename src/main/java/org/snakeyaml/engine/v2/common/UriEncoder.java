@@ -13,24 +13,22 @@
  */
 package org.snakeyaml.engine.v2.common;
 
+import org.snakeyaml.engine.external.com.google.gdata.util.common.base.Escaper;
+import org.snakeyaml.engine.external.com.google.gdata.util.common.base.PercentEscaper;
+
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
-
-import org.snakeyaml.engine.external.com.google.gdata.util.common.base.Escaper;
-import org.snakeyaml.engine.external.com.google.gdata.util.common.base.PercentEscaper;
 
 /**
  * To be decided
  */
 public abstract class UriEncoder {
 
-    private static final CharsetDecoder UTF8Decoder =
-        StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT);
+    private static final CharsetDecoder UTF8Decoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT);
     // Include the [] chars to the SAFEPATHCHARS_URLENCODER to avoid
     // its escape as required by spec. See
     private static final String SAFE_CHARS = PercentEscaper.SAFEPATHCHARS_URLENCODER + "[]/";
@@ -54,11 +52,10 @@ public abstract class UriEncoder {
      *
      * @param buff data to decode
      * @return decoded data
-     * @throws CharacterCodingException if cannot be decoded
+     * @throws CharacterCodingException if it cannot be decoded
      */
     public static String decode(ByteBuffer buff) throws CharacterCodingException {
-        CharBuffer chars = UTF8Decoder.decode(buff);
-        return chars.toString();
+        return UTF8Decoder.decode(buff).toString();
     }
 
     /**

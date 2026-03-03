@@ -26,73 +26,73 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
  */
 class JRubyPsychTest {
 
-  @Test
-  @DisplayName("Issue 46: parse different values")
-  void parseDifferentValues() {
-    parse("\u2029", "\n \u2029");
-    parse("\u2029", "\n\u2029");
-    parse("\u2028", "\n \u2028");
-    parse("\u2028", "\n\u2028");
-    parse("\u2029 1", "\n\u2029 1");
+    @Test
+    @DisplayName("Issue 46: parse different values")
+    void parseDifferentValues() {
+        parse("\u2029", "\n \u2029");
+        parse("\u2029", "\n\u2029");
+        parse("\u2028", "\n \u2028");
+        parse("\u2028", "\n\u2028");
+        parse("\u2029 1", "\n\u2029 1");
 
-    parse("\u2029*", "\n\u2029* "); // empty alias
-    parse("\u2029*", "\n\u2029*"); // empty alias
-    parse("\u2029* 1", "\n\u2029* 1");
-  }
-
-  @Test
-  @DisplayName("Issue 46: parse document where 2028 is used as leading space (3rd)")
-  void parseValid() {
-    LoadSettings loadSettings = LoadSettings.builder().build();
-    Load load = new Load(loadSettings);
-    Object docs = load.loadAllFromString("--- |2-\n\n\u2028  * C\n");
-    assertNotNull(docs);
-    Iterable iter = (Iterable) docs;
-    Object doc = iter.iterator().next();
-    assertNotNull(doc);
-  }
-
-  @Test
-  @DisplayName("Issue 46: parse document")
-  void parseInvalid2() {
-    LoadSettings loadSettings = LoadSettings.builder().build();
-    Load load = new Load(loadSettings);
-    Object obj = load.loadAllFromString("--- |2-\n\n  \u2028* C\n");
-    assertNotNull(obj);
-    Iterable iter = (Iterable) obj;
-    Object doc = iter.iterator().next();
-    assertEquals("\n\u2028* C", doc);
-  }
-
-
-  private void parse(Object expected, String data) {
-    LoadSettings loadSettings = LoadSettings.builder().build();
-    Load load = new Load(loadSettings);
-    Object obj = load.loadFromString(data);
-    assertEquals(expected, obj);
-  }
-
-  @Test
-  @DisplayName("Issue 46: * is not alias after 2028")
-  void failToParseInvalid() {
-    LoadSettings loadSettings = LoadSettings.builder().build();
-    Load load = new Load(loadSettings);
-    Object obj = load.loadAllFromString("\n\u2028* C");
-    Iterable iter = (Iterable) obj;
-    for (Object o : iter) {
-      assertEquals("\u2028* C", o);
+        parse("\u2029*", "\n\u2029* "); // empty alias
+        parse("\u2029*", "\n\u2029*"); // empty alias
+        parse("\u2029* 1", "\n\u2029* 1");
     }
-  }
 
-  @Test
-  @DisplayName("Issue 46: use anchor instead of alias")
-  void parse2028_1() {
-    LoadSettings loadSettings = LoadSettings.builder().build();
-    Load load = new Load(loadSettings);
-    Object obj = load.loadAllFromString("\n\u2028&C");
-    Iterable iter = (Iterable) obj;
-    for (Object o : iter) {
-      assertEquals("\u2028&C", o);
+    @Test
+    @DisplayName("Issue 46: parse document where 2028 is used as leading space (3rd)")
+    void parseValid() {
+        LoadSettings loadSettings = LoadSettings.builder().build();
+        Load load = new Load(loadSettings);
+        Object docs = load.loadAllFromString("--- |2-\n\n\u2028  * C\n");
+        assertNotNull(docs);
+        Iterable iter = (Iterable) docs;
+        Object doc = iter.iterator().next();
+        assertNotNull(doc);
     }
-  }
+
+    @Test
+    @DisplayName("Issue 46: parse document")
+    void parseInvalid2() {
+        LoadSettings loadSettings = LoadSettings.builder().build();
+        Load load = new Load(loadSettings);
+        Object obj = load.loadAllFromString("--- |2-\n\n  \u2028* C\n");
+        assertNotNull(obj);
+        Iterable iter = (Iterable) obj;
+        Object doc = iter.iterator().next();
+        assertEquals("\n\u2028* C", doc);
+    }
+
+
+    private void parse(Object expected, String data) {
+        LoadSettings loadSettings = LoadSettings.builder().build();
+        Load load = new Load(loadSettings);
+        Object obj = load.loadFromString(data);
+        assertEquals(expected, obj);
+    }
+
+    @Test
+    @DisplayName("Issue 46: * is not alias after 2028")
+    void failToParseInvalid() {
+        LoadSettings loadSettings = LoadSettings.builder().build();
+        Load load = new Load(loadSettings);
+        Object obj = load.loadAllFromString("\n\u2028* C");
+        Iterable iter = (Iterable) obj;
+        for (Object o : iter) {
+            assertEquals("\u2028* C", o);
+        }
+    }
+
+    @Test
+    @DisplayName("Issue 46: use anchor instead of alias")
+    void parse2028_1() {
+        LoadSettings loadSettings = LoadSettings.builder().build();
+        Load load = new Load(loadSettings);
+        Object obj = load.loadAllFromString("\n\u2028&C");
+        Iterable iter = (Iterable) obj;
+        for (Object o : iter) {
+            assertEquals("\u2028&C", o);
+        }
+    }
 }

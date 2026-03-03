@@ -25,26 +25,26 @@ import org.snakeyaml.engine.v2.schema.FailsafeSchema;
 @org.junit.jupiter.api.Tag("fast")
 public class FailsafeTest {
 
-  Load loader = new Load(LoadSettings.builder().setSchema(new FailsafeSchema()).build());
+    Load loader = new Load(LoadSettings.builder().setSchema(new FailsafeSchema()).build());
 
-  @Test
-  void parseString() {
-    assertEquals("true", loader.loadFromString("true"));
-    assertEquals("false", loader.loadFromString("false"));
-    assertEquals("null", loader.loadFromString("null"));
-    assertEquals("1", loader.loadFromString("1"));
-    assertEquals("0001", loader.loadFromString("0001"));
-    assertEquals("3.000", loader.loadFromString("3.000"));
-  }
+    @Test
+    void parseString() {
+        assertEquals("true", loader.loadFromString("true"));
+        assertEquals("false", loader.loadFromString("false"));
+        assertEquals("null", loader.loadFromString("null"));
+        assertEquals("1", loader.loadFromString("1"));
+        assertEquals("0001", loader.loadFromString("0001"));
+        assertEquals("3.000", loader.loadFromString("3.000"));
+    }
 
-  @Test
-  void dumpString() {
-    Dump dumper = new Dump(DumpSettings.builder().setSchema(new FailsafeSchema()).build());
-    assertEquals("!!bool 'true'\n", dumper.dumpToString(Boolean.TRUE));
-    assertEquals("!!bool 'false'\n", dumper.dumpToString(Boolean.FALSE));
-    assertEquals("!!null 'null'\n", dumper.dumpToString(null));
-    assertEquals("!!int '25'\n", dumper.dumpToString(25));
-    assertEquals("!!int '17'\n", dumper.dumpToString(Integer.valueOf(17)));
-    assertEquals("!!float '17.4'\n", dumper.dumpToString(Double.valueOf(17.4)));
-  }
+    @Test
+    void dumpString() {
+        Dump dumper = new Dump(DumpSettings.builder().setSchema(new FailsafeSchema()).build());
+        assertEquals("!!bool 'true'\n", dumper.dumpToString(Boolean.TRUE));
+        assertEquals("!!bool 'false'\n", dumper.dumpToString(Boolean.FALSE));
+        assertEquals("!!null 'null'\n", dumper.dumpToString(null));
+        assertEquals("!!int '25'\n", dumper.dumpToString(25));
+        assertEquals("!!int '17'\n", dumper.dumpToString(Integer.valueOf(17)));
+        assertEquals("!!float '17.4'\n", dumper.dumpToString(Double.valueOf(17.4)));
+    }
 }

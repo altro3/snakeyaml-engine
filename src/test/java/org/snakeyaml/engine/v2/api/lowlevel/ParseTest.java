@@ -32,23 +32,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Tag("fast")
 class ParseTest {
 
-  @Test
-  void parseEmptyReader() throws IOException {
-    var parse = new Parse(LoadSettings.builder().build());
-    Iterable<Event> events = parse.parseReader(new StringReader(""));
-    var list = new ArrayList<Event>();
-    events.forEach(list::add);
-    assertEquals(2, list.size());
-    TestUtils.compareEvents(List.of(new StreamStartEvent(), new StreamEndEvent()), list);
-  }
+    @Test
+    void parseEmptyReader() throws IOException {
+        var parse = new Parse(LoadSettings.builder().build());
+        Iterable<Event> events = parse.parseReader(new StringReader(""));
+        var list = new ArrayList<Event>();
+        events.forEach(list::add);
+        assertEquals(2, list.size());
+        TestUtils.compareEvents(List.of(new StreamStartEvent(), new StreamEndEvent()), list);
+    }
 
-  @Test
-  void parseEmptyInputStream() {
-    var parse = new Parse(LoadSettings.builder().build());
-    Iterable<Event> events = parse.parseInputStream(new ByteArrayInputStream("".getBytes()));
-    var list = new ArrayList<Event>();
-    events.forEach(list::add);
-    assertEquals(2, list.size());
-    TestUtils.compareEvents(List.of(new StreamStartEvent(), new StreamEndEvent()), list);
-  }
+    @Test
+    void parseEmptyInputStream() {
+        var parse = new Parse(LoadSettings.builder().build());
+        Iterable<Event> events = parse.parseInputStream(new ByteArrayInputStream("".getBytes()));
+        var list = new ArrayList<Event>();
+        events.forEach(list::add);
+        assertEquals(2, list.size());
+        TestUtils.compareEvents(List.of(new StreamStartEvent(), new StreamEndEvent()), list);
+    }
 }

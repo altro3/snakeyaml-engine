@@ -23,20 +23,20 @@ import org.junit.jupiter.api.Test;
 @Tag("fast")
 class UriEncoderTest {
 
-  @Test
-  @DisplayName("Encode-decode")
-  void encodeDecodeString() {
-    String encoded = UriEncoder.encode(" +%");
-    assertEquals("%20%2B%25", encoded);
-    String decoded = UriEncoder.decode(encoded);
-    assertEquals(" +%", decoded);
-  }
+    @Test
+    @DisplayName("Encode-decode")
+    void encodeDecodeString() {
+        String encoded = UriEncoder.encode(" +%");
+        assertEquals("%20%2B%25", encoded);
+        String decoded = UriEncoder.decode(encoded);
+        assertEquals(" +%", decoded);
+    }
 
-  @Test
-  @DisplayName("Invalid decode")
-  void testInvalidDecode() {
-    IllegalArgumentException exception =
-        assertThrows(IllegalArgumentException.class, () -> UriEncoder.decode("%2"));
-    assertEquals("URLDecoder: Incomplete trailing escape (%) pattern", exception.getMessage());
-  }
+    @Test
+    @DisplayName("Invalid decode")
+    void testInvalidDecode() {
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> UriEncoder.decode("%2"));
+        assertEquals("URLDecoder: Incomplete trailing escape (%) pattern", exception.getMessage());
+    }
 }

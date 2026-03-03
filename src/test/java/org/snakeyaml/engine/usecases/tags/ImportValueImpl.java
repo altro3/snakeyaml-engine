@@ -18,13 +18,13 @@ package org.snakeyaml.engine.usecases.tags;
  */
 public class ImportValueImpl {
 
-  private final String value;
+    private final String value;
 
-  public ImportValueImpl(String value) {
-    this.value = value;
-  }
+    public ImportValueImpl(String value) {
+        this.value = value;
+    }
 
-  public String getValue() {
-    return value;
-  }
+    public String getValue() {
+        return value;
+    }
 }

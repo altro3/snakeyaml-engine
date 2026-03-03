@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -29,41 +30,41 @@ import org.snakeyaml.engine.v2.util.TestUtils;
 @org.junit.jupiter.api.Tag("fast")
 public class GlobalDirectivesTest {
 
-  Iterable<Event> yamlToEvents(final String resourceName) {
-    InputStream input = TestUtils.getResourceAsStream(resourceName);
-    Parse parser = new Parse(LoadSettings.builder().build());
-    return parser.parseInputStream(input);
-  }
-
-  @Test
-  @DisplayName("Use tag directive")
-  public void testOneDocument() {
-    Iterable<Event> events = yamlToEvents("issues/issue149-one-document.yaml");
-    final AtomicInteger counter = new AtomicInteger(0);
-    events.forEach(event -> counter.incrementAndGet());
-
-    assertEquals(10, counter.get());
-  }
-
-  @Test
-  @DisplayName("Fail to parse because directive does not stay for the second document")
-  public void testDirectives() {
-    Iterable<Event> events = yamlToEvents("issues/issue149-losing-directives.yaml");
-    final AtomicInteger counter = new AtomicInteger(0);
-    try {
-      events.forEach(event -> counter.incrementAndGet());
-    } catch (ParserException e) {
-      assertTrue(e.getMessage().contains("found undefined tag handle !u!"), e.getMessage());
+    Iterable<Event> yamlToEvents(final String resourceName) {
+        InputStream input = TestUtils.getResourceAsStream(resourceName);
+        Parse parser = new Parse(LoadSettings.builder().build());
+        return parser.parseInputStream(input);
     }
-  }
 
-  @Test
-  @DisplayName("Parse both tag directives")
-  public void testDirectives2() {
-    Iterable<Event> events = yamlToEvents("issues/issue149-losing-directives-2.yaml");
-    final AtomicInteger counter = new AtomicInteger(0);
-    events.forEach(event -> counter.incrementAndGet());
+    @Test
+    @DisplayName("Use tag directive")
+    public void testOneDocument() {
+        Iterable<Event> events = yamlToEvents("issues/issue149-one-document.yaml");
+        final AtomicInteger counter = new AtomicInteger(0);
+        events.forEach(event -> counter.incrementAndGet());
 
-    assertEquals(18, counter.get());
-  }
+        assertEquals(10, counter.get());
+    }
+
+    @Test
+    @DisplayName("Fail to parse because directive does not stay for the second document")
+    public void testDirectives() {
+        Iterable<Event> events = yamlToEvents("issues/issue149-losing-directives.yaml");
+        final AtomicInteger counter = new AtomicInteger(0);
+        try {
+            events.forEach(event -> counter.incrementAndGet());
+        } catch (ParserException e) {
+            assertTrue(e.getMessage().contains("found undefined tag handle !u!"), e.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Parse both tag directives")
+    public void testDirectives2() {
+        Iterable<Event> events = yamlToEvents("issues/issue149-losing-directives-2.yaml");
+        final AtomicInteger counter = new AtomicInteger(0);
+        events.forEach(event -> counter.incrementAndGet());
+
+        assertEquals(18, counter.get());
+    }
 }

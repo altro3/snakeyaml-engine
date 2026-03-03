@@ -32,113 +32,113 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("fast")
 class DumpTest {
 
-  @Test
-  @DisplayName("Dump string")
-  void dumpString() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    String str = dump.dumpToString("a");
-    assertEquals("a\n", str);
-  }
-
-  @Test
-  @DisplayName("Dump int")
-  void dumpInteger() {
-    DumpSettings settings = DumpSettings.builder().build();
-    Dump dump = new Dump(settings);
-    String str = dump.dumpToString(Integer.valueOf(1));
-    assertEquals("1\n", str);
-  }
-
-  @Test
-  @DisplayName("Dump boolean")
-  void dumpBoolean() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    String str = dump.dumpToString(Boolean.TRUE);
-    assertEquals("true\n", str);
-  }
-
-  @Test
-  @DisplayName("Dump seq")
-  void dumpSequence() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    String str = dump.dumpToString(List.of(2, "a", Boolean.TRUE));
-    assertEquals("[2, a, true]\n", str);
-  }
-
-  @Test
-  @DisplayName("Dump map")
-  void dumpMapping() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    String output = dump.dumpToString(Map.of("x", 1, "y", 2, "z", 3));
-    assertEquals("{x: 1, y: 2, z: 3}\n", output);
-  }
-
-  @Test
-  @DisplayName("Dump all instances")
-  void dumpAll() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    var streamToStringWriter = new StreamToStringWriter();
-    var list = new ArrayList<>() {
-      {
-        add("a");
-        add(null);
-        add(Boolean.TRUE);
-      }
-    };
-    dump.dumpAll(list.iterator(), streamToStringWriter);
-    assertEquals("a\n" + "--- null\n" + "--- true\n", streamToStringWriter.toString());
-    // load back
-    var loadSettings = LoadSettings.builder().build();
-    var load = new Load(loadSettings);
-    for (Object obj : load.loadAllFromString(streamToStringWriter.toString())) {
-      assertEquals(list.remove(0), obj);
+    @Test
+    @DisplayName("Dump string")
+    void dumpString() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        String str = dump.dumpToString("a");
+        assertEquals("a\n", str);
     }
-  }
 
-  @Test
-  @DisplayName("Dump all instances")
-  void dumpAllToString() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    var list = new ArrayList<>() {
-      {
-        add("a");
-        add(null);
-        add(Boolean.TRUE);
-      }
-    };
-    String output = dump.dumpAllToString(list.iterator());
-    assertEquals("a\n" + "--- null\n" + "--- true\n", output);
-    // load back
-    var loadSettings = LoadSettings.builder().build();
-    var load = new Load(loadSettings);
-    for (Object obj : load.loadAllFromString(output)) {
-      assertEquals(list.remove(0), obj);
+    @Test
+    @DisplayName("Dump int")
+    void dumpInteger() {
+        DumpSettings settings = DumpSettings.builder().build();
+        Dump dump = new Dump(settings);
+        String str = dump.dumpToString(Integer.valueOf(1));
+        assertEquals("1\n", str);
     }
-  }
 
-  @Test
-  @DisplayName("Dump to File")
-  void dumpToFile() throws IOException {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    var file = new File("target/temp.yaml");
-    file.delete();
-    assertFalse(file.exists());
-    file.createNewFile();
-    var writer = new YamlOutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8) {
-      @Override
-      public void processIOException(IOException e) {
-        throw new RuntimeException(e);
-      }
-    };
-    dump.dump(Map.of("x", 1, "y", 2, "z", 3), writer);
-    assertTrue(file.exists());
-    file.delete();// on Windows the file is not deleted
-  }
+    @Test
+    @DisplayName("Dump boolean")
+    void dumpBoolean() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        String str = dump.dumpToString(Boolean.TRUE);
+        assertEquals("true\n", str);
+    }
+
+    @Test
+    @DisplayName("Dump seq")
+    void dumpSequence() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        String str = dump.dumpToString(List.of(2, "a", Boolean.TRUE));
+        assertEquals("[2, a, true]\n", str);
+    }
+
+    @Test
+    @DisplayName("Dump map")
+    void dumpMapping() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        String output = dump.dumpToString(Map.of("x", 1, "y", 2, "z", 3));
+        assertEquals("{x: 1, y: 2, z: 3}\n", output);
+    }
+
+    @Test
+    @DisplayName("Dump all instances")
+    void dumpAll() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        var streamToStringWriter = new StreamToStringWriter();
+        var list = new ArrayList<>() {
+            {
+                add("a");
+                add(null);
+                add(Boolean.TRUE);
+            }
+        };
+        dump.dumpAll(list.iterator(), streamToStringWriter);
+        assertEquals("a\n" + "--- null\n" + "--- true\n", streamToStringWriter.toString());
+        // load back
+        var loadSettings = LoadSettings.builder().build();
+        var load = new Load(loadSettings);
+        for (Object obj : load.loadAllFromString(streamToStringWriter.toString())) {
+            assertEquals(list.remove(0), obj);
+        }
+    }
+
+    @Test
+    @DisplayName("Dump all instances")
+    void dumpAllToString() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        var list = new ArrayList<>() {
+            {
+                add("a");
+                add(null);
+                add(Boolean.TRUE);
+            }
+        };
+        String output = dump.dumpAllToString(list.iterator());
+        assertEquals("a\n" + "--- null\n" + "--- true\n", output);
+        // load back
+        var loadSettings = LoadSettings.builder().build();
+        var load = new Load(loadSettings);
+        for (Object obj : load.loadAllFromString(output)) {
+            assertEquals(list.remove(0), obj);
+        }
+    }
+
+    @Test
+    @DisplayName("Dump to File")
+    void dumpToFile() throws IOException {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        var file = new File("target/temp.yaml");
+        file.delete();
+        assertFalse(file.exists());
+        file.createNewFile();
+        var writer = new YamlOutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8) {
+            @Override
+            public void processIOException(IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        dump.dump(Map.of("x", 1, "y", 2, "z", 3), writer);
+        assertTrue(file.exists());
+        file.delete();// on Windows the file is not deleted
+    }
 }

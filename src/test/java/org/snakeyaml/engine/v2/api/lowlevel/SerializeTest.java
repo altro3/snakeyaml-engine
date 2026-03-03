@@ -37,17 +37,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @org.junit.jupiter.api.Tag("fast")
 class SerializeTest {
 
-  @Test
-  void serializeOneScalar() {
-    var serialize = new Serialize(DumpSettings.builder().build());
-    Iterable<Event> events =
-        serialize.serializeOne(new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN));
-    var list = new ArrayList<Event>();
-    events.forEach(list::add);
-    assertEquals(5, list.size());
-    TestUtils.compareEvents(List.of(new StreamStartEvent(),
-        new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()),
-        new ScalarEvent(null, null, new ImplicitTuple(false, false), "a", ScalarStyle.PLAIN),
-        new DocumentEndEvent(false), new StreamEndEvent()), list);
-  }
+    @Test
+    void serializeOneScalar() {
+        var serialize = new Serialize(DumpSettings.builder().build());
+        Iterable<Event> events =
+            serialize.serializeOne(new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN));
+        var list = new ArrayList<Event>();
+        events.forEach(list::add);
+        assertEquals(5, list.size());
+        TestUtils.compareEvents(List.of(new StreamStartEvent(),
+            new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()),
+            new ScalarEvent(null, null, new ImplicitTuple(false, false), "a", ScalarStyle.PLAIN),
+            new DocumentEndEvent(false), new StreamEndEvent()), list);
+    }
 }

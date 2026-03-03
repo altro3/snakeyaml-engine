@@ -35,101 +35,101 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @org.junit.jupiter.api.Tag("fast")
 class ComposeSuiteTest {
 
-  /**
-   * Use cases which result in an empty Node
-   */
-  public static final List<String> emptyNodes = List.of("AVM7", "8G76", "98YD");
+    /**
+     * Use cases which result in an empty Node
+     */
+    public static final List<String> emptyNodes = List.of("AVM7", "8G76", "98YD");
 
-  private final List<SuiteData> allValid =
-      SuiteUtils.getAll().stream().filter(data -> !data.hasError())
-          .filter(data -> !SuiteUtils.deviationsWithSuccess.contains(data.getName()))
-          .filter(data -> !SuiteUtils.deviationsWithError.contains(data.getName()))
-          // TODO FIXME JEF9-02 is not according to the spec
-          .filter(data -> !data.getName().equals("JEF9-02")).collect(Collectors.toList());
+    private final List<SuiteData> allValid =
+        SuiteUtils.getAll().stream().filter(data -> !data.hasError())
+            .filter(data -> !SuiteUtils.deviationsWithSuccess.contains(data.getName()))
+            .filter(data -> !SuiteUtils.deviationsWithError.contains(data.getName()))
+            // TODO FIXME JEF9-02 is not according to the spec
+            .filter(data -> !data.getName().equals("JEF9-02")).collect(Collectors.toList());
 
-  private final List<SuiteData> allValidAndNonEmpty = allValid.stream()
-      .filter(data -> !emptyNodes.contains(data.getName())).collect(Collectors.toList());
+    private final List<SuiteData> allValidAndNonEmpty = allValid.stream()
+        .filter(data -> !emptyNodes.contains(data.getName())).collect(Collectors.toList());
 
-  private final List<SuiteData> allValidAndEmpty = allValid.stream()
-      .filter(data -> emptyNodes.contains(data.getName())).collect(Collectors.toList());
+    private final List<SuiteData> allValidAndEmpty = allValid.stream()
+        .filter(data -> emptyNodes.contains(data.getName())).collect(Collectors.toList());
 
 
-  public static ComposeResult composeData(SuiteData data) {
-    Exception error = null;
-    var list = new ArrayList<Node>();
-    try {
-      var settings =
-          LoadSettings.builder().setLabel(data.getLabel()).setAllowNonScalarKeys(true).build();
-      Iterable<Node> iterable = new Compose(settings).composeAllFromString(data.getInput());
-      iterable.forEach(list::add);
-    } catch (YamlEngineException e) {
-      error = e;
-    }
-    return new ComposeResult(list, error);
-  }
-
-  @Test
-  @DisplayName("Compose: run one test")
-  void runOne() {
-    var data = SuiteUtils.getOne("C4HZ");
-    var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
-    Node node = new Compose(settings).composeString(data.getInput());
-    assertNotNull(node);
-    // System.out.println(node);
-  }
-
-  @Test
-  @DisplayName("Compose: Run comprehensive test suite for non empty Nodes")
-  void runAllNonEmpty() {
-    for (SuiteData data : allValidAndNonEmpty) {
-      ComposeResult result = composeData(data);
-      List<Node> nodes = result.getNode();
-      assertFalse(nodes.isEmpty(),
-          data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
-      var settings = DumpSettings.builder().setExplicitStart(true).setExplicitEnd(true).build();
-      var serialize = new Serialize(settings);
-      List<Event> events = serialize.serializeAll(nodes);
-      assertEquals(data.getEvents().size(), events.size(),
-          data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
-      for (int i = 0; i < events.size(); i++) {
-        Event event = events.get(i);
-        var representation = new EventRepresentation(event);
-        String expectation = data.getEvents().get(i);
-        boolean theSame = representation.isSameAs(expectation);
-        assertTrue(theSame, data.getName() + " -> " + data.getLabel() + "\n" + data.getInput()
-            + "\n" + data.getEvents().get(i) + "\n" + events.get(i) + "\n");
-      }
-    }
-  }
-
-  @Test
-  @DisplayName("Compose: Run comprehensive test suite for empty Nodes")
-  void runAllEmpty() {
-    for (SuiteData data : allValidAndEmpty) {
-      ComposeResult result = composeData(data);
-      List<Node> nodes = result.getNode();
-      assertTrue(nodes.isEmpty(),
-          data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
-    }
-  }
-
-  static class ComposeResult {
-
-    private final List<Node> node;
-    private final Exception error;
-
-    public ComposeResult(List<Node> node, Exception error) {
-      this.node = node;
-      this.error = error;
+    public static ComposeResult composeData(SuiteData data) {
+        Exception error = null;
+        var list = new ArrayList<Node>();
+        try {
+            var settings =
+                LoadSettings.builder().setLabel(data.getLabel()).setAllowNonScalarKeys(true).build();
+            Iterable<Node> iterable = new Compose(settings).composeAllFromString(data.getInput());
+            iterable.forEach(list::add);
+        } catch (YamlEngineException e) {
+            error = e;
+        }
+        return new ComposeResult(list, error);
     }
 
-    public List<Node> getNode() {
-      return node;
+    @Test
+    @DisplayName("Compose: run one test")
+    void runOne() {
+        var data = SuiteUtils.getOne("C4HZ");
+        var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
+        Node node = new Compose(settings).composeString(data.getInput());
+        assertNotNull(node);
+        // System.out.println(node);
     }
 
-    public Exception getError() {
-      return error;
+    @Test
+    @DisplayName("Compose: Run comprehensive test suite for non empty Nodes")
+    void runAllNonEmpty() {
+        for (SuiteData data : allValidAndNonEmpty) {
+            ComposeResult result = composeData(data);
+            List<Node> nodes = result.getNode();
+            assertFalse(nodes.isEmpty(),
+                data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
+            var settings = DumpSettings.builder().setExplicitStart(true).setExplicitEnd(true).build();
+            var serialize = new Serialize(settings);
+            List<Event> events = serialize.serializeAll(nodes);
+            assertEquals(data.getEvents().size(), events.size(),
+                data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
+            for (int i = 0; i < events.size(); i++) {
+                Event event = events.get(i);
+                var representation = new EventRepresentation(event);
+                String expectation = data.getEvents().get(i);
+                boolean theSame = representation.isSameAs(expectation);
+                assertTrue(theSame, data.getName() + " -> " + data.getLabel() + "\n" + data.getInput()
+                    + "\n" + data.getEvents().get(i) + "\n" + events.get(i) + "\n");
+            }
+        }
     }
-  }
+
+    @Test
+    @DisplayName("Compose: Run comprehensive test suite for empty Nodes")
+    void runAllEmpty() {
+        for (SuiteData data : allValidAndEmpty) {
+            ComposeResult result = composeData(data);
+            List<Node> nodes = result.getNode();
+            assertTrue(nodes.isEmpty(),
+                data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
+        }
+    }
+
+    static class ComposeResult {
+
+        private final List<Node> node;
+        private final Exception error;
+
+        public ComposeResult(List<Node> node, Exception error) {
+            this.node = node;
+            this.error = error;
+        }
+
+        public List<Node> getNode() {
+            return node;
+        }
+
+        public Exception getError() {
+            return error;
+        }
+    }
 
 }

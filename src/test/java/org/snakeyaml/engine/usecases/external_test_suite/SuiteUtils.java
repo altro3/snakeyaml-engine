@@ -30,129 +30,129 @@ import java.util.stream.Collectors;
 
 public class SuiteUtils {
 
-  // all 4 similar parsers fail (go-yaml/yaml, libyaml, PyYAML, Ruamel) if not specified
+    // all 4 similar parsers fail (go-yaml/yaml, libyaml, PyYAML, Ruamel) if not specified
 
-  public static final List<String> deviationsWithSuccess = List.of( // should have failed
-      "9JBA", // Comment must be separated from other tokens by white space characters
-      "CVW2", // Comments must be separated from other tokens by white space characters
-      "9C9N", // Wrong indented flow sequence
-      "SU5Z", // Comment without whitespace after double-quoted scalar
-      "QB6E", // Wrong indented multiline quoted scalar
-      "Y79Y-003" // TODO Tabs in various contexts (go-yaml/yaml, libyaml), see issue 55
-  );
-  public static final List<String> deviationsWithError = List.of( // just keep it
-      "HWV9", // Document-end marker
-      "NB6Z", // TODO Multiline plain value with tabs on empty lines
-      "VJP3-01", // Flow collections over many lines
-      "5MUD", // Colon and adjacent value on next line
-      "9SA2", // Multiline double quoted flow mapping key
-      "QT73", // Comment and document-end marker
-      "CFD4", // Empty implicit key in single pair flow sequences
-      "NJ66", // Multiline plain flow mapping key
-      "NKF9", // Empty keys in block and flow mapping
-      "K3WX", // Colon and adjacent value after comment on next line
-      "5T43", // Colon at the beginning of adjacent flow scalar
-      "SM9W-01", // Single character streams
-      "4MUZ-00", // Flow mapping colon on line after key
-      "4MUZ-01", // Flow mapping colon on line after key
-      "4MUZ-02", // Flow mapping colon on line after key
-      "UKK6-00", // Syntax character edge cases (Go, libyaml, PyYAML)
-      "K54U", // TODO Tab after document header
-      "Y79Y-010", // Tabs in various contexts
-      "2JQS", // Block Mapping with Missing Keys (Go, libyaml, PyYAML)
-      "6M2F", // Aliases in Explicit Block Mapping (Go, libyaml, PyYAML)
-      "S3PD", // Spec Example 8.18. Implicit Block Mapping Entries (Go, libyaml, PyYAML)
-      "FRK4", // Spec Example 7.3. Completely Empty Flow Nodes (Go, libyaml, PyYAML)
-      "NHX8", // Empty Lines at End of Document (Go, libyaml, PyYAML)
-      "M2N8-00", // Question mark edge cases (Go, libyaml, PyYAML)
-      "MUS6-03", // TODO Directive variants
-      "6BCT", // Spec Example 6.3. Separation Spaces
-      "Q5MG", // Tab at beginning of line followed by a flow mapping
-      "DBG4", // Spec Example 7.10. Plain Characters (Go, libyaml, PyYAML)
-      "M7A3", // Spec Example 9.3. Bare Documents
-      "DK3J", // Zero indented block scalar with line that looks like a comment (Go, libyaml,
-              // PyYAML)
-      "W5VH", // Allowed characters in alias (Go, libyaml, PyYAML)
-      "58MP", // Flow mapping edge cases (Go, libyaml, PyYAML)
-      "UV7Q", // TODO Legal tab after indentation (PyYAML, Ruamel)
-      "HM87-00", // Scalars in flow start with syntax char (Go, libyaml, PyYAML)
-      "DC7X", // Various trailing tabs (PyYAML, Ruamel)
-      "A2M4", // Spec Example 6.2. Indentation Indicators
-      "J3BT", // Spec Example 5.12. Tabs and Spaces (PyYAML, Ruamel)
-      "HS5T", // Spec Example 7.12. Plain Lines >> leading TAB (PyYAML, Ruamel)
-      "UT92", // Spec Example 9.4. Explicit Documents
-      "W4TN", // Spec Example 9.5. Directives Documents (Go, libyaml, PyYAML)
-      "FP8R", // TODO Zero indented block scalar (Go, libyaml, PyYAML)
-      "WZ62", // TODO Spec Example 7.2. Empty Content (Go, PyYAML, Ruamel)
-      "7Z25" // TODO Bare document after document end marker (Go, libyaml, PyYAML)
-  );
+    public static final List<String> deviationsWithSuccess = List.of( // should have failed
+        "9JBA", // Comment must be separated from other tokens by white space characters
+        "CVW2", // Comments must be separated from other tokens by white space characters
+        "9C9N", // Wrong indented flow sequence
+        "SU5Z", // Comment without whitespace after double-quoted scalar
+        "QB6E", // Wrong indented multiline quoted scalar
+        "Y79Y-003" // TODO Tabs in various contexts (go-yaml/yaml, libyaml), see issue 55
+    );
+    public static final List<String> deviationsWithError = List.of( // just keep it
+        "HWV9", // Document-end marker
+        "NB6Z", // TODO Multiline plain value with tabs on empty lines
+        "VJP3-01", // Flow collections over many lines
+        "5MUD", // Colon and adjacent value on next line
+        "9SA2", // Multiline double quoted flow mapping key
+        "QT73", // Comment and document-end marker
+        "CFD4", // Empty implicit key in single pair flow sequences
+        "NJ66", // Multiline plain flow mapping key
+        "NKF9", // Empty keys in block and flow mapping
+        "K3WX", // Colon and adjacent value after comment on next line
+        "5T43", // Colon at the beginning of adjacent flow scalar
+        "SM9W-01", // Single character streams
+        "4MUZ-00", // Flow mapping colon on line after key
+        "4MUZ-01", // Flow mapping colon on line after key
+        "4MUZ-02", // Flow mapping colon on line after key
+        "UKK6-00", // Syntax character edge cases (Go, libyaml, PyYAML)
+        "K54U", // TODO Tab after document header
+        "Y79Y-010", // Tabs in various contexts
+        "2JQS", // Block Mapping with Missing Keys (Go, libyaml, PyYAML)
+        "6M2F", // Aliases in Explicit Block Mapping (Go, libyaml, PyYAML)
+        "S3PD", // Spec Example 8.18. Implicit Block Mapping Entries (Go, libyaml, PyYAML)
+        "FRK4", // Spec Example 7.3. Completely Empty Flow Nodes (Go, libyaml, PyYAML)
+        "NHX8", // Empty Lines at End of Document (Go, libyaml, PyYAML)
+        "M2N8-00", // Question mark edge cases (Go, libyaml, PyYAML)
+        "MUS6-03", // TODO Directive variants
+        "6BCT", // Spec Example 6.3. Separation Spaces
+        "Q5MG", // Tab at beginning of line followed by a flow mapping
+        "DBG4", // Spec Example 7.10. Plain Characters (Go, libyaml, PyYAML)
+        "M7A3", // Spec Example 9.3. Bare Documents
+        "DK3J", // Zero indented block scalar with line that looks like a comment (Go, libyaml,
+        // PyYAML)
+        "W5VH", // Allowed characters in alias (Go, libyaml, PyYAML)
+        "58MP", // Flow mapping edge cases (Go, libyaml, PyYAML)
+        "UV7Q", // TODO Legal tab after indentation (PyYAML, Ruamel)
+        "HM87-00", // Scalars in flow start with syntax char (Go, libyaml, PyYAML)
+        "DC7X", // Various trailing tabs (PyYAML, Ruamel)
+        "A2M4", // Spec Example 6.2. Indentation Indicators
+        "J3BT", // Spec Example 5.12. Tabs and Spaces (PyYAML, Ruamel)
+        "HS5T", // Spec Example 7.12. Plain Lines >> leading TAB (PyYAML, Ruamel)
+        "UT92", // Spec Example 9.4. Explicit Documents
+        "W4TN", // Spec Example 9.5. Directives Documents (Go, libyaml, PyYAML)
+        "FP8R", // TODO Zero indented block scalar (Go, libyaml, PyYAML)
+        "WZ62", // TODO Spec Example 7.2. Empty Content (Go, PyYAML, Ruamel)
+        "7Z25" // TODO Bare document after document end marker (Go, libyaml, PyYAML)
+    );
 
-  public static final String FOLDER_NAME = "src/test/resources/comprehensive-test-suite-data";
+    public static final String FOLDER_NAME = "src/test/resources/comprehensive-test-suite-data";
 
-  public static List<File> getAllFoldersIn(String folder) {
-    File file = new File(folder);
-    if (!file.exists()) {
-      throw new RuntimeException("Folder not found: " + file.getAbsolutePath());
-    }
-    if (!file.isDirectory()) {
-      throw new RuntimeException("Must be folder: " + file.getAbsolutePath());
-    }
-    return Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(File::isDirectory)
-        .collect(Collectors.toList());
-  }
-
-  public static SuiteData readData(File file) {
-    try {
-      String name = file.getName();
-      String label = Files.asCharSource(new File(file, "==="), StandardCharsets.UTF_8).read();
-      String input = Files.asCharSource(new File(file, "in.yaml"), StandardCharsets.UTF_8).read();
-      List<String> events = Files.readLines(new File(file, "test.event"), StandardCharsets.UTF_8)
-          .stream().filter(line -> !line.isEmpty()).collect(Collectors.toList());
-      boolean error = new File(file, "error").exists();
-      return new SuiteData(name, label, input, events, error);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public static List<SuiteData> getAll() {
-    List<File> allSuiteFiles = getAllFoldersIn(FOLDER_NAME);
-    return allSuiteFiles.stream().map(SuiteUtils::readData).collect(Collectors.toList());
-  }
-
-  public static SuiteData getOne(String name) {
-    return readData(new File(FOLDER_NAME, name));
-  }
-
-  public static ParseResult parseData(SuiteData data) {
-    Exception error = null;
-    var list = new ArrayList<Event>();
-    try {
-      var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
-      Iterable<Event> iterable = new Parse(settings).parseString(data.getInput());
-      iterable.forEach(list::add);
-    } catch (YamlEngineException e) {
-      error = e;
-    }
-    return new ParseResult(list, error);
-  }
-
-  public static class ParseResult {
-
-    private final List<Event> events;
-    private final Exception error;
-
-    public ParseResult(List<Event> events, Exception error) {
-      this.events = events;
-      this.error = error;
+    public static List<File> getAllFoldersIn(String folder) {
+        File file = new File(folder);
+        if (!file.exists()) {
+            throw new RuntimeException("Folder not found: " + file.getAbsolutePath());
+        }
+        if (!file.isDirectory()) {
+            throw new RuntimeException("Must be folder: " + file.getAbsolutePath());
+        }
+        return Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(File::isDirectory)
+            .collect(Collectors.toList());
     }
 
-    public List<Event> getEvents() {
-      return events;
+    public static SuiteData readData(File file) {
+        try {
+            String name = file.getName();
+            String label = Files.asCharSource(new File(file, "==="), StandardCharsets.UTF_8).read();
+            String input = Files.asCharSource(new File(file, "in.yaml"), StandardCharsets.UTF_8).read();
+            List<String> events = Files.readLines(new File(file, "test.event"), StandardCharsets.UTF_8)
+                .stream().filter(line -> !line.isEmpty()).collect(Collectors.toList());
+            boolean error = new File(file, "error").exists();
+            return new SuiteData(name, label, input, events, error);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Exception getError() {
-      return error;
+    public static List<SuiteData> getAll() {
+        List<File> allSuiteFiles = getAllFoldersIn(FOLDER_NAME);
+        return allSuiteFiles.stream().map(SuiteUtils::readData).collect(Collectors.toList());
     }
-  }
+
+    public static SuiteData getOne(String name) {
+        return readData(new File(FOLDER_NAME, name));
+    }
+
+    public static ParseResult parseData(SuiteData data) {
+        Exception error = null;
+        var list = new ArrayList<Event>();
+        try {
+            var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
+            Iterable<Event> iterable = new Parse(settings).parseString(data.getInput());
+            iterable.forEach(list::add);
+        } catch (YamlEngineException e) {
+            error = e;
+        }
+        return new ParseResult(list, error);
+    }
+
+    public static class ParseResult {
+
+        private final List<Event> events;
+        private final Exception error;
+
+        public ParseResult(List<Event> events, Exception error) {
+            this.events = events;
+            this.error = error;
+        }
+
+        public List<Event> getEvents() {
+            return events;
+        }
+
+        public Exception getError() {
+            return error;
+        }
+    }
 }

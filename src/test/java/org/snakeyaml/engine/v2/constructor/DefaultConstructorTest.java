@@ -28,36 +28,36 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("fast")
 class DefaultConstructorTest {
 
-  @Test
-  void constructNullWhenUnknown() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings, new MagicNullConstructor(settings));
-    var str = (String) load.loadFromString("!unknownLocalTag a");
-    assertNull(str);
-  }
-
-  @Test
-  void failWhenUnknown() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var exception =
-        assertThrows(YamlEngineException.class, () -> load.loadFromString("!unknownLocalTag a"));
-    assertTrue(exception.getMessage()
-        .startsWith("could not determine a constructor for the tag !unknownLocalTag"));
-  }
-
-  /**
-   * Make NULL if the tag is not recognized
-   */
-  static class MagicNullConstructor extends StandardConstructor {
-
-    public MagicNullConstructor(LoadSettings settings) {
-      super(settings);
+    @Test
+    void constructNullWhenUnknown() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings, new MagicNullConstructor(settings));
+        var str = (String) load.loadFromString("!unknownLocalTag a");
+        assertNull(str);
     }
 
-    @Override
-    public ConstructNode findConstructorFor(Node node) {
-      return new ConstructYamlNull();
+    @Test
+    void failWhenUnknown() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var exception =
+            assertThrows(YamlEngineException.class, () -> load.loadFromString("!unknownLocalTag a"));
+        assertTrue(exception.getMessage()
+            .startsWith("could not determine a constructor for the tag !unknownLocalTag"));
     }
-  }
+
+    /**
+     * Make NULL if the tag is not recognized
+     */
+    static class MagicNullConstructor extends StandardConstructor {
+
+        public MagicNullConstructor(LoadSettings settings) {
+            super(settings);
+        }
+
+        @Override
+        public ConstructNode findConstructorFor(Node node) {
+            return new ConstructYamlNull();
+        }
+    }
 }

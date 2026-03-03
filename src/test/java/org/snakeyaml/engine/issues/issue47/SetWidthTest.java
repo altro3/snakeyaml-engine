@@ -39,89 +39,91 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Test issue 47 <a href="https://yaml.org/spec/1.2.2/#3231-node-styles">Node styles</a>
  */
 public class SetWidthTest {
-  String stringToSerialize =
-      "arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{ github.token }}";
 
-  private String parseBack(String yaml) {
-    LoadSettings settings = LoadSettings.builder().build();
-    Load load = new Load(settings);
-    return load.loadFromString(yaml).toString();
-  }
+    String stringToSerialize =
+        "arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{ github.token }}";
 
-  @Test
-  @DisplayName("Issue 47: emit plain and split")
-  void emitPlainString() {
-    DumpSettings settings = DumpSettings.builder().setWidth(80) // Intentionally limited.
-        .build();
-    StreamDataWriter writer = new StreamToStringWriter();
-    Dump dump = new Dump(settings);
+    private String parseBack(String yaml) {
+        LoadSettings settings = LoadSettings.builder().build();
+        Load load = new Load(settings);
+        return load.loadFromString(yaml).toString();
+    }
 
-    dump.dump(stringToSerialize, writer);
-    String yaml = writer.toString();
-    String expected =
-        "arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{\n  github.token }}";
-    assertEquals(stringToSerialize, parseBack(yaml));
-    assertEquals(expected, yaml.trim());
-  }
+    @Test
+    @DisplayName("Issue 47: emit plain and split")
+    void emitPlainString() {
+        DumpSettings settings = DumpSettings.builder().setWidth(80) // Intentionally limited.
+            .build();
+        StreamDataWriter writer = new StreamToStringWriter();
+        Dump dump = new Dump(settings);
 
-  @Test
-  @DisplayName("Issue 47: emit plain and split")
-  void emitPlain() {
-    DumpSettings settings = DumpSettings.builder().setWidth(80) // Intentionally limited.
-        .build();
-    StreamDataWriter writer = new StreamToStringWriter();
-    Emitter emitter = new Emitter(settings, writer);
-    emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, emptyMap()));
+        dump.dump(stringToSerialize, writer);
+        String yaml = writer.toString();
+        String expected =
+            "arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{\n  github.token }}";
+        assertEquals(stringToSerialize, parseBack(yaml));
+        assertEquals(expected, yaml.trim());
+    }
 
-    emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
-        ScalarStyle.PLAIN));
+    @Test
+    @DisplayName("Issue 47: emit plain and split")
+    void emitPlain() {
+        DumpSettings settings = DumpSettings.builder().setWidth(80) // Intentionally limited.
+            .build();
+        StreamDataWriter writer = new StreamToStringWriter();
+        Emitter emitter = new Emitter(settings, writer);
+        emitter.emit(new StreamStartEvent());
+        emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, emptyMap()));
 
-    emitter.emit(new DocumentEndEvent(false));
-    emitter.emit(new StreamEndEvent());
-    String yaml = writer.toString();
-    String expected =
-        "arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{\n  github.token }}";
-    assertEquals(stringToSerialize, parseBack(yaml));
-    assertEquals(expected, yaml.trim());
-  }
+        emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
+            ScalarStyle.PLAIN));
 
-  @Test
-  @DisplayName("Issue 47: emit plain and no split")
-  void emitPlainNoSplit() {
-    DumpSettings settings = DumpSettings.builder().setWidth(180) // Intentionally limited.
-        .build();
-    StreamDataWriter writer = new StreamToStringWriter();
-    Emitter emitter = new Emitter(settings, writer);
-    emitter.emit(new StreamStartEvent());
-    emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, emptyMap()));
+        emitter.emit(new DocumentEndEvent(false));
+        emitter.emit(new StreamEndEvent());
+        String yaml = writer.toString();
+        String expected =
+            "arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{\n  github.token }}";
+        assertEquals(stringToSerialize, parseBack(yaml));
+        assertEquals(expected, yaml.trim());
+    }
 
-    emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
-        ScalarStyle.PLAIN));
+    @Test
+    @DisplayName("Issue 47: emit plain and no split")
+    void emitPlainNoSplit() {
+        DumpSettings settings = DumpSettings.builder().setWidth(180) // Intentionally limited.
+            .build();
+        StreamDataWriter writer = new StreamToStringWriter();
+        Emitter emitter = new Emitter(settings, writer);
+        emitter.emit(new StreamStartEvent());
+        emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, emptyMap()));
 
-    emitter.emit(new DocumentEndEvent(false));
-    emitter.emit(new StreamEndEvent());
-    String yaml = writer.toString();
-    String expected =
-        "arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{ github.token }}\n";
-    assertEquals(expected, yaml);
-    assertEquals(stringToSerialize, parseBack(yaml));
-  }
+        emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
+            ScalarStyle.PLAIN));
 
-  @Test
-  @DisplayName("Issue 47: emit folded")
-  void emitFolded() {
-    DumpSettings settings = DumpSettings.builder().setWidth(80) // Intentionally limited.
-        .setDefaultScalarStyle(ScalarStyle.FOLDED).build();
-    Dump dump = new Dump(settings);
-    String yaml = dump.dumpToString(stringToSerialize);
-    String expected = ">-\n"
-        + "  arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{\n"
-        + "  github.token }}\n";
-    assertEquals(expected, yaml);
-    assertEquals(stringToSerialize, parseBack(yaml));
-  }
+        emitter.emit(new DocumentEndEvent(false));
+        emitter.emit(new StreamEndEvent());
+        String yaml = writer.toString();
+        String expected =
+            "arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{ github.token }}\n";
+        assertEquals(expected, yaml);
+        assertEquals(stringToSerialize, parseBack(yaml));
+    }
 
-  static class StreamToStringWriter extends StringWriter implements StreamDataWriter {
-  }
+    @Test
+    @DisplayName("Issue 47: emit folded")
+    void emitFolded() {
+        DumpSettings settings = DumpSettings.builder().setWidth(80) // Intentionally limited.
+            .setDefaultScalarStyle(ScalarStyle.FOLDED).build();
+        Dump dump = new Dump(settings);
+        String yaml = dump.dumpToString(stringToSerialize);
+        String expected = ">-\n"
+            + "  arn:aws:iam::12345678901234567890:foobarbaz:testing:testing2:role/github-actions-role/${{\n"
+            + "  github.token }}\n";
+        assertEquals(expected, yaml);
+        assertEquals(stringToSerialize, parseBack(yaml));
+    }
+
+    static class StreamToStringWriter extends StringWriter implements StreamDataWriter {
+
+    }
 }

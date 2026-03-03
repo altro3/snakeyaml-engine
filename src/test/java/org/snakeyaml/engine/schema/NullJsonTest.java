@@ -25,17 +25,17 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 @org.junit.jupiter.api.Tag("fast")
 public class NullJsonTest {
 
-  Load loader = new Load(LoadSettings.builder().build());
+    Load loader = new Load(LoadSettings.builder().build());
 
-  @Test
-  void parseNull() {
-    assertNull(loader.loadFromString("null"));
-    assertEquals("null", loader.loadFromString("! null"));
-  }
+    @Test
+    void parseNull() {
+        assertNull(loader.loadFromString("null"));
+        assertEquals("null", loader.loadFromString("! null"));
+    }
 
-  @Test
-  void dumpNull() {
-    Dump dumper = new Dump(DumpSettings.builder().build());
-    assertEquals("null\n", dumper.dumpToString(null));
-  }
+    @Test
+    void dumpNull() {
+        Dump dumper = new Dump(DumpSettings.builder().build());
+        assertEquals("null\n", dumper.dumpToString(null));
+    }
 }

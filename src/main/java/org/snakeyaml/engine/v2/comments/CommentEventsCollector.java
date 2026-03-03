@@ -13,15 +13,17 @@
  */
 package org.snakeyaml.engine.v2.comments;
 
+import org.jspecify.annotations.NonNull;
+import org.snakeyaml.engine.v2.events.CommentEvent;
+import org.snakeyaml.engine.v2.events.Event;
+import org.snakeyaml.engine.v2.parser.Parser;
+
 import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
-
-import org.snakeyaml.engine.v2.events.CommentEvent;
-import org.snakeyaml.engine.v2.events.Event;
-import org.snakeyaml.engine.v2.parser.Parser;
 
 /**
  * Used by the Composer and Emitter to collect comment events so that they can be used at a later
@@ -59,7 +61,7 @@ public class CommentEventsCollector {
             }
 
             @Override
-            public Iterator<Event> iterator() {
+            public @NonNull Iterator<Event> iterator() {
                 throw new UnsupportedOperationException();
             }
 
@@ -96,7 +98,7 @@ public class CommentEventsCollector {
         if (event == null || event.getEventId() != Event.ID.Comment) {
             return false;
         }
-        CommentEvent commentEvent = (CommentEvent) event;
+        var commentEvent = (CommentEvent) event;
         for (CommentType type : expectedCommentTypes) {
             if (commentEvent.getCommentType() == type) {
                 return true;
@@ -134,7 +136,7 @@ public class CommentEventsCollector {
             }
         }
         while (isEventExpected(eventSource.peek())) {
-            commentLineList.add(new CommentLine((CommentEvent) eventSource.poll()));
+            commentLineList.add(new CommentLine((CommentEvent) Objects.requireNonNull(eventSource.poll())));
         }
         return null;
     }

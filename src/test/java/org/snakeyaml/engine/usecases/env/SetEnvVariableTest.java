@@ -22,14 +22,14 @@ import org.snakeyaml.engine.v2.util.SystemProperty;
 @org.junit.jupiter.api.Tag("fast")
 class SetEnvVariableTest {
 
-  @Test
-  @SystemProperty(key = "KEY42", value = "value42")
-  void readVar() {
-    assertEquals("value42", System.getProperty("KEY42"));
-  }
+    @Test
+    @SystemProperty(key = "KEY42", value = "value42")
+    void readVar() {
+        assertEquals("value42", System.getProperty("KEY42"));
+    }
 
-  @Test
-  void noVar() {
-    assertNull(System.getProperty("KEY42"));
-  }
+    @Test
+    void noVar() {
+        assertNull(System.getProperty("KEY42"));
+    }
 }

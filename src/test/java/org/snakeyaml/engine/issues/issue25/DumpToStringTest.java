@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.LinkedHashMap;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
@@ -27,29 +28,29 @@ import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 @org.junit.jupiter.api.Tag("fast")
 public class DumpToStringTest {
 
-  @Test
-  @DisplayName("If Dump instance is called more then once then the results are not predictable.")
-  void dumpToStringTwice() {
-    LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-    DumpSettings dumpSettings = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK).build();
-    Dump dump = new Dump(dumpSettings);
-    class Something {
+    @Test
+    @DisplayName("If Dump instance is called more then once then the results are not predictable.")
+    void dumpToStringTwice() {
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        DumpSettings dumpSettings = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK).build();
+        Dump dump = new Dump(dumpSettings);
+        class Something {
 
-      final int doesntmatter = 0;
+            final int doesntmatter = 0;
+        }
+        Something something = new Something();
+        data.put("before", "bla");
+        data.put("nested", something);
+        try {
+            dump.dumpToString(data);
+            fail("Something must not be accepted without Representer");
+        } catch (YamlEngineException e) {
+            assertEquals(
+                "Representer is not defined for class org.snakeyaml.engine.issues.issue25.DumpToStringTest$1Something",
+                e.getMessage());
+        }
+        String output = dump.dumpToString(data);
+        // System.out.print("actual " + output);
+        assertEquals("before: bla\n", output);
     }
-    Something something = new Something();
-    data.put("before", "bla");
-    data.put("nested", something);
-    try {
-      dump.dumpToString(data);
-      fail("Something must not be accepted without Representer");
-    } catch (YamlEngineException e) {
-      assertEquals(
-          "Representer is not defined for class org.snakeyaml.engine.issues.issue25.DumpToStringTest$1Something",
-          e.getMessage());
-    }
-    String output = dump.dumpToString(data);
-    // System.out.print("actual " + output);
-    assertEquals("before: bla\n", output);
-  }
 }

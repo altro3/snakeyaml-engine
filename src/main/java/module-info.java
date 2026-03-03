@@ -12,6 +12,7 @@
  * the License.
  */
 module org.snakeyaml.engine {
+    requires org.jspecify;
     // Main API packages
     exports org.snakeyaml.engine.v2.api;
     exports org.snakeyaml.engine.v2.common;

@@ -25,12 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Tag("fast")
 class StandardConstructorTest {
 
-  @Test
-  void constructMergeExample() {
-    Compose compose = new Compose(LoadSettings.builder().build());
-    Node node = compose.composeString(TestUtils.getResource("load/list1.yaml"));
-    var constructor = new StandardConstructor(LoadSettings.builder().build());
-    Object object = constructor.construct(node);
-    assertNotNull(object);
-  }
+    @Test
+    void constructMergeExample() {
+        Compose compose = new Compose(LoadSettings.builder().build());
+        Node node = compose.composeString(TestUtils.getResource("load/list1.yaml"));
+        var constructor = new StandardConstructor(LoadSettings.builder().build());
+        Object object = constructor.construct(node);
+        assertNotNull(object);
+    }
 }

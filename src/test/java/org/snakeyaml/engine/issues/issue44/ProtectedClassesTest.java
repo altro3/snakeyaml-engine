@@ -21,18 +21,18 @@ import org.snakeyaml.engine.v2.representer.StandardRepresenter;
 
 public class ProtectedClassesTest {
 
-  @Test
-  public void testSubstitution() {
-    ExampleRepresenter r = new ExampleRepresenter(DumpSettings.builder().build());
-    assertEquals(1, 1);
-  }
-
-  static final class ExampleRepresenter extends StandardRepresenter {
-
-    public ExampleRepresenter(DumpSettings settings) {
-      super(settings);
-      this.representers.clear();
-      this.representers.put(Boolean.class, new RepresentBoolean());
+    @Test
+    public void testSubstitution() {
+        ExampleRepresenter r = new ExampleRepresenter(DumpSettings.builder().build());
+        assertEquals(1, 1);
     }
-  }
+
+    static final class ExampleRepresenter extends StandardRepresenter {
+
+        public ExampleRepresenter(DumpSettings settings) {
+            super(settings);
+            this.representers.clear();
+            this.representers.put(Boolean.class, new RepresentBoolean());
+        }
+    }
 }

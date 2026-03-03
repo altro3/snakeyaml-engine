@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 @Tag("fast")
 class ImplicitTupleTest {
 
-  @Test
-  void testToString() {
-    assertEquals("implicit=[true, false]", new ImplicitTuple(true, false).toString());
-  }
+    @Test
+    void testToString() {
+        assertEquals("implicit=[true, false]", new ImplicitTuple(true, false).toString());
+    }
 }

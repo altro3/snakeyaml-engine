@@ -26,21 +26,21 @@ import org.snakeyaml.engine.v2.schema.CoreSchema;
 @org.junit.jupiter.api.Tag("fast")
 public class NullCoreTest {
 
-  Load loader = new Load(LoadSettings.builder().setSchema(new CoreSchema()).build());
+    Load loader = new Load(LoadSettings.builder().setSchema(new CoreSchema()).build());
 
-  @Test
-  void parseNull() {
-    // null | Null | NULL | ~
-    assertNull(loader.loadFromString("null"));
-    assertNull(loader.loadFromString("Null"));
-    assertNull(loader.loadFromString("NULL"));
-    assertNull(loader.loadFromString("~"));
-    assertEquals("null", loader.loadFromString("! null"));
-  }
+    @Test
+    void parseNull() {
+        // null | Null | NULL | ~
+        assertNull(loader.loadFromString("null"));
+        assertNull(loader.loadFromString("Null"));
+        assertNull(loader.loadFromString("NULL"));
+        assertNull(loader.loadFromString("~"));
+        assertEquals("null", loader.loadFromString("! null"));
+    }
 
-  @Test
-  void dumpNull() {
-    Dump dumper = new Dump(DumpSettings.builder().setSchema(new CoreSchema()).build());
-    assertEquals("null\n", dumper.dumpToString(null));
-  }
+    @Test
+    void dumpNull() {
+        Dump dumper = new Dump(DumpSettings.builder().setSchema(new CoreSchema()).build());
+        assertEquals("null\n", dumper.dumpToString(null));
+    }
 }

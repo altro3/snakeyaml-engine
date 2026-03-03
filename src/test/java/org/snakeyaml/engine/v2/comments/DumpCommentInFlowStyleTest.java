@@ -32,58 +32,58 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DumpCommentInFlowStyleTest {
 
-  private String extractInlineComment(Node node) {
-    MappingNode mapping = (MappingNode) node;
-    List<NodeTuple> value = mapping.getValue();
-    NodeTuple first = value.get(0);
-    Node textNode = first.getValueNode();
-    return textNode.getInLineComments().get(0).getValue();
-  }
-
-  @Test
-  public void testFlowWithComments() {
-    LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
-    Compose loader = new Compose(loadSettings);
-    String content = "{url: text # comment breaks it\n}";
-    Parse parser = new Parse(loadSettings);
-    for (Event event : parser.parseReader(new StringReader(content))) {
-      // System.out.println(event);
+    private String extractInlineComment(Node node) {
+        MappingNode mapping = (MappingNode) node;
+        List<NodeTuple> value = mapping.getValue();
+        NodeTuple first = value.get(0);
+        Node textNode = first.getValueNode();
+        return textNode.getInLineComments().get(0).value();
     }
 
-    Node node = loader.composeReader(new StringReader(content));
-    assertEquals(" comment breaks it", extractInlineComment(node));
+    @Test
+    public void testFlowWithComments() {
+        LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
+        Compose loader = new Compose(loadSettings);
+        String content = "{url: text # comment breaks it\n}";
+        Parse parser = new Parse(loadSettings);
+        for (Event event : parser.parseReader(new StringReader(content))) {
+            // System.out.println(event);
+        }
 
-    DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(true).build();
-    Serialize serialize = new Serialize(dumpSettings);
-    List<Event> events = serialize.serializeOne(node);
-    for (Event event : events) {
-      // System.out.println(event);
+        Node node = loader.composeReader(new StringReader(content));
+        assertEquals(" comment breaks it", extractInlineComment(node));
+
+        DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(true).build();
+        Serialize serialize = new Serialize(dumpSettings);
+        List<Event> events = serialize.serializeOne(node);
+        for (Event event : events) {
+            // System.out.println(event);
+        }
+        assertEquals(9, events.size());
+
+        Present present = new Present(dumpSettings);
+        String output = present.emitToString(events.iterator());
+        assertEquals(content, output.trim());
     }
-    assertEquals(9, events.size());
 
-    Present present = new Present(dumpSettings);
-    String output = present.emitToString(events.iterator());
-    assertEquals(content, output.trim());
-  }
+    @Test
+    public void testBlockWithComments() {
+        Compose loader = new Compose(LoadSettings.builder().setParseComments(true).build());
+        String content = "url: text # comment breaks it\n";
+        Node node = loader.composeReader(new StringReader(content));
 
-  @Test
-  public void testBlockWithComments() {
-    Compose loader = new Compose(LoadSettings.builder().setParseComments(true).build());
-    String content = "url: text # comment breaks it\n";
-    Node node = loader.composeReader(new StringReader(content));
+        assertEquals(" comment breaks it", extractInlineComment(node));
 
-    assertEquals(" comment breaks it", extractInlineComment(node));
+        DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(true).build();
+        Serialize serialize = new Serialize(dumpSettings);
+        List<Event> events = serialize.serializeOne(node);
+        for (Event event : events) {
+            // System.out.println(event);
+        }
+        assertEquals(9, events.size());
 
-    DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(true).build();
-    Serialize serialize = new Serialize(dumpSettings);
-    List<Event> events = serialize.serializeOne(node);
-    for (Event event : events) {
-      // System.out.println(event);
+        Present present = new Present(dumpSettings);
+        String output = present.emitToString(events.iterator());
+        assertEquals(content, output);
     }
-    assertEquals(9, events.size());
-
-    Present present = new Present(dumpSettings);
-    String output = present.emitToString(events.iterator());
-    assertEquals(content, output);
-  }
 }

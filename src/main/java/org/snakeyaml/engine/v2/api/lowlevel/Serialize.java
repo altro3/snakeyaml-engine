@@ -13,16 +13,16 @@
  */
 package org.snakeyaml.engine.v2.api.lowlevel;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.emitter.Emitable;
 import org.snakeyaml.engine.v2.events.Event;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.serializer.Serializer;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Implementation of the step which translates Nodes to Events
@@ -36,8 +36,7 @@ public class Serialize {
      *
      * @param settings - configuration
      */
-    public Serialize(DumpSettings settings) {
-        Objects.requireNonNull(settings, "DumpSettings cannot be null");
+    public Serialize(@NonNull DumpSettings settings) {
         this.settings = settings;
     }
 
@@ -48,8 +47,7 @@ public class Serialize {
      * @return serialized events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public List<Event> serializeOne(Node node) {
-        Objects.requireNonNull(node, "Node cannot be null");
+    public List<Event> serializeOne(@NonNull Node node) {
         return serializeAll(Collections.singletonList(node));
     }
 
@@ -60,10 +58,9 @@ public class Serialize {
      * @return serialized events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
-    public List<Event> serializeAll(List<Node> nodes) {
-        Objects.requireNonNull(nodes, "Nodes cannot be null");
-        EmitableEvents emitableEvents = new EmitableEvents();
-        Serializer serializer = new Serializer(settings, emitableEvents);
+    public List<Event> serializeAll(@NonNull List<Node> nodes) {
+        var emitableEvents = new EmitableEvents();
+        var serializer = new Serializer(settings, emitableEvents);
         serializer.emitStreamStart();
         for (Node node : nodes) {
             serializer.serializeDocument(node);
@@ -71,20 +68,18 @@ public class Serialize {
         serializer.emitStreamEnd();
         return emitableEvents.getEvents();
     }
-}
 
+    static class EmitableEvents implements Emitable {
 
-class EmitableEvents implements Emitable {
+        private final List<Event> events = new ArrayList<>();
 
-    private final List<Event> events = new ArrayList<>();
+        @Override
+        public void emit(Event event) {
+            events.add(event);
+        }
 
-    @Override
-    public void emit(Event event) {
-        events.add(event);
+        public List<Event> getEvents() {
+            return events;
+        }
     }
-
-    public List<Event> getEvents() {
-        return events;
-    }
 }
-

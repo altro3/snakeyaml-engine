@@ -16,6 +16,7 @@ package org.snakeyaml.engine.issues.issue69;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -26,15 +27,16 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
  * 69</a>
  */
 public class TabInDoubleQuoteTest {
-  @Test
-  public void testTabInDoubleQuote() {
-    LoadSettings options = LoadSettings.builder().setParseComments(true).build();
-    Load load = new Load(options);
-    String str = "- \"\\\t\""; // "\TAB"
-    @SuppressWarnings("unchecked")
-    List<String> obj = (List<String>) load.loadFromString(str);
-    assertEquals(1, obj.size());
-    String parsed = obj.get(0);
-    assertEquals("\t", parsed);
-  }
+
+    @Test
+    public void testTabInDoubleQuote() {
+        LoadSettings options = LoadSettings.builder().setParseComments(true).build();
+        Load load = new Load(options);
+        String str = "- \"\\\t\""; // "\TAB"
+        @SuppressWarnings("unchecked")
+        List<String> obj = (List<String>) load.loadFromString(str);
+        assertEquals(1, obj.size());
+        String parsed = obj.get(0);
+        assertEquals("\t", parsed);
+    }
 }

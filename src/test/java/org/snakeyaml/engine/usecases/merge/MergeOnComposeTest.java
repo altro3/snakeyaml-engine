@@ -34,55 +34,55 @@ import static org.junit.jupiter.api.Assertions.fail;
 @org.junit.jupiter.api.Tag("fast")
 public class MergeOnComposeTest {
 
-  private String merge(String inputName, LoadSettings loadSettings) {
-    String input = TestUtils.getResource(inputName);
-    var loader = new Compose(loadSettings);
-    Node sourceTree = loader.composeReader(new StringReader(input));
-    Serialize serialize = new Serialize(DumpSettings.builder().setDereferenceAliases(true).build());
-    List<Event> events = serialize.serializeOne(sourceTree);
-    Present present = new Present(DumpSettings.builder().build());
+    private String merge(String inputName, LoadSettings loadSettings) {
+        String input = TestUtils.getResource(inputName);
+        var loader = new Compose(loadSettings);
+        Node sourceTree = loader.composeReader(new StringReader(input));
+        Serialize serialize = new Serialize(DumpSettings.builder().setDereferenceAliases(true).build());
+        List<Event> events = serialize.serializeOne(sourceTree);
+        Present present = new Present(DumpSettings.builder().build());
 
-    return present.emitToString(events.iterator());
-  }
-
-  @Test
-  public void simple_load_Merge() {
-    String out = merge("merge/issue1096-simple-merge-input.yaml",
-        LoadSettings.builder().setSchema(new CoreSchema()).build());
-    String expected = TestUtils.getResource("merge/issue1096-simple-merge-output.yaml");
-    assertEquals(expected, out);
-  }
-
-  @Test
-  public void complex_load_Merge() {
-    String out = merge("merge/issue1096-complex-merge-input.yaml",
-        LoadSettings.builder().setSchema(new CoreSchema()).build());
-    String expected = TestUtils.getResource("merge/issue1096-complex-merge-output.yaml");
-    assertEquals(expected, out);
-  }
-
-  @Test
-  public void specs_load_Merge() {
-    String out = merge("merge/issue1096-merge-input.yaml",
-        LoadSettings.builder().setSchema(new CoreSchema()).setParseComments(false).build());
-    String expected = TestUtils.getResource("merge/issue1096-merge-output.yaml");
-    assertEquals(expected, out);
-  }
-
-  @Test
-  public void merge_As_Scalar() {
-    String str =
-        "test-list:\n" + " - &1\n" + "   a: 1\n" + "   b: 2\n" + " - &2 <<: *1\n" + " - <<: *2";
-
-    var loader = new Compose(
-        LoadSettings.builder().setSchema(new CoreSchema()).setParseComments(false).build());
-    try {
-      loader.composeReader(new StringReader(str));
-      fail();
-    } catch (Exception e) {
-      String error = e.getMessage();
-      assertTrue(error.contains("Expected mapping node or an anchor referencing mapping"), error);
-      assertTrue(error.contains("in reader, line 6, column 10:"), error);
+        return present.emitToString(events.iterator());
     }
-  }
+
+    @Test
+    public void simple_load_Merge() {
+        String out = merge("merge/issue1096-simple-merge-input.yaml",
+            LoadSettings.builder().setSchema(new CoreSchema()).build());
+        String expected = TestUtils.getResource("merge/issue1096-simple-merge-output.yaml");
+        assertEquals(expected, out);
+    }
+
+    @Test
+    public void complex_load_Merge() {
+        String out = merge("merge/issue1096-complex-merge-input.yaml",
+            LoadSettings.builder().setSchema(new CoreSchema()).build());
+        String expected = TestUtils.getResource("merge/issue1096-complex-merge-output.yaml");
+        assertEquals(expected, out);
+    }
+
+    @Test
+    public void specs_load_Merge() {
+        String out = merge("merge/issue1096-merge-input.yaml",
+            LoadSettings.builder().setSchema(new CoreSchema()).setParseComments(false).build());
+        String expected = TestUtils.getResource("merge/issue1096-merge-output.yaml");
+        assertEquals(expected, out);
+    }
+
+    @Test
+    public void merge_As_Scalar() {
+        String str =
+            "test-list:\n" + " - &1\n" + "   a: 1\n" + "   b: 2\n" + " - &2 <<: *1\n" + " - <<: *2";
+
+        var loader = new Compose(
+            LoadSettings.builder().setSchema(new CoreSchema()).setParseComments(false).build());
+        try {
+            loader.composeReader(new StringReader(str));
+            fail();
+        } catch (Exception e) {
+            String error = e.getMessage();
+            assertTrue(error.contains("Expected mapping node or an anchor referencing mapping"), error);
+            assertTrue(error.contains("in reader, line 6, column 10:"), error);
+        }
+    }
 }

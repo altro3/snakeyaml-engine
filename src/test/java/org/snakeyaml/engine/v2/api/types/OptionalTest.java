@@ -32,83 +32,83 @@ import java.util.Optional;
 @org.junit.jupiter.api.Tag("fast")
 class OptionalTest {
 
-  @Test
-  @DisplayName("Represent Optional as value")
-  void representOptional() {
-    var standardRepresenter = new StandardRepresenter(DumpSettings.builder().build());
-    Node node = standardRepresenter.represent("a");
-    assertEquals("tag:yaml.org,2002:java.util.Optional", node.getTag().getValue());
-  }
+    @Test
+    @DisplayName("Represent Optional as value")
+    void representOptional() {
+        var standardRepresenter = new StandardRepresenter(DumpSettings.builder().build());
+        Node node = standardRepresenter.represent("a");
+        assertEquals("tag:yaml.org,2002:java.util.Optional", node.getTag().getValue());
+    }
 
-  @Test
-  @DisplayName("Represent Optional.empty as null")
-  void representEmptyOptional() {
-    var standardRepresenter = new StandardRepresenter(DumpSettings.builder().build());
-    Node node = standardRepresenter.represent(null);
-    assertEquals("tag:yaml.org,2002:null", node.getTag().getValue());
-  }
+    @Test
+    @DisplayName("Represent Optional.empty as null")
+    void representEmptyOptional() {
+        var standardRepresenter = new StandardRepresenter(DumpSettings.builder().build());
+        Node node = standardRepresenter.represent(null);
+        assertEquals("tag:yaml.org,2002:null", node.getTag().getValue());
+    }
 
-  @Test
-  @DisplayName("Dump Optional as its value")
-  void dumpOptional() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    String str = dump.dumpToString("a");
-    assertEquals("!!java.util.Optional 'a'\n", str);
-  }
+    @Test
+    @DisplayName("Dump Optional as its value")
+    void dumpOptional() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        String str = dump.dumpToString("a");
+        assertEquals("!!java.util.Optional 'a'\n", str);
+    }
 
-  @Test
-  @DisplayName("Dump empty Optional as null")
-  void dumpEmptyOptional() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    String str = dump.dumpToString(null);
-    assertEquals("null\n", str);
-  }
+    @Test
+    @DisplayName("Dump empty Optional as null")
+    void dumpEmptyOptional() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        String str = dump.dumpToString(null);
+        assertEquals("null\n", str);
+    }
 
-  @Test
-  @DisplayName("Dump Optionals")
-  void dumpListOfOptional() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    String str = dump.dumpToString(Arrays.asList(Optional.of(2), null, Optional.of("a")));
-    assertEquals("[!!java.util.Optional '2', null, !!java.util.Optional 'a']\n", str);
-  }
+    @Test
+    @DisplayName("Dump Optionals")
+    void dumpListOfOptional() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        String str = dump.dumpToString(Arrays.asList(Optional.of(2), null, Optional.of("a")));
+        assertEquals("[!!java.util.Optional '2', null, !!java.util.Optional 'a']\n", str);
+    }
 
-  @Test
-  @DisplayName("Dump Optionals")
-  void dumpListOfOptional2() {
-    var settings = DumpSettings.builder().build();
-    var dump = new Dump(settings);
-    String str = dump.dumpToString(Optional.of(List.of(1, 2)));
-    assertEquals("!!java.util.Optional [1, 2]\n", str);
-  }
+    @Test
+    @DisplayName("Dump Optionals")
+    void dumpListOfOptional2() {
+        var settings = DumpSettings.builder().build();
+        var dump = new Dump(settings);
+        String str = dump.dumpToString(Optional.of(List.of(1, 2)));
+        assertEquals("!!java.util.Optional [1, 2]\n", str);
+    }
 
-  // parse
-  @Test
-  @DisplayName("Optional 'a' is parsed")
-  void parseOptional() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var str = (Optional<String>) load.loadFromString("!!java.util.Optional a");
-    assertEquals(Optional.of("a"), str);
-  }
+    // parse
+    @Test
+    @DisplayName("Optional 'a' is parsed")
+    void parseOptional() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var str = (Optional<String>) load.loadFromString("!!java.util.Optional a");
+        assertEquals(Optional.of("a"), str);
+    }
 
-  @Test
-  @DisplayName("Empty Optional parsed")
-  void parseEmptyOptional() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var str = (Optional<String>) load.loadFromString("!!java.util.Optional null");
-    assertNull(str);
-  }
+    @Test
+    @DisplayName("Empty Optional parsed")
+    void parseEmptyOptional() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var str = (Optional<String>) load.loadFromString("!!java.util.Optional null");
+        assertNull(str);
+    }
 
-  @Test
-  @DisplayName("Empty Optional parsed")
-  void parseEmptyOptional2() {
-    var settings = LoadSettings.builder().build();
-    var load = new Load(settings);
-    var str = (Optional<String>) load.loadFromString("!!java.util.Optional ");
-    assertNull(str);
-  }
+    @Test
+    @DisplayName("Empty Optional parsed")
+    void parseEmptyOptional2() {
+        var settings = LoadSettings.builder().build();
+        var load = new Load(settings);
+        var str = (Optional<String>) load.loadFromString("!!java.util.Optional ");
+        assertNull(str);
+    }
 }

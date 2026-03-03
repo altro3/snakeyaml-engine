@@ -23,9 +23,9 @@ import java.util.Map;
 @Tag("fast")
 class VersionTagsTupleTest {
 
-  @Test
-  void testToString() {
-    var tuple = new VersionTagsTuple(null, Map.of());
-    assertEquals("VersionTagsTuple<Optional.empty, {}>", tuple.toString());
-  }
+    @Test
+    void testToString() {
+        var tuple = new VersionTagsTuple(null, Map.of());
+        assertEquals("VersionTagsTuple<Optional.empty, {}>", tuple.toString());
+    }
 }
