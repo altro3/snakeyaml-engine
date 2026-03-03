@@ -55,197 +55,197 @@ import java.util.Set;
  */
 public class Serializer {
 
-  private final DumpSettings settings;
-  private final Emitable emitable;
-  private final Set<Node> serializedNodes;
-  private final Map<Node, Anchor> anchors;
-  private final boolean dereferenceAliases;
-  private final Set<Node> recursive;
-  private final MergeUtils mergeUtils;
+    private final DumpSettings settings;
+    private final Emitable emitable;
+    private final Set<Node> serializedNodes;
+    private final Map<Node, Anchor> anchors;
+    private final boolean dereferenceAliases;
+    private final Set<Node> recursive;
+    private final MergeUtils mergeUtils;
 
 
-  /**
-   * Create Serializer
-   *
-   * @param settings - dump configuration
-   * @param emitable - destination for the event stream
-   */
-  public Serializer(DumpSettings settings, Emitable emitable) {
-    this.settings = settings;
-    this.emitable = emitable;
-    this.serializedNodes = new HashSet<>();
-    this.anchors = new HashMap<>();
-    this.dereferenceAliases = settings.isDereferenceAliases();
-    this.recursive = Collections.newSetFromMap(new IdentityHashMap<>());
-    this.mergeUtils = new MergeUtils() {
-      @Override
-      public MappingNode asMappingNode(Node node) {
-        if (node instanceof MappingNode) {
-          return (MappingNode) node;
+    /**
+     * Create Serializer
+     *
+     * @param settings - dump configuration
+     * @param emitable - destination for the event stream
+     */
+    public Serializer(DumpSettings settings, Emitable emitable) {
+        this.settings = settings;
+        this.emitable = emitable;
+        this.serializedNodes = new HashSet<>();
+        this.anchors = new HashMap<>();
+        this.dereferenceAliases = settings.isDereferenceAliases();
+        this.recursive = Collections.newSetFromMap(new IdentityHashMap<>());
+        this.mergeUtils = new MergeUtils() {
+            @Override
+            public MappingNode asMappingNode(Node node) {
+                if (node instanceof MappingNode) {
+                    return (MappingNode) node;
+                }
+                // TODO: This need to be explored more to understand if only MappingNode possible.
+                // Or at least the error message needs to be improved.
+                throw new YamlEngineException("expecting MappingNode while processing merge.");
+            }
+        };
+    }
+
+    /**
+     * Serialize document
+     *
+     * @param node - the document root
+     */
+    public void serializeDocument(Node node) {
+        this.emitable.emit(new DocumentStartEvent(settings.isExplicitStart(), settings.getYamlDirective(), settings.getTagDirective()));
+        anchorNode(node);
+        if (settings.getExplicitRootTag() != null) {
+            node.setTag(settings.getExplicitRootTag());
         }
-        // TODO: This need to be explored more to understand if only MappingNode possible.
-        // Or at least the error message needs to be improved.
-        throw new YamlEngineException("expecting MappingNode while processing merge.");
-      }
-    };
-  }
+        serializeNode(node);
+        this.emitable.emit(new DocumentEndEvent(settings.isExplicitEnd()));
+        this.serializedNodes.clear();
+        this.anchors.clear();
+        this.recursive.clear();
+    }
 
-  /**
-   * Serialize document
-   *
-   * @param node - the document root
-   */
-  public void serializeDocument(Node node) {
-    this.emitable.emit(new DocumentStartEvent(settings.isExplicitStart(), settings.getYamlDirective(), settings.getTagDirective()));
-    anchorNode(node);
-    if (settings.getExplicitRootTag() != null) {
-      node.setTag(settings.getExplicitRootTag());
+    /**
+     * Emit {@link StreamStartEvent}
+     */
+    public void emitStreamStart() {
+        this.emitable.emit(new StreamStartEvent());
     }
-    serializeNode(node);
-    this.emitable.emit(new DocumentEndEvent(settings.isExplicitEnd()));
-    this.serializedNodes.clear();
-    this.anchors.clear();
-    this.recursive.clear();
-  }
 
-  /**
-   * Emit {@link StreamStartEvent}
-   */
-  public void emitStreamStart() {
-    this.emitable.emit(new StreamStartEvent());
-  }
+    /**
+     * Emit {@link StreamEndEvent}
+     */
+    public void emitStreamEnd() {
+        this.emitable.emit(new StreamEndEvent());
+    }
 
-  /**
-   * Emit {@link StreamEndEvent}
-   */
-  public void emitStreamEnd() {
-    this.emitable.emit(new StreamEndEvent());
-  }
-
-  private void anchorNode(Node node) {
-    final Node realNode;
-    if (node.getNodeType() == NodeType.ANCHOR) {
-      realNode = ((AnchorNode) node).getRealNode();
-    } else {
-      realNode = node;
-    }
-    if (this.anchors.containsKey(realNode)) {
-      // it looks weird, anchor does contain the key node, but we call computeIfAbsent()
-      // this is because the value is null (HashMap permits values to be null)
-      this.anchors.computeIfAbsent(realNode,
-          a -> settings.getAnchorGenerator().nextAnchor(realNode));
-    } else {
-      this.anchors.put(realNode,
-          realNode.getAnchor() != null ? settings.getAnchorGenerator().nextAnchor(realNode) : null);
-      switch (realNode.getNodeType()) {
-        case SEQUENCE:
-          var seqNode = (SequenceNode) realNode;
-          List<Node> list = seqNode.getValue();
-          for (Node item : list) {
-            anchorNode(item);
-          }
-          break;
-        case MAPPING:
-          var mappingNode = (MappingNode) realNode;
-          List<NodeTuple> map = mappingNode.getValue();
-          for (NodeTuple object : map) {
-            Node key = object.getKeyNode();
-            Node value = object.getValueNode();
-            anchorNode(key);
-            anchorNode(value);
-          }
-          break;
-        default: // no further action required for non-collections
-      }
-    }
-  }
-
-  /**
-   * Recursive serialization of a {@link Node}
-   *
-   * @param node - content
-   */
-  private void serializeNode(Node node) {
-    if (node.getNodeType() == NodeType.ANCHOR) {
-      node = ((AnchorNode) node).getRealNode();
-    }
-    if (dereferenceAliases && recursive.contains(node)) {
-      throw new YamlEngineException("Cannot dereferenceAliases for recursive structures.");
-    }
-    recursive.add(node);
-    Anchor tAlias;
-    if (!dereferenceAliases) {
-      tAlias = this.anchors.get(node);
-    } else {
-      tAlias = null;
-    }
-    if (!dereferenceAliases && this.serializedNodes.contains(node)) {
-      this.emitable.emit(new AliasEvent(tAlias));
-    } else {
-      this.serializedNodes.add(node);
-      switch (node.getNodeType()) {
-        case SCALAR:
-          var scalarNode = (ScalarNode) node;
-          serializeComments(node.getBlockComments());
-          Tag detectedTag =
-              settings.getSchema().getScalarResolver().resolve(scalarNode.getValue(), true);
-          Tag defaultTag =
-              settings.getSchema().getScalarResolver().resolve(scalarNode.getValue(), false);
-          ImplicitTuple tuple = new ImplicitTuple(node.getTag().equals(detectedTag),
-              node.getTag().equals(defaultTag));
-          ScalarEvent event = new ScalarEvent(tAlias, node.getTag().getValue(), tuple,
-              scalarNode.getValue(), scalarNode.getScalarStyle());
-          this.emitable.emit(event);
-          serializeComments(node.getInLineComments());
-          serializeComments(node.getEndComments());
-          break;
-        case SEQUENCE:
-          var seqNode = (SequenceNode) node;
-          serializeComments(node.getBlockComments());
-          boolean implicitS = node.getTag().equals(Tag.SEQ);
-          this.emitable.emit(new SequenceStartEvent(tAlias, node.getTag().getValue(), implicitS,
-              seqNode.getFlowStyle()));
-          List<Node> list = seqNode.getValue();
-          for (Node item : list) {
-            serializeNode(item);
-          }
-          this.emitable.emit(new SequenceEndEvent());
-          serializeComments(node.getInLineComments());
-          serializeComments(node.getEndComments());
-          break;
-        default:// instance of MappingNode
-          serializeComments(node.getBlockComments());
-          if (node.getTag() != Tag.COMMENT) {
-            boolean implicitM = node.getTag().equals(Tag.MAP);
-            var mappingNode = (MappingNode) node;
-            List<NodeTuple> map = mappingNode.getValue();
-            if (this.dereferenceAliases && mappingNode.hasMergeTag()) {
-              map = mergeUtils.flatten(mappingNode);
+    private void anchorNode(Node node) {
+        final Node realNode;
+        if (node.getNodeType() == NodeType.ANCHOR) {
+            realNode = ((AnchorNode) node).getRealNode();
+        } else {
+            realNode = node;
+        }
+        if (this.anchors.containsKey(realNode)) {
+            // it looks weird, anchor does contain the key node, but we call computeIfAbsent()
+            // this is because the value is null (HashMap permits values to be null)
+            this.anchors.computeIfAbsent(realNode,
+                a -> settings.getAnchorGenerator().nextAnchor(realNode));
+        } else {
+            this.anchors.put(realNode,
+                realNode.getAnchor() != null ? settings.getAnchorGenerator().nextAnchor(realNode) : null);
+            switch (realNode.getNodeType()) {
+                case SEQUENCE:
+                    var seqNode = (SequenceNode) realNode;
+                    List<Node> list = seqNode.getValue();
+                    for (Node item : list) {
+                        anchorNode(item);
+                    }
+                    break;
+                case MAPPING:
+                    var mappingNode = (MappingNode) realNode;
+                    List<NodeTuple> map = mappingNode.getValue();
+                    for (NodeTuple object : map) {
+                        Node key = object.getKeyNode();
+                        Node value = object.getValueNode();
+                        anchorNode(key);
+                        anchorNode(value);
+                    }
+                    break;
+                default: // no further action required for non-collections
             }
-            this.emitable.emit(new MappingStartEvent(tAlias, mappingNode.getTag().getValue(),
-                implicitM, mappingNode.getFlowStyle(), null, null));
-            for (NodeTuple entry : map) {
-              Node key = entry.getKeyNode();
-              Node value = entry.getValueNode();
-              serializeNode(key);
-              serializeNode(value);
-            }
-            this.emitable.emit(new MappingEndEvent());
-            serializeComments(node.getInLineComments());
-            serializeComments(node.getEndComments());
-          }
-      }
+        }
     }
-    recursive.remove(node);
-  }
 
-  private void serializeComments(List<CommentLine> comments) {
-    if (settings.getDumpComments() && comments != null) {
-      for (CommentLine line : comments) {
-        var commentEvent = new CommentEvent(line.getCommentType(), line.getValue(),
-            line.getStartMark(), line.getEndMark());
-        this.emitable.emit(commentEvent);
-      }
+    /**
+     * Recursive serialization of a {@link Node}
+     *
+     * @param node - content
+     */
+    private void serializeNode(Node node) {
+        if (node.getNodeType() == NodeType.ANCHOR) {
+            node = ((AnchorNode) node).getRealNode();
+        }
+        if (dereferenceAliases && recursive.contains(node)) {
+            throw new YamlEngineException("Cannot dereferenceAliases for recursive structures.");
+        }
+        recursive.add(node);
+        Anchor tAlias;
+        if (!dereferenceAliases) {
+            tAlias = this.anchors.get(node);
+        } else {
+            tAlias = null;
+        }
+        if (!dereferenceAliases && this.serializedNodes.contains(node)) {
+            this.emitable.emit(new AliasEvent(tAlias));
+        } else {
+            this.serializedNodes.add(node);
+            switch (node.getNodeType()) {
+                case SCALAR:
+                    var scalarNode = (ScalarNode) node;
+                    serializeComments(node.getBlockComments());
+                    Tag detectedTag =
+                        settings.getSchema().getScalarResolver().resolve(scalarNode.getValue(), true);
+                    Tag defaultTag =
+                        settings.getSchema().getScalarResolver().resolve(scalarNode.getValue(), false);
+                    ImplicitTuple tuple = new ImplicitTuple(node.getTag().equals(detectedTag),
+                        node.getTag().equals(defaultTag));
+                    ScalarEvent event = new ScalarEvent(tAlias, node.getTag().getValue(), tuple,
+                        scalarNode.getValue(), scalarNode.getScalarStyle());
+                    this.emitable.emit(event);
+                    serializeComments(node.getInLineComments());
+                    serializeComments(node.getEndComments());
+                    break;
+                case SEQUENCE:
+                    var seqNode = (SequenceNode) node;
+                    serializeComments(node.getBlockComments());
+                    boolean implicitS = node.getTag().equals(Tag.SEQ);
+                    this.emitable.emit(new SequenceStartEvent(tAlias, node.getTag().getValue(), implicitS,
+                        seqNode.getFlowStyle()));
+                    List<Node> list = seqNode.getValue();
+                    for (Node item : list) {
+                        serializeNode(item);
+                    }
+                    this.emitable.emit(new SequenceEndEvent());
+                    serializeComments(node.getInLineComments());
+                    serializeComments(node.getEndComments());
+                    break;
+                default:// instance of MappingNode
+                    serializeComments(node.getBlockComments());
+                    if (node.getTag() != Tag.COMMENT) {
+                        boolean implicitM = node.getTag().equals(Tag.MAP);
+                        var mappingNode = (MappingNode) node;
+                        List<NodeTuple> map = mappingNode.getValue();
+                        if (this.dereferenceAliases && mappingNode.hasMergeTag()) {
+                            map = mergeUtils.flatten(mappingNode);
+                        }
+                        this.emitable.emit(new MappingStartEvent(tAlias, mappingNode.getTag().getValue(),
+                            implicitM, mappingNode.getFlowStyle(), null, null));
+                        for (NodeTuple entry : map) {
+                            Node key = entry.getKeyNode();
+                            Node value = entry.getValueNode();
+                            serializeNode(key);
+                            serializeNode(value);
+                        }
+                        this.emitable.emit(new MappingEndEvent());
+                        serializeComments(node.getInLineComments());
+                        serializeComments(node.getEndComments());
+                    }
+            }
+        }
+        recursive.remove(node);
     }
-  }
+
+    private void serializeComments(List<CommentLine> comments) {
+        if (settings.getDumpComments() && comments != null) {
+            for (CommentLine line : comments) {
+                var commentEvent = new CommentEvent(line.getCommentType(), line.getValue(),
+                    line.getStartMark(), line.getEndMark());
+                this.emitable.emit(commentEvent);
+            }
+        }
+    }
 }

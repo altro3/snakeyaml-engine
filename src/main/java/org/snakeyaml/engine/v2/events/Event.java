@@ -21,43 +21,43 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class Event {
 
-  private final Mark startMark;
-  private final Mark endMark;
+    private final Mark startMark;
+    private final Mark endMark;
 
-  public Event(Mark startMark, Mark endMark) {
-    if ((startMark != null && endMark == null) || (startMark == null && endMark != null)) {
-      throw new NullPointerException("Both marks must be either present or absent.");
+    public Event(Mark startMark, Mark endMark) {
+        if ((startMark != null && endMark == null) || (startMark == null && endMark != null)) {
+            throw new NullPointerException("Both marks must be either present or absent.");
+        }
+        this.startMark = startMark;
+        this.endMark = endMark;
     }
-    this.startMark = startMark;
-    this.endMark = endMark;
-  }
 
-  /*
-   * Create Node for emitter
-   */
-  public Event() {
-    this(null, null);
-  }
+    /*
+     * Create Node for emitter
+     */
+    public Event() {
+        this(null, null);
+    }
 
-  public Mark getStartMark() {
-    return startMark;
-  }
+    public Mark getStartMark() {
+        return startMark;
+    }
 
-  public Mark getEndMark() {
-    return endMark;
-  }
+    public Mark getEndMark() {
+        return endMark;
+    }
 
-  /**
-   * Get the type (kind) if this Event
-   *
-   * @return the ID of this Event
-   */
-  public abstract Event.ID getEventId();
+    /**
+     * Get the type (kind) if this Event
+     *
+     * @return the ID of this Event
+     */
+    public abstract Event.ID getEventId();
 
-  /**
-   * ID of a non-abstract Event
-   */
-  public enum ID {
-    Alias, Comment, DocumentEnd, DocumentStart, MappingEnd, MappingStart, Scalar, SequenceEnd, SequenceStart, StreamEnd, StreamStart // NOSONAR
-  }
+    /**
+     * ID of a non-abstract Event
+     */
+    public enum ID {
+        Alias, Comment, DocumentEnd, DocumentStart, MappingEnd, MappingStart, Scalar, SequenceEnd, SequenceStart, StreamEnd, StreamStart // NOSONAR
+    }
 }

@@ -20,24 +20,25 @@ package org.snakeyaml.engine.v2.api;
  */
 public interface StreamDataWriter {
 
-  /**
-   * Flushes this stream by writing any buffered output to the underlying stream.
-   */
-  default void flush() {}
+    /**
+     * Flushes this stream by writing any buffered output to the underlying stream.
+     */
+    default void flush() {
+    }
 
-  /**
-   * write the whole data
-   *
-   * @param str - data to write
-   */
-  void write(String str);
+    /**
+     * write the whole data
+     *
+     * @param str - data to write
+     */
+    void write(String str);
 
-  /**
-   * Write part of the data
-   *
-   * @param str - the data to write (the source)
-   * @param off - offset to start from
-   * @param len - number of chars to write
-   */
-  void write(String str, int off, int len);
+    /**
+     * Write part of the data
+     *
+     * @param str - the data to write (the source)
+     * @param off - offset to start from
+     * @param len - number of chars to write
+     */
+    void write(String str, int off, int len);
 }

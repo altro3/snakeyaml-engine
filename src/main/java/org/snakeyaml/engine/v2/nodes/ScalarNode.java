@@ -15,6 +15,7 @@ package org.snakeyaml.engine.v2.nodes;
 
 import java.util.Objects;
 import java.util.Optional;
+
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -26,55 +27,55 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public class ScalarNode extends Node {
 
-  private final ScalarStyle style;
-  private final String value;
+    private final ScalarStyle style;
+    private final String value;
 
-  public ScalarNode(Tag tag, boolean resolved, String value, ScalarStyle style, Mark startMark,
-      Mark endMark) {
-    super(tag, startMark, endMark);
-    Objects.requireNonNull(value, "value in a Node is required.");
-    Objects.requireNonNull(style, "Scalar style must be provided.");
-    this.value = value;
-    this.style = style;
-    this.resolved = resolved;
-  }
+    public ScalarNode(Tag tag, boolean resolved, String value, ScalarStyle style, Mark startMark,
+                      Mark endMark) {
+        super(tag, startMark, endMark);
+        Objects.requireNonNull(value, "value in a Node is required.");
+        Objects.requireNonNull(style, "Scalar style must be provided.");
+        this.value = value;
+        this.style = style;
+        this.resolved = resolved;
+    }
 
-  public ScalarNode(Tag tag, String value, ScalarStyle style) {
-    this(tag, true, value, style, null, null);
-  }
+    public ScalarNode(Tag tag, String value, ScalarStyle style) {
+        this(tag, true, value, style, null, null);
+    }
 
-  /**
-   * Get scalar style of this node.
-   *
-   * @return style of this scalar node
-   * @see org.snakeyaml.engine.v2.events.ScalarEvent Flow styles -
-   *      https://yaml.org/spec/1.2/spec.html#id2786942 Block styles -
-   *      https://yaml.org/spec/1.2/spec.html#id2793652
-   */
-  public ScalarStyle getScalarStyle() {
-    return style;
-  }
+    /**
+     * Get scalar style of this node.
+     *
+     * @return style of this scalar node
+     * @see org.snakeyaml.engine.v2.events.ScalarEvent Flow styles -
+     *     https://yaml.org/spec/1.2/spec.html#id2786942 Block styles -
+     *     https://yaml.org/spec/1.2/spec.html#id2793652
+     */
+    public ScalarStyle getScalarStyle() {
+        return style;
+    }
 
-  @Override
-  public NodeType getNodeType() {
-    return NodeType.SCALAR;
-  }
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.SCALAR;
+    }
 
-  /**
-   * Value of this scalar.
-   *
-   * @return Scalar's value.
-   */
-  public String getValue() {
-    return value;
-  }
+    /**
+     * Value of this scalar.
+     *
+     * @return Scalar's value.
+     */
+    public String getValue() {
+        return value;
+    }
 
-  public boolean isPlain() {
-    return style == ScalarStyle.PLAIN;
-  }
+    public boolean isPlain() {
+        return style == ScalarStyle.PLAIN;
+    }
 
-  @Override
-  public String toString() {
-    return "<ScalarNode (tag=" + getTag() + ", value=" + getValue() + ")>";
-  }
+    @Override
+    public String toString() {
+        return "<ScalarNode (tag=" + getTag() + ", value=" + getValue() + ")>";
+    }
 }

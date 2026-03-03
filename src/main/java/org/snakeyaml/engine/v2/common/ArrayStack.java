@@ -22,41 +22,41 @@ import java.util.ArrayList;
  */
 public class ArrayStack<T> {
 
-  private final ArrayList<T> stack;
+    private final ArrayList<T> stack;
 
-  /**
-   * Create empty stack
-   *
-   * @param initSize - the initial size of the stack
-   */
-  public ArrayStack(int initSize) {
-    stack = new ArrayList<>(initSize);
-  }
+    /**
+     * Create empty stack
+     *
+     * @param initSize - the initial size of the stack
+     */
+    public ArrayStack(int initSize) {
+        stack = new ArrayList<>(initSize);
+    }
 
-  /**
-   * Add the element to the head
-   *
-   * @param obj - data to be added
-   */
-  public void push(T obj) {
-    stack.add(obj);
-  }
+    /**
+     * Add the element to the head
+     *
+     * @param obj - data to be added
+     */
+    public void push(T obj) {
+        stack.add(obj);
+    }
 
-  /**
-   * Get the head and remove it from the stack
-   *
-   * @return the head
-   */
-  public T pop() {
-    return stack.remove(stack.size() - 1);
-  }
+    /**
+     * Get the head and remove it from the stack
+     *
+     * @return the head
+     */
+    public T pop() {
+        return stack.remove(stack.size() - 1);
+    }
 
-  /**
-   * Check
-   *
-   * @return true when it contains nothing
-   */
-  public boolean isEmpty() {
-    return stack.isEmpty();
-  }
+    /**
+     * Check
+     *
+     * @return true when it contains nothing
+     */
+    public boolean isEmpty() {
+        return stack.isEmpty();
+    }
 }

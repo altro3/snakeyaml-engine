@@ -25,20 +25,20 @@ import org.snakeyaml.engine.v2.resolver.ScalarResolver;
  */
 public class ConstructOptionalClass extends ConstructScalar {
 
-  private final ScalarResolver scalarResolver;
+    private final ScalarResolver scalarResolver;
 
-  public ConstructOptionalClass(ScalarResolver scalarResolver) {
-    this.scalarResolver = scalarResolver;
-  }
-
-  @Override
-  public Object construct(Node node) {
-    if (node.getNodeType() != NodeType.SCALAR) {
-      throw new ConstructorException("while constructing Optional", null, "found non scalar node",
-          null);
+    public ConstructOptionalClass(ScalarResolver scalarResolver) {
+        this.scalarResolver = scalarResolver;
     }
-    String value = constructScalar(node);
-    Tag implicitTag = scalarResolver.resolve(value, true);
-    return !implicitTag.equals(Tag.NULL) ? value : null;
-  }
+
+    @Override
+    public Object construct(Node node) {
+        if (node.getNodeType() != NodeType.SCALAR) {
+            throw new ConstructorException("while constructing Optional", null, "found non scalar node",
+                null);
+        }
+        String value = constructScalar(node);
+        Tag implicitTag = scalarResolver.resolve(value, true);
+        return !implicitTag.equals(Tag.NULL) ? value : null;
+    }
 }

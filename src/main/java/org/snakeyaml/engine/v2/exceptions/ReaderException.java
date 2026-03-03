@@ -18,57 +18,57 @@ package org.snakeyaml.engine.v2.exceptions;
  */
 public class ReaderException extends YamlEngineException {
 
-  private final String name;
-  private final int codePoint;
-  private final int position;
+    private final String name;
+    private final int codePoint;
+    private final int position;
 
-  /**
-   * Create
-   *
-   * @param name - the name of the reader
-   * @param position - the position from the beginning of the stream
-   * @param codePoint - the invalid character
-   * @param message - the problem
-   */
-  public ReaderException(String name, int position, int codePoint, String message) {
-    super(message);
-    this.name = name;
-    this.codePoint = codePoint;
-    this.position = position;
-  }
+    /**
+     * Create
+     *
+     * @param name - the name of the reader
+     * @param position - the position from the beginning of the stream
+     * @param codePoint - the invalid character
+     * @param message - the problem
+     */
+    public ReaderException(String name, int position, int codePoint, String message) {
+        super(message);
+        this.name = name;
+        this.codePoint = codePoint;
+        this.position = position;
+    }
 
-  /**
-   * getter
-   *
-   * @return the name of the reader
-   */
-  public String getName() {
-    return name;
-  }
+    /**
+     * getter
+     *
+     * @return the name of the reader
+     */
+    public String getName() {
+        return name;
+    }
 
-  /**
-   * getter
-   *
-   * @return the invalid char
-   */
-  public int getCodePoint() {
-    return codePoint;
-  }
+    /**
+     * getter
+     *
+     * @return the invalid char
+     */
+    public int getCodePoint() {
+        return codePoint;
+    }
 
-  /**
-   * getter
-   *
-   * @return position of the error
-   */
-  public int getPosition() {
-    return position;
-  }
+    /**
+     * getter
+     *
+     * @return position of the error
+     */
+    public int getPosition() {
+        return position;
+    }
 
-  @Override
-  public String toString() {
-    final String s = new String(Character.toChars(codePoint));
-    return "unacceptable code point '" + s + "' (0x" + Integer.toHexString(codePoint).toUpperCase()
-        + ") " + getMessage() + "\nin \"" + name + "\", position " + position;
-  }
+    @Override
+    public String toString() {
+        final String s = new String(Character.toChars(codePoint));
+        return "unacceptable code point '" + s + "' (0x" + Integer.toHexString(codePoint).toUpperCase()
+            + ") " + getMessage() + "\nin \"" + name + "\", position " + position;
+    }
 }
 

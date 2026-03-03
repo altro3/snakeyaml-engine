@@ -20,42 +20,42 @@ package org.snakeyaml.engine.v2.common;
  * power and readability.
  */
 public enum ScalarStyle {
-  /**
-   * Double quoted scalar
-   */
-  DOUBLE_QUOTED('"'),
-  /**
-   * Single quoted scalar
-   */
-  SINGLE_QUOTED('\''),
-  /**
-   * Literal scalar
-   */
-  LITERAL('|'),
-  /**
-   * Folded scalar
-   */
-  FOLDED('>'),
-  /**
-   * Mixture of scalar styles to dump JSON format. Double-quoted style for !!str, !!binary,
-   * !!timestamp. Plain style - for !!bool, !!float, !!int, !!null
-   *
-   * These are never dumped - !!merge, !!value, !!yaml
-   */
-  JSON_SCALAR_STYLE('J'),
-  /**
-   * Plain scalar
-   */
-  PLAIN(null);
+    /**
+     * Double quoted scalar
+     */
+    DOUBLE_QUOTED('"'),
+    /**
+     * Single quoted scalar
+     */
+    SINGLE_QUOTED('\''),
+    /**
+     * Literal scalar
+     */
+    LITERAL('|'),
+    /**
+     * Folded scalar
+     */
+    FOLDED('>'),
+    /**
+     * Mixture of scalar styles to dump JSON format. Double-quoted style for !!str, !!binary,
+     * !!timestamp. Plain style - for !!bool, !!float, !!int, !!null
+     * <p>
+     * These are never dumped - !!merge, !!value, !!yaml
+     */
+    JSON_SCALAR_STYLE('J'),
+    /**
+     * Plain scalar
+     */
+    PLAIN(null);
 
-  private final Character styleOpt;
+    private final Character styleOpt;
 
-  ScalarStyle(Character style) {
-    this.styleOpt = style;
-  }
+    ScalarStyle(Character style) {
+        this.styleOpt = style;
+    }
 
-  @Override
-  public String toString() {
-    return styleOpt != null ? styleOpt.toString() : ":";
-  }
+    @Override
+    public String toString() {
+        return styleOpt != null ? styleOpt.toString() : ":";
+    }
 }

@@ -27,21 +27,21 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class StreamEndEvent extends Event {
 
-  public StreamEndEvent(Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-  }
+    public StreamEndEvent(Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+    }
 
-  public StreamEndEvent() {
-    super();
-  }
+    public StreamEndEvent() {
+        super();
+    }
 
-  @Override
-  public ID getEventId() {
-    return ID.StreamEnd;
-  }
+    @Override
+    public ID getEventId() {
+        return ID.StreamEnd;
+    }
 
-  @Override
-  public String toString() {
-    return "-STR";
-  }
+    @Override
+    public String toString() {
+        return "-STR";
+    }
 }

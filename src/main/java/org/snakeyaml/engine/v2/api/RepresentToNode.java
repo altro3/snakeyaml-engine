@@ -24,11 +24,11 @@ import org.snakeyaml.engine.v2.nodes.Node;
  */
 public interface RepresentToNode {
 
-  /**
-   * Create a Node
-   *
-   * @param data the instance to represent
-   * @return Node to dump
-   */
-  Node representData(Object data);
+    /**
+     * Create a Node
+     *
+     * @param data the instance to represent
+     * @return Node to dump
+     */
+    Node representData(Object data);
 }

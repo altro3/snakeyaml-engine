@@ -17,12 +17,12 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class BlockMappingStartToken extends Token {
 
-  public BlockMappingStartToken(Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-  }
+    public BlockMappingStartToken(Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+    }
 
-  @Override
-  public Token.ID getTokenId() {
-    return ID.BlockMappingStart;
-  }
+    @Override
+    public Token.ID getTokenId() {
+        return ID.BlockMappingStart;
+    }
 }

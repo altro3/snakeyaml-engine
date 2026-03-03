@@ -27,27 +27,27 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class SequenceStartEvent extends CollectionStartEvent {
 
-  public SequenceStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
-      Mark startMark, Mark endMark) {
-    super(anchor, tag, implicit, flowStyle, startMark, endMark);
-  }
-
-  public SequenceStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle) {
-    this(anchor, tag, implicit, flowStyle, null, null);
-  }
-
-  @Override
-  public ID getEventId() {
-    return ID.SequenceStart;
-  }
-
-  @Override
-  public String toString() {
-    var builder = new StringBuilder("+SEQ");
-    if (flowStyle == FlowStyle.FLOW) {
-      builder.append(" []");
+    public SequenceStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
+                              Mark startMark, Mark endMark) {
+        super(anchor, tag, implicit, flowStyle, startMark, endMark);
     }
-    builder.append(super.toString());
-    return builder.toString();
-  }
+
+    public SequenceStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle) {
+        this(anchor, tag, implicit, flowStyle, null, null);
+    }
+
+    @Override
+    public ID getEventId() {
+        return ID.SequenceStart;
+    }
+
+    @Override
+    public String toString() {
+        var builder = new StringBuilder("+SEQ");
+        if (flowStyle == FlowStyle.FLOW) {
+            builder.append(" []");
+        }
+        builder.append(super.toString());
+        return builder.toString();
+    }
 }

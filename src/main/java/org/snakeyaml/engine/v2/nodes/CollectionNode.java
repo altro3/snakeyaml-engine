@@ -15,6 +15,7 @@ package org.snakeyaml.engine.v2.nodes;
 
 import java.util.List;
 import java.util.Objects;
+
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -24,35 +25,35 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class CollectionNode<T> extends Node {
 
-  private FlowStyle flowStyle;
+    private FlowStyle flowStyle;
 
-  public CollectionNode(Tag tag, FlowStyle flowStyle, Mark startMark, Mark endMark) {
-    super(tag, startMark, endMark);
-    setFlowStyle(flowStyle);
-  }
+    public CollectionNode(Tag tag, FlowStyle flowStyle, Mark startMark, Mark endMark) {
+        super(tag, startMark, endMark);
+        setFlowStyle(flowStyle);
+    }
 
-  /**
-   * Returns the elements in this sequence.
-   *
-   * @return Nodes in the specified order.
-   */
-  public abstract List<T> getValue();
+    /**
+     * Returns the elements in this sequence.
+     *
+     * @return Nodes in the specified order.
+     */
+    public abstract List<T> getValue();
 
-  /**
-   * Serialization style of this collection.
-   *
-   * @return <code>true</code> for flow style, <code>false</code> for block style.
-   */
-  public FlowStyle getFlowStyle() {
-    return flowStyle;
-  }
+    /**
+     * Serialization style of this collection.
+     *
+     * @return <code>true</code> for flow style, <code>false</code> for block style.
+     */
+    public FlowStyle getFlowStyle() {
+        return flowStyle;
+    }
 
-  public void setFlowStyle(FlowStyle flowStyle) {
-    Objects.requireNonNull(flowStyle, "Flow style must be provided.");
-    this.flowStyle = flowStyle;
-  }
+    public void setFlowStyle(FlowStyle flowStyle) {
+        Objects.requireNonNull(flowStyle, "Flow style must be provided.");
+        this.flowStyle = flowStyle;
+    }
 
-  public void setEndMark(Mark endMark) {
-    this.endMark = endMark;
-  }
+    public void setEndMark(Mark endMark) {
+        this.endMark = endMark;
+    }
 }

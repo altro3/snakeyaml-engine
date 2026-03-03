@@ -33,27 +33,27 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class MappingStartEvent extends CollectionStartEvent {
 
-  public MappingStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
-      Mark startMark, Mark endMark) {
-    super(anchor, tag, implicit, flowStyle, startMark, endMark);
-  }
-
-  public MappingStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle) {
-    this(anchor, tag, implicit, flowStyle, null, null);
-  }
-
-  @Override
-  public ID getEventId() {
-    return ID.MappingStart;
-  }
-
-  @Override
-  public String toString() {
-    var builder = new StringBuilder("+MAP");
-    if (flowStyle == FlowStyle.FLOW) {
-      builder.append(" {}");
+    public MappingStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
+                             Mark startMark, Mark endMark) {
+        super(anchor, tag, implicit, flowStyle, startMark, endMark);
     }
-    builder.append(super.toString());
-    return builder.toString();
-  }
+
+    public MappingStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle) {
+        this(anchor, tag, implicit, flowStyle, null, null);
+    }
+
+    @Override
+    public ID getEventId() {
+        return ID.MappingStart;
+    }
+
+    @Override
+    public String toString() {
+        var builder = new StringBuilder("+MAP");
+        if (flowStyle == FlowStyle.FLOW) {
+            builder.append(" {}");
+        }
+        builder.append(super.toString());
+        return builder.toString();
+    }
 }

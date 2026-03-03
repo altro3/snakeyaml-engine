@@ -21,51 +21,52 @@ import java.util.regex.Pattern;
  * ScalarResolver for Core Schema
  */
 public class CoreScalarResolver extends BaseScalarResolver {
-  /**
-   * Boolean as defined in Core
-   */
-  public static final Pattern BOOL = Pattern.compile("^(?:true|True|TRUE|false|False|FALSE)$");
-  /**
-   * Float as defined in JSON (Number which is Float)
-   */
-  public static final Pattern FLOAT =
-      Pattern.compile("^([-+]?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)([eE][-+]?[0-9]+)?)" + // float
-          "|([-+]?\\.(?:inf|Inf|INF))" + // infinity
-          "|(\\.(?:nan|NaN|NAN))$"); // not a number
-  /**
-   * Merge is optional, but not defined in YAML 1.2
-   */
-  public static final Pattern MERGE = Pattern.compile("^(?:<<)$");
-  /**
-   * Integer as defined in Core
-   */
-  public static final Pattern INT = Pattern.compile("^([-+]?[0-9]+)" + // (base 10)
-      "|(0o[0-7]+)" + // (base 8)
-      "|(0x[0-9a-fA-F]+)$" // (base 16)
-  );
-  /**
-   * Null as defined in Core
-   */
-  public static final Pattern NULL = Pattern.compile("^(?:~|null|Null|NULL| )$");
 
-  public CoreScalarResolver(boolean supportMerge) {
-    if (supportMerge) {
-      addImplicitResolver(Tag.MERGE, MERGE, "<");
-    }
-  }
-
-  /**
-   * Register all the resolvers to be applied
-   */
-  protected void addImplicitResolvers() {
-    addImplicitResolver(Tag.NULL, EMPTY, null);
-    addImplicitResolver(Tag.BOOL, BOOL, "tfTF");
-    /*
-     * INT must be before FLOAT because the regular expression for FLOAT matches INT
+    /**
+     * Boolean as defined in Core
      */
-    addImplicitResolver(Tag.INT, INT, "-+0123456789");
-    addImplicitResolver(Tag.FLOAT, FLOAT, "-+0123456789.");
-    addImplicitResolver(Tag.NULL, NULL, "n\u0000");
-    addImplicitResolver(Tag.ENV_TAG, ENV_FORMAT, "$");
-  }
+    public static final Pattern BOOL = Pattern.compile("^(?:true|True|TRUE|false|False|FALSE)$");
+    /**
+     * Float as defined in JSON (Number which is Float)
+     */
+    public static final Pattern FLOAT =
+        Pattern.compile("^([-+]?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)([eE][-+]?[0-9]+)?)" + // float
+            "|([-+]?\\.(?:inf|Inf|INF))" + // infinity
+            "|(\\.(?:nan|NaN|NAN))$"); // not a number
+    /**
+     * Merge is optional, but not defined in YAML 1.2
+     */
+    public static final Pattern MERGE = Pattern.compile("^(?:<<)$");
+    /**
+     * Integer as defined in Core
+     */
+    public static final Pattern INT = Pattern.compile("^([-+]?[0-9]+)" + // (base 10)
+        "|(0o[0-7]+)" + // (base 8)
+        "|(0x[0-9a-fA-F]+)$" // (base 16)
+    );
+    /**
+     * Null as defined in Core
+     */
+    public static final Pattern NULL = Pattern.compile("^(?:~|null|Null|NULL| )$");
+
+    public CoreScalarResolver(boolean supportMerge) {
+        if (supportMerge) {
+            addImplicitResolver(Tag.MERGE, MERGE, "<");
+        }
+    }
+
+    /**
+     * Register all the resolvers to be applied
+     */
+    protected void addImplicitResolvers() {
+        addImplicitResolver(Tag.NULL, EMPTY, null);
+        addImplicitResolver(Tag.BOOL, BOOL, "tfTF");
+        /*
+         * INT must be before FLOAT because the regular expression for FLOAT matches INT
+         */
+        addImplicitResolver(Tag.INT, INT, "-+0123456789");
+        addImplicitResolver(Tag.FLOAT, FLOAT, "-+0123456789.");
+        addImplicitResolver(Tag.NULL, NULL, "n\u0000");
+        addImplicitResolver(Tag.ENV_TAG, ENV_FORMAT, "$");
+    }
 }

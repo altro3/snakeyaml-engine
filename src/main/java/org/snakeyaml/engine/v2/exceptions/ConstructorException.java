@@ -18,29 +18,29 @@ package org.snakeyaml.engine.v2.exceptions;
  */
 public class ConstructorException extends MarkedYamlEngineException { // NOSONAR
 
-  /**
-   * Create
-   *
-   * @param context - part of the document
-   * @param contextMark - context position
-   * @param problem - the issue
-   * @param problemMark - problem position
-   * @param cause - the reason
-   */
-  public ConstructorException(String context, Mark contextMark, String problem, Mark problemMark,
-      Throwable cause) {
-    super(context, contextMark, problem, problemMark, cause);
-  }
+    /**
+     * Create
+     *
+     * @param context - part of the document
+     * @param contextMark - context position
+     * @param problem - the issue
+     * @param problemMark - problem position
+     * @param cause - the reason
+     */
+    public ConstructorException(String context, Mark contextMark, String problem, Mark problemMark,
+                                Throwable cause) {
+        super(context, contextMark, problem, problemMark, cause);
+    }
 
-  /**
-   * Create
-   *
-   * @param context - part of the document
-   * @param contextMark - context position
-   * @param problem - the issue
-   * @param problemMark - problem position
-   */
-  public ConstructorException(String context, Mark contextMark, String problem, Mark problemMark) {
-    this(context, contextMark, problem, problemMark, null);
-  }
+    /**
+     * Create
+     *
+     * @param context - part of the document
+     * @param contextMark - context position
+     * @param problem - the issue
+     * @param problemMark - problem position
+     */
+    public ConstructorException(String context, Mark contextMark, String problem, Mark problemMark) {
+        this(context, contextMark, problem, problemMark, null);
+    }
 }

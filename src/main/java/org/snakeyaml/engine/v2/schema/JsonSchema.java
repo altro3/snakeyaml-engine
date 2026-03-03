@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.constructor.ConstructYamlNull;
 import org.snakeyaml.engine.v2.constructor.json.ConstructOptionalClass;
@@ -33,44 +34,44 @@ import org.snakeyaml.engine.v2.resolver.ScalarResolver;
  * Default schema
  */
 public class JsonSchema implements Schema {
-  // No need to extend Failsafe schema because it is empty
+    // No need to extend Failsafe schema because it is empty
 
-  private final Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
-  private final ScalarResolver scalarResolver = new JsonScalarResolver();
+    private final Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
+    private final ScalarResolver scalarResolver = new JsonScalarResolver();
 
-  /**
-   * Create the instance
-   */
-  public JsonSchema() {
-    this.tagConstructors.put(Tag.NULL, new ConstructYamlNull());
-    this.tagConstructors.put(Tag.BOOL, new ConstructYamlJsonBool());
-    this.tagConstructors.put(Tag.INT, new ConstructYamlJsonInt());
-    this.tagConstructors.put(Tag.FLOAT, new ConstructYamlJsonFloat());
+    /**
+     * Create the instance
+     */
+    public JsonSchema() {
+        this.tagConstructors.put(Tag.NULL, new ConstructYamlNull());
+        this.tagConstructors.put(Tag.BOOL, new ConstructYamlJsonBool());
+        this.tagConstructors.put(Tag.INT, new ConstructYamlJsonInt());
+        this.tagConstructors.put(Tag.FLOAT, new ConstructYamlJsonFloat());
 
-    this.tagConstructors.put(Tag.BINARY, new ConstructYamlBinary());
+        this.tagConstructors.put(Tag.BINARY, new ConstructYamlBinary());
 
-    this.tagConstructors.put(new Tag(UUID.class), new ConstructUuidClass());
-    this.tagConstructors.put(new Tag(Optional.class),
-        new ConstructOptionalClass(getScalarResolver()));
-  }
+        this.tagConstructors.put(new Tag(UUID.class), new ConstructUuidClass());
+        this.tagConstructors.put(new Tag(Optional.class),
+            new ConstructOptionalClass(getScalarResolver()));
+    }
 
-  /**
-   * Create ScalarResolver
-   *
-   * @return JsonScalarResolver
-   */
-  @Override
-  public ScalarResolver getScalarResolver() {
-    return scalarResolver;
-  }
+    /**
+     * Create ScalarResolver
+     *
+     * @return JsonScalarResolver
+     */
+    @Override
+    public ScalarResolver getScalarResolver() {
+        return scalarResolver;
+    }
 
-  /**
-   * Basic constructs
-   *
-   * @return map with constructs
-   */
-  @Override
-  public Map<Tag, ConstructNode> getSchemaTagConstructors() {
-    return tagConstructors;
-  }
+    /**
+     * Basic constructs
+     *
+     * @return map with constructs
+     */
+    @Override
+    public Map<Tag, ConstructNode> getSchemaTagConstructors() {
+        return tagConstructors;
+    }
 }

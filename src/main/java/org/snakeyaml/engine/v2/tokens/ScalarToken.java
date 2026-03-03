@@ -20,42 +20,42 @@ import java.util.Objects;
 
 public final class ScalarToken extends Token {
 
-  private final String value;
-  private final boolean plain;
-  private final ScalarStyle style;
+    private final String value;
+    private final boolean plain;
+    private final ScalarStyle style;
 
-  public ScalarToken(String value, boolean plain, Mark startMark, Mark endMark) {
-    this(value, plain, ScalarStyle.PLAIN, startMark, endMark);
-  }
+    public ScalarToken(String value, boolean plain, Mark startMark, Mark endMark) {
+        this(value, plain, ScalarStyle.PLAIN, startMark, endMark);
+    }
 
-  public ScalarToken(String value, boolean plain, ScalarStyle style, Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-    Objects.requireNonNull(value);
-    Objects.requireNonNull(style);
-    this.value = value;
-    this.plain = plain;
-    this.style = style;
-  }
+    public ScalarToken(String value, boolean plain, ScalarStyle style, Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(style);
+        this.value = value;
+        this.plain = plain;
+        this.style = style;
+    }
 
-  public boolean isPlain() {
-    return this.plain;
-  }
+    public boolean isPlain() {
+        return this.plain;
+    }
 
-  public String getValue() {
-    return this.value;
-  }
+    public String getValue() {
+        return this.value;
+    }
 
-  public ScalarStyle getStyle() {
-    return this.style;
-  }
+    public ScalarStyle getStyle() {
+        return this.style;
+    }
 
-  @Override
-  public Token.ID getTokenId() {
-    return ID.Scalar;
-  }
+    @Override
+    public Token.ID getTokenId() {
+        return ID.Scalar;
+    }
 
-  @Override
-  public String toString() {
-    return getTokenId().toString() + " plain=" + plain + " style=" + style + " value=" + value;
-  }
+    @Override
+    public String toString() {
+        return getTokenId().toString() + " plain=" + plain + " style=" + style + " value=" + value;
+    }
 }

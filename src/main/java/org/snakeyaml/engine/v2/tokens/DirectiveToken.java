@@ -15,38 +15,39 @@ package org.snakeyaml.engine.v2.tokens;
 
 import java.util.List;
 import java.util.Objects;
+
 import org.snakeyaml.engine.v2.exceptions.Mark;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 
 public final class DirectiveToken<T> extends Token {
 
-  public static final String YAML_DIRECTIVE = "YAML";
-  public static final String TAG_DIRECTIVE = "TAG";
-  private final String name;
-  private final List<T> value;
+    public static final String YAML_DIRECTIVE = "YAML";
+    public static final String TAG_DIRECTIVE = "TAG";
+    private final String name;
+    private final List<T> value;
 
-  public DirectiveToken(String name, List<T> value, Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-    Objects.requireNonNull(name);
-    Objects.requireNonNull(value);
-    this.name = name;
-    if (value.size() != 2) {
-      throw new YamlEngineException(
-          "Two strings/integers must be provided instead of " + value.size());
+    public DirectiveToken(String name, List<T> value, Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(value);
+        this.name = name;
+        if (value.size() != 2) {
+            throw new YamlEngineException(
+                "Two strings/integers must be provided instead of " + value.size());
+        }
+        this.value = value;
     }
-    this.value = value;
-  }
 
-  public String getName() {
-    return this.name;
-  }
+    public String getName() {
+        return this.name;
+    }
 
-  public List<T> getValue() {
-    return this.value;
-  }
+    public List<T> getValue() {
+        return this.value;
+    }
 
-  @Override
-  public Token.ID getTokenId() {
-    return ID.Directive;
-  }
+    @Override
+    public Token.ID getTokenId() {
+        return ID.Directive;
+    }
 }

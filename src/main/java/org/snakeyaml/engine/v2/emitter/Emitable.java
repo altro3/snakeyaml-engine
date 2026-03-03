@@ -20,10 +20,10 @@ import org.snakeyaml.engine.v2.events.Event;
  */
 public interface Emitable {
 
-  /**
-   * Serialise event to bytes
-   *
-   * @param event - the source
-   */
-  void emit(Event event);
+    /**
+     * Serialise event to bytes
+     *
+     * @param event - the source
+     */
+    void emit(Event event);
 }

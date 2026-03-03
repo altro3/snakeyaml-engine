@@ -19,20 +19,20 @@ import java.util.Objects;
 
 public final class TagToken extends Token {
 
-  private final TagTuple value;
+    private final TagTuple value;
 
-  public TagToken(TagTuple value, Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-    Objects.requireNonNull(value);
-    this.value = value;
-  }
+    public TagToken(TagTuple value, Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+        Objects.requireNonNull(value);
+        this.value = value;
+    }
 
-  public TagTuple getValue() {
-    return this.value;
-  }
+    public TagTuple getValue() {
+        return this.value;
+    }
 
-  @Override
-  public Token.ID getTokenId() {
-    return ID.Tag;
-  }
+    @Override
+    public Token.ID getTokenId() {
+        return ID.Tag;
+    }
 }

@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.events;
 
 import java.util.Objects;
+
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -22,46 +23,46 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class CommentEvent extends Event {
 
-  private final CommentType type;
-  private final String value;
+    private final CommentType type;
+    private final String value;
 
-  public CommentEvent(CommentType type, String value, Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-    Objects.requireNonNull(type);
-    Objects.requireNonNull(value);
+    public CommentEvent(CommentType type, String value, Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(value);
 
-    this.type = type;
-    this.value = value;
-  }
+        this.type = type;
+        this.value = value;
+    }
 
-  /**
-   * String representation of the value.
-   * <p>
-   * Without quotes and escaping.
-   * </p>
-   *
-   * @return Value a comment line string without the leading '#' or a blank line.
-   */
-  public String getValue() {
-    return this.value;
-  }
+    /**
+     * String representation of the value.
+     * <p>
+     * Without quotes and escaping.
+     * </p>
+     *
+     * @return Value a comment line string without the leading '#' or a blank line.
+     */
+    public String getValue() {
+        return this.value;
+    }
 
-  /**
-   * The comment type.
-   *
-   * @return the commentType.
-   */
-  public CommentType getCommentType() {
-    return this.type;
-  }
+    /**
+     * The comment type.
+     *
+     * @return the commentType.
+     */
+    public CommentType getCommentType() {
+        return this.type;
+    }
 
-  @Override
-  public Event.ID getEventId() {
-    return ID.Comment;
-  }
+    @Override
+    public Event.ID getEventId() {
+        return ID.Comment;
+    }
 
-  @Override
-  public String toString() {
-    return "=COM " + type + " " + value;
-  }
+    @Override
+    public String toString() {
+        return "=COM " + type + " " + value;
+    }
 }

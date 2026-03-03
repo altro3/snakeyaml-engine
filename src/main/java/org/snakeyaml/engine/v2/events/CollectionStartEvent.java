@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.events;
 
 import java.util.Objects;
+
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -23,63 +24,63 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class CollectionStartEvent extends NodeEvent {
 
-  private final String tag;
-  // The implicit flag of a collection start event indicates if the tag may be
-  // omitted when the collection is emitted
-  private final boolean implicit;
-  // flag indicates if a collection is block or flow
-  protected final FlowStyle flowStyle;
+    private final String tag;
+    // The implicit flag of a collection start event indicates if the tag may be
+    // omitted when the collection is emitted
+    private final boolean implicit;
+    // flag indicates if a collection is block or flow
+    protected final FlowStyle flowStyle;
 
-  public CollectionStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
-      Mark startMark, Mark endMark) {
-    super(anchor, startMark, endMark);
-    Objects.requireNonNull(tag);
-    this.tag = tag;
-    this.implicit = implicit;
-    Objects.requireNonNull(flowStyle);
-    this.flowStyle = flowStyle;
-  }
-
-  /**
-   * Tag of this collection.
-   *
-   * @return The tag of this collection, or <code>empty</code> if no explicit tag is available.
-   */
-  public String getTag() {
-    return this.tag;
-  }
-
-  /**
-   * <code>true</code> if the tag can be omitted while this collection is emitted.
-   *
-   * @return True if the tag can be omitted while this collection is emitted.
-   */
-  public boolean isImplicit() {
-    return this.implicit;
-  }
-
-  /**
-   * <code>true</code> if this collection is in flow style, <code>false</code> for block style.
-   *
-   * @return If this collection is in flow style.
-   */
-  public FlowStyle getFlowStyle() {
-    return this.flowStyle;
-  }
-
-  public boolean isFlow() {
-    return FlowStyle.FLOW == flowStyle;
-  }
-
-  @Override
-  public String toString() {
-    var builder = new StringBuilder();
-    if (anchor != null) {
-      builder.append(" &").append(anchor);
+    public CollectionStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
+                                Mark startMark, Mark endMark) {
+        super(anchor, startMark, endMark);
+        Objects.requireNonNull(tag);
+        this.tag = tag;
+        this.implicit = implicit;
+        Objects.requireNonNull(flowStyle);
+        this.flowStyle = flowStyle;
     }
-    if (!implicit && tag != null) {
-      builder.append(" <").append(tag).append('>');
+
+    /**
+     * Tag of this collection.
+     *
+     * @return The tag of this collection, or <code>empty</code> if no explicit tag is available.
+     */
+    public String getTag() {
+        return this.tag;
     }
-    return builder.toString();
-  }
+
+    /**
+     * <code>true</code> if the tag can be omitted while this collection is emitted.
+     *
+     * @return True if the tag can be omitted while this collection is emitted.
+     */
+    public boolean isImplicit() {
+        return this.implicit;
+    }
+
+    /**
+     * <code>true</code> if this collection is in flow style, <code>false</code> for block style.
+     *
+     * @return If this collection is in flow style.
+     */
+    public FlowStyle getFlowStyle() {
+        return this.flowStyle;
+    }
+
+    public boolean isFlow() {
+        return FlowStyle.FLOW == flowStyle;
+    }
+
+    @Override
+    public String toString() {
+        var builder = new StringBuilder();
+        if (anchor != null) {
+            builder.append(" &").append(anchor);
+        }
+        if (!implicit && tag != null) {
+            builder.append(" <").append(tag).append('>');
+        }
+        return builder.toString();
+    }
 }

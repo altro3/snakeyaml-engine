@@ -9,22 +9,6 @@
     <description>Core YAML 1.2 parser and emitter for Java</description>
     <inceptionYear>2018</inceptionYear>
     <url>https://bitbucket.org/snakeyaml/snakeyaml-engine</url>
-    <issueManagement>
-        <system>Bitbucket</system>
-        <url>https://bitbucket.org/snakeyaml/snakeyaml-engine/issues</url>
-    </issueManagement>
-    <mailingLists>
-        <mailingList>
-            <name>SnakeYAML developers and users List</name>
-            <post>snakeyaml-core@googlegroups.com</post>
-        </mailingList>
-    </mailingLists>
-    <scm>
-        <connection>scm:git:https://bitbucket.org/snakeyaml/snakeyaml-engine</connection>
-        <developerConnection>scm:git:ssh://git@bitbucket.org/snakeyaml/snakeyaml-engine</developerConnection>
-        <url>https://bitbucket.org/snakeyaml/snakeyaml-engine/src</url>
-        <tag>HEAD</tag>
-    </scm>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -32,19 +16,52 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <developers>
-        <developer>
-            <id>asomov</id>
-            <name>Andrey Somov</name>
-            <email>public.somov@gmail.com</email>
-        </developer>
-        <developer>
-            <id>maslovalex</id>
-            <name>Alexander Maslov</name>
-            <email>alexander.maslov@gmail.com</email>
-        </developer>
-    </developers>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.scm.id>bitbucket</project.scm.id>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+
+        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
+        <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
+        <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+        <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+        <maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
+        <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+        <maven-changes-plugin.version>3.0.0-M3</maven-changes-plugin.version>
+        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+        <central-publishing-maven-plugin.version>0.10.0</central-publishing-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
+        <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
+        <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
+        <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
+        <jmh-maven-plugin.version>0.2.2</jmh-maven-plugin.version>
+
+        <lombok.version>1.18.42</lombok.version>
+        <junit.jupiter.version>5.14.3</junit.jupiter.version>
+        <guava.version>33.5.0-jre</guava.version>
+        <jmh.version>1.36</jmh.version>
+
+        <sonar.exclusions>**/*google*/**.java</sonar.exclusions>
+        <!-- Methods should not have too many parameters -->
+        <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria.e1.ruleKey>squid:S00107</sonar.issue.ignore.multicriteria.e1.ruleKey>
+        <sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
+    </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -130,6 +147,13 @@
                         <target>${maven.compiler.target}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -422,42 +446,4 @@
             </build>
         </profile>
     </profiles>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.scm.id>bitbucket</project.scm.id>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-
-        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
-        <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
-        <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
-        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-        <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
-        <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
-        <maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
-        <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
-        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
-        <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
-        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <maven-changes-plugin.version>3.0.0-M3</maven-changes-plugin.version>
-        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-        <central-publishing-maven-plugin.version>0.10.0</central-publishing-maven-plugin.version>
-        <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
-        <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
-        <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
-        <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
-        <jmh-maven-plugin.version>0.2.2</jmh-maven-plugin.version>
-
-        <junit.jupiter.version>5.14.3</junit.jupiter.version>
-        <guava.version>33.5.0-jre</guava.version>
-        <jmh.version>1.36</jmh.version>
-
-        <sonar.exclusions>**/*google*/**.java</sonar.exclusions>
-        <!-- Methods should not have too many parameters -->
-        <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
-        <sonar.issue.ignore.multicriteria.e1.ruleKey>squid:S00107</sonar.issue.ignore.multicriteria.e1.ruleKey>
-        <sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
-    </properties>
 </project>

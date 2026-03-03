@@ -17,21 +17,21 @@ import java.util.Objects;
 
 public final class TagTuple {
 
-  private final String handle;
-  private final String suffix;
+    private final String handle;
+    private final String suffix;
 
-  public TagTuple(String handle, String suffix) {
-    Objects.requireNonNull(handle);
-    Objects.requireNonNull(suffix);
-    this.handle = handle;
-    this.suffix = suffix;
-  }
+    public TagTuple(String handle, String suffix) {
+        Objects.requireNonNull(handle);
+        Objects.requireNonNull(suffix);
+        this.handle = handle;
+        this.suffix = suffix;
+    }
 
-  public String getHandle() {
-    return handle;
-  }
+    public String getHandle() {
+        return handle;
+    }
 
-  public String getSuffix() {
-    return suffix;
-  }
+    public String getSuffix() {
+        return suffix;
+    }
 }

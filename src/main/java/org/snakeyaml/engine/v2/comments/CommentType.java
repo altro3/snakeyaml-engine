@@ -17,16 +17,16 @@ package org.snakeyaml.engine.v2.comments;
  * The type of comment line.
  */
 public enum CommentType {
-  /**
-   * empty line
-   */
-  BLANK_LINE,
-  /**
-   * complete line comment which starts with #
-   */
-  BLOCK,
-  /**
-   * ending the line
-   */
-  IN_LINE
+    /**
+     * empty line
+     */
+    BLANK_LINE,
+    /**
+     * complete line comment which starts with #
+     */
+    BLOCK,
+    /**
+     * ending the line
+     */
+    IN_LINE
 }

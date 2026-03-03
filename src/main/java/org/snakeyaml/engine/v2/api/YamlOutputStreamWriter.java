@@ -25,50 +25,50 @@ import java.nio.charset.Charset;
  */
 public class YamlOutputStreamWriter extends OutputStreamWriter implements StreamDataWriter {
 
-  /**
-   * Create
-   *
-   * @param out - the output
-   * @param cs - encoding to use to translate String to bytes
-   */
-  public YamlOutputStreamWriter(OutputStream out, Charset cs) {
-    super(out, cs);
-  }
-
-  /**
-   * Default implementation wraps the given {@code IOException} into an
-   * {@link UncheckedIOException}.
-   *
-   * @param e - the reason
-   */
-  public void processIOException(IOException e) {
-    throw new UncheckedIOException(e);
-  }
-
-  @Override
-  public void flush() {
-    try {
-      super.flush();
-    } catch (IOException e) {
-      processIOException(e);
+    /**
+     * Create
+     *
+     * @param out - the output
+     * @param cs - encoding to use to translate String to bytes
+     */
+    public YamlOutputStreamWriter(OutputStream out, Charset cs) {
+        super(out, cs);
     }
-  }
 
-  @Override
-  public void write(String str, int off, int len) {
-    try {
-      super.write(str, off, len);
-    } catch (IOException e) {
-      processIOException(e);
+    /**
+     * Default implementation wraps the given {@code IOException} into an
+     * {@link UncheckedIOException}.
+     *
+     * @param e - the reason
+     */
+    public void processIOException(IOException e) {
+        throw new UncheckedIOException(e);
     }
-  }
 
-  @Override
-  public void write(String str) {
-    try {
-      super.write(str);
-    } catch (IOException e) {
-      processIOException(e);
+    @Override
+    public void flush() {
+        try {
+            super.flush();
+        } catch (IOException e) {
+            processIOException(e);
+        }
     }
-  }
+
+    @Override
+    public void write(String str, int off, int len) {
+        try {
+            super.write(str, off, len);
+        } catch (IOException e) {
+            processIOException(e);
+        }
+    }
+
+    @Override
+    public void write(String str) {
+        try {
+            super.write(str);
+        } catch (IOException e) {
+            processIOException(e);
+        }
+    }
 }

@@ -15,6 +15,7 @@ package org.snakeyaml.engine.v2.schema;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.constructor.core.ConstructYamlCoreBool;
 import org.snakeyaml.engine.v2.constructor.core.ConstructYamlCoreFloat;
@@ -28,35 +29,35 @@ import org.snakeyaml.engine.v2.resolver.ScalarResolver;
  */
 public class CoreSchema extends JsonSchema {
 
-  private final Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
+    private final Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
 
-  public CoreSchema() {
-    this.tagConstructors.put(Tag.BOOL, new ConstructYamlCoreBool());
-    this.tagConstructors.put(Tag.INT, new ConstructYamlCoreInt());
-    this.tagConstructors.put(Tag.FLOAT, new ConstructYamlCoreFloat());
-  }
+    public CoreSchema() {
+        this.tagConstructors.put(Tag.BOOL, new ConstructYamlCoreBool());
+        this.tagConstructors.put(Tag.INT, new ConstructYamlCoreInt());
+        this.tagConstructors.put(Tag.FLOAT, new ConstructYamlCoreFloat());
+    }
 
-  /**
-   * Create ScalarResolver with the merge implemented
-   *
-   * @see <a href="https://ktomk.github.io/writing/yaml-anchor-alias-and-merge-key.html">Support of
-   *      Merge Keys</a>
-   * @return CoreScalarResolver
-   */
-  @Override
-  public ScalarResolver getScalarResolver() {
-    return new CoreScalarResolver(true);
-  }
+    /**
+     * Create ScalarResolver with the merge implemented
+     *
+     * @return CoreScalarResolver
+     * @see <a href="https://ktomk.github.io/writing/yaml-anchor-alias-and-merge-key.html">Support of
+     *     Merge Keys</a>
+     */
+    @Override
+    public ScalarResolver getScalarResolver() {
+        return new CoreScalarResolver(true);
+    }
 
-  /**
-   * Provide constructs to support the schema (bool, int, float)
-   *
-   * @return map
-   */
-  @Override
-  public Map<Tag, ConstructNode> getSchemaTagConstructors() {
-    Map<Tag, ConstructNode> json = super.getSchemaTagConstructors();
-    json.putAll(tagConstructors);
-    return json;
-  }
+    /**
+     * Provide constructs to support the schema (bool, int, float)
+     *
+     * @return map
+     */
+    @Override
+    public Map<Tag, ConstructNode> getSchemaTagConstructors() {
+        Map<Tag, ConstructNode> json = super.getSchemaTagConstructors();
+        json.putAll(tagConstructors);
+        return json;
+    }
 }

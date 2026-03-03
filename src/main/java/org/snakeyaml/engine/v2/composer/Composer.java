@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.comments.CommentEventsCollector;
 import org.snakeyaml.engine.v2.comments.CommentLine;
@@ -57,348 +58,348 @@ import org.snakeyaml.engine.v2.util.MergeUtils;
  */
 public class Composer implements Iterator<Node> {
 
-  /**
-   * Event parser
-   */
-  protected final Parser parser;
-  private final ScalarResolver scalarResolver;
-  private final Map<Anchor, Node> anchors;
-  private final Set<Node> recursiveNodes;
-  private final LoadSettings settings;
-  private final CommentEventsCollector blockCommentsCollector;
-  private final CommentEventsCollector inlineCommentsCollector;
-  private int nonScalarAliasesCount = 0;
-  private final MergeUtils mergeUtils;
+    /**
+     * Event parser
+     */
+    protected final Parser parser;
+    private final ScalarResolver scalarResolver;
+    private final Map<Anchor, Node> anchors;
+    private final Set<Node> recursiveNodes;
+    private final LoadSettings settings;
+    private final CommentEventsCollector blockCommentsCollector;
+    private final CommentEventsCollector inlineCommentsCollector;
+    private int nonScalarAliasesCount = 0;
+    private final MergeUtils mergeUtils;
 
-  /**
-   * Create
-   *
-   * @param settings - configuration options
-   * @param parser - the input
-   */
-  public Composer(LoadSettings settings, Parser parser) {
-    this.parser = parser;
-    this.scalarResolver = settings.getSchema().getScalarResolver();
-    this.settings = settings;
-    this.anchors = new HashMap<>();
-    this.recursiveNodes = new HashSet<>();
-    this.blockCommentsCollector =
-        new CommentEventsCollector(parser, CommentType.BLANK_LINE, CommentType.BLOCK);
-    this.inlineCommentsCollector = new CommentEventsCollector(parser, CommentType.IN_LINE);
-    this.mergeUtils = new MergeUtils() {
-      public MappingNode asMappingNode(Node node) {
-        return Composer.this.asMappingNode(node);
-      }
-    };
-  }
+    /**
+     * Create
+     *
+     * @param settings - configuration options
+     * @param parser - the input
+     */
+    public Composer(LoadSettings settings, Parser parser) {
+        this.parser = parser;
+        this.scalarResolver = settings.getSchema().getScalarResolver();
+        this.settings = settings;
+        this.anchors = new HashMap<>();
+        this.recursiveNodes = new HashSet<>();
+        this.blockCommentsCollector =
+            new CommentEventsCollector(parser, CommentType.BLANK_LINE, CommentType.BLOCK);
+        this.inlineCommentsCollector = new CommentEventsCollector(parser, CommentType.IN_LINE);
+        this.mergeUtils = new MergeUtils() {
+            public MappingNode asMappingNode(Node node) {
+                return Composer.this.asMappingNode(node);
+            }
+        };
+    }
 
-  /**
-   * Checks if further documents are available.
-   *
-   * @return <code>true</code> if there is at least one more document.
-   */
-  public boolean hasNext() {
-    // Drop the STREAM-START event.
-    if (parser.checkEvent(Event.ID.StreamStart)) {
-      parser.next();
-    }
-    // If there are more documents available?
-    return !parser.checkEvent(Event.ID.StreamEnd);
-  }
-
-  /**
-   * Reads a document from a source that contains only one document.
-   * <p>
-   * If the stream contains more than one document, an exception is thrown.
-   * </p>
-   *
-   * @return The root node of the document or <code>null</code> if no document is available.
-   */
-  public Node getSingleNode() {
-    // Drop the STREAM-START event.
-    parser.next();
-    // Compose a document if the stream is not empty.
-    Node document = null;
-    if (!parser.checkEvent(Event.ID.StreamEnd)) {
-      document = next();
-    }
-    if (document != null) {
-      // is there a better place for this code? Should it be in the Node?
-      document.setInLineComments(inlineCommentsCollector.collectEvents().consume());
-      document.setBlockComments(blockCommentsCollector.collectEvents().consume());
-    }
-    // Ensure that the stream contains no more documents.
-    if (!parser.checkEvent(Event.ID.StreamEnd)) {
-      Event event = parser.next();
-      Mark previousDocMark = document.getStartMark();
-      throw new ComposerException("expected a single document in the stream", previousDocMark,
-          "but found another document", event.getStartMark());
-    }
-    // Drop the STREAM-END event.
-    parser.next();
-    return document;
-  }
-
-  /**
-   * Reads and composes the next document.
-   *
-   * @return The root node of the document or <code>null</code> if no more documents are available.
-   */
-  public Node next() {
-    // Collect inter-document start comments
-    blockCommentsCollector.collectEvents();
-    if (parser.checkEvent(Event.ID.StreamEnd)) {
-      List<CommentLine> commentLines = blockCommentsCollector.consume();
-      Mark startMark = commentLines.get(0).getStartMark();
-      List<NodeTuple> children = Collections.emptyList();
-      Node node = new MappingNode(Tag.COMMENT, false, children, FlowStyle.BLOCK, startMark, null);
-      node.setBlockComments(commentLines);
-      return node;
-    }
-    // Drop the DOCUMENT-START event.
-    parser.next();
-    // Compose the root node.
-    Node node = composeNode(null);
-    // Drop the DOCUMENT-END event.
-    blockCommentsCollector.collectEvents();
-    if (!blockCommentsCollector.isEmpty()) {
-      node.setEndComments(blockCommentsCollector.consume());
-    }
-    parser.next();
-    this.anchors.clear();
-    this.recursiveNodes.clear();
-    this.nonScalarAliasesCount = 0;
-    return node;
-  }
-
-
-  private Node composeNode(Node parent) {
-    blockCommentsCollector.collectEvents();
-    if (parent != null) {
-      recursiveNodes.add(parent);
-    }
-    final Node node;
-    if (parser.checkEvent(Event.ID.Alias)) {
-      var event = (AliasEvent) parser.next();
-      Anchor anchor = event.getAlias();
-      if (!anchors.containsKey(anchor)) {
-        throw new ComposerException("found undefined alias " + anchor, event.getStartMark());
-      }
-      node = anchors.get(anchor);
-      if (node.getNodeType() != NodeType.SCALAR) {
-        this.nonScalarAliasesCount++;
-        if (this.nonScalarAliasesCount > settings.getMaxAliasesForCollections()) {
-          throw new YamlEngineException(
-              "Number of aliases for non-scalar nodes exceeds the specified max="
-                  + settings.getMaxAliasesForCollections());
+    /**
+     * Checks if further documents are available.
+     *
+     * @return <code>true</code> if there is at least one more document.
+     */
+    public boolean hasNext() {
+        // Drop the STREAM-START event.
+        if (parser.checkEvent(Event.ID.StreamStart)) {
+            parser.next();
         }
-      }
-      if (recursiveNodes.remove(node)) {
-        node.setRecursive(true);
-      }
-      // drop comments, they cannot be supported here
-      blockCommentsCollector.consume();
-      inlineCommentsCollector.collectEvents().consume();
-    } else {
-      var event = (NodeEvent) parser.peekEvent();
-      Anchor anchor = event.getAnchor();
-      // the check for duplicate anchors has been removed (issue 174)
-      if (parser.checkEvent(Event.ID.Scalar)) {
-        node = composeScalarNode(anchor, blockCommentsCollector.consume());
-      } else if (parser.checkEvent(Event.ID.SequenceStart)) {
-        node = composeSequenceNode(anchor);
-      } else {
-        node = composeMappingNode(anchor);
-      }
-    }
-    if (parent != null) {
-      recursiveNodes.remove(parent);
-    }
-    return node;
-  }
-
-  private void registerAnchor(Anchor anchor, Node node) {
-    anchors.put(anchor, node);
-    node.setAnchor(anchor);
-  }
-
-  /**
-   * Create ScalarNode
-   *
-   * @param anchor - anchor if present
-   * @param blockComments - comments before the Node
-   * @return Node
-   */
-  protected Node composeScalarNode(Anchor anchor, List<CommentLine> blockComments) {
-    var ev = (ScalarEvent) parser.next();
-    String tag = ev.getTag();
-    boolean resolved = false;
-    Tag nodeTag;
-    if (tag == null || tag.equals("!")) {
-      nodeTag = scalarResolver.resolve(ev.getValue(), ev.getImplicit().canOmitTagInPlainScalar());
-      resolved = true;
-    } else {
-      nodeTag = new Tag(tag);
-    }
-    Node node = new ScalarNode(nodeTag, resolved, ev.getValue(), ev.getScalarStyle(),
-        ev.getStartMark(), ev.getEndMark());
-    if (anchor != null) {
-      registerAnchor(anchor, node);
-    }
-    node.setBlockComments(blockComments);
-    node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
-    return node;
-  }
-
-  /**
-   * Compose a sequence Node from the input starting with SequenceStartEvent
-   *
-   * @param anchor - anchor if present
-   * @return parsed Node
-   */
-  protected SequenceNode composeSequenceNode(Anchor anchor) {
-    var startEvent = (SequenceStartEvent) parser.next();
-    String tag = startEvent.getTag();
-    Tag nodeTag;
-    boolean resolved = false;
-    if (tag == null || tag.equals("!")) {
-      nodeTag = Tag.SEQ;
-      resolved = true;
-    } else {
-      nodeTag = new Tag(tag);
-    }
-    final var children = new ArrayList<Node>();
-    var node = new SequenceNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
-        startEvent.getStartMark(), null);
-    if (startEvent.isFlow()) {
-      node.setBlockComments(blockCommentsCollector.consume());
-    }
-    if (anchor != null) {
-      registerAnchor(anchor, node);
-    }
-    while (!parser.checkEvent(Event.ID.SequenceEnd)) {
-      blockCommentsCollector.collectEvents();
-      if (parser.checkEvent(Event.ID.SequenceEnd)) {
-        break;
-      }
-      children.add(composeNode(node));
-    }
-    if (startEvent.isFlow()) {
-      node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
-    }
-    Event endEvent = parser.next();
-    node.setEndMark(endEvent.getEndMark());
-    inlineCommentsCollector.collectEvents();
-    if (!inlineCommentsCollector.isEmpty()) {
-      node.setInLineComments(inlineCommentsCollector.consume());
-    }
-    return node;
-  }
-
-  /**
-   * Create mapping Node
-   *
-   * @param anchor - anchor if present
-   * @return Node
-   */
-  protected Node composeMappingNode(Anchor anchor) {
-    var startEvent = (MappingStartEvent) parser.next();
-    String tag = startEvent.getTag();
-    Tag nodeTag;
-    boolean resolved = false;
-    if (tag == null || tag.equals("!")) {
-      nodeTag = Tag.MAP;
-      resolved = true;
-    } else {
-      nodeTag = new Tag(tag);
+        // If there are more documents available?
+        return !parser.checkEvent(Event.ID.StreamEnd);
     }
 
-    final var children = new ArrayList<NodeTuple>();
-    var node = new MappingNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
-        startEvent.getStartMark(), null);
-    if (startEvent.isFlow()) {
-      node.setBlockComments(blockCommentsCollector.consume());
-    }
-    if (anchor != null) {
-      registerAnchor(anchor, node);
-    }
-    while (!parser.checkEvent(Event.ID.MappingEnd)) {
-      blockCommentsCollector.collectEvents();
-      if (parser.checkEvent(Event.ID.MappingEnd)) {
-        break;
-      }
-      composeMappingChildren(children, node);
-    }
-    if (startEvent.isFlow()) {
-      node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
-    }
-    Event endEvent = parser.next();
-    node.setEndMark(endEvent.getEndMark());
-    inlineCommentsCollector.collectEvents();
-    if (!inlineCommentsCollector.isEmpty()) {
-      node.setInLineComments(inlineCommentsCollector.consume());
-    }
-    if (node.hasMergeTag()) {
-      List<NodeTuple> updatedValue = mergeUtils.flatten(node);
-      node.setValue(updatedValue);
-      node.setHasMergeTag(false);
-    }
-    return node;
-  }
-
-  /**
-   * Add the provided Node to the children as the last child
-   *
-   * @param children - the list to be extended
-   * @param node - the child to the children
-   */
-  protected void composeMappingChildren(List<NodeTuple> children, MappingNode node) {
-    Node itemKey = composeKeyNode(node);
-    if (itemKey.getNodeType() != NodeType.SCALAR && !settings.getAllowNonScalarKeys()) {
-      throw new YamlEngineException(
-          "Non scalar key is detected but it is not configured to be allowed.");
-    }
-    if (itemKey.getTag().equals(Tag.MERGE)) {
-      node.setHasMergeTag(true);
-    }
-    Node itemValue = composeValueNode(node);
-    children.add(new NodeTuple(itemKey, itemValue));
-  }
-
-  protected MappingNode asMappingNode(Node node) {
-    if (node instanceof MappingNode) {
-      return (MappingNode) node;
-    } else {
-      Anchor anchor = node.getAnchor();
-      if (anchor != null) {
-        Node ref = anchors.get(anchor);
-        if (ref instanceof MappingNode) {
-          return (MappingNode) ref;
+    /**
+     * Reads a document from a source that contains only one document.
+     * <p>
+     * If the stream contains more than one document, an exception is thrown.
+     * </p>
+     *
+     * @return The root node of the document or <code>null</code> if no document is available.
+     */
+    public Node getSingleNode() {
+        // Drop the STREAM-START event.
+        parser.next();
+        // Compose a document if the stream is not empty.
+        Node document = null;
+        if (!parser.checkEvent(Event.ID.StreamEnd)) {
+            document = next();
         }
-      }
+        if (document != null) {
+            // is there a better place for this code? Should it be in the Node?
+            document.setInLineComments(inlineCommentsCollector.collectEvents().consume());
+            document.setBlockComments(blockCommentsCollector.collectEvents().consume());
+        }
+        // Ensure that the stream contains no more documents.
+        if (!parser.checkEvent(Event.ID.StreamEnd)) {
+            Event event = parser.next();
+            Mark previousDocMark = document.getStartMark();
+            throw new ComposerException("expected a single document in the stream", previousDocMark,
+                "but found another document", event.getStartMark());
+        }
+        // Drop the STREAM-END event.
+        parser.next();
+        return document;
     }
-    Event ev = parser.peekEvent();
-    throw new ComposerException("Expected mapping node or an anchor referencing mapping",
-        ev.getStartMark());
-  }
 
-  /**
-   * To be able to override composeNode(node) which is a key
-   *
-   * @param node - the source
-   * @return node
-   */
-  protected Node composeKeyNode(MappingNode node) {
-    return composeNode(node);
-  }
+    /**
+     * Reads and composes the next document.
+     *
+     * @return The root node of the document or <code>null</code> if no more documents are available.
+     */
+    public Node next() {
+        // Collect inter-document start comments
+        blockCommentsCollector.collectEvents();
+        if (parser.checkEvent(Event.ID.StreamEnd)) {
+            List<CommentLine> commentLines = blockCommentsCollector.consume();
+            Mark startMark = commentLines.get(0).getStartMark();
+            List<NodeTuple> children = Collections.emptyList();
+            Node node = new MappingNode(Tag.COMMENT, false, children, FlowStyle.BLOCK, startMark, null);
+            node.setBlockComments(commentLines);
+            return node;
+        }
+        // Drop the DOCUMENT-START event.
+        parser.next();
+        // Compose the root node.
+        Node node = composeNode(null);
+        // Drop the DOCUMENT-END event.
+        blockCommentsCollector.collectEvents();
+        if (!blockCommentsCollector.isEmpty()) {
+            node.setEndComments(blockCommentsCollector.consume());
+        }
+        parser.next();
+        this.anchors.clear();
+        this.recursiveNodes.clear();
+        this.nonScalarAliasesCount = 0;
+        return node;
+    }
 
-  /**
-   * To be able to override composeNode(node) which is a value
-   *
-   * @param node - the source
-   * @return node
-   */
-  protected Node composeValueNode(MappingNode node) {
-    return composeNode(node);
-  }
+
+    private Node composeNode(Node parent) {
+        blockCommentsCollector.collectEvents();
+        if (parent != null) {
+            recursiveNodes.add(parent);
+        }
+        final Node node;
+        if (parser.checkEvent(Event.ID.Alias)) {
+            var event = (AliasEvent) parser.next();
+            Anchor anchor = event.getAlias();
+            if (!anchors.containsKey(anchor)) {
+                throw new ComposerException("found undefined alias " + anchor, event.getStartMark());
+            }
+            node = anchors.get(anchor);
+            if (node.getNodeType() != NodeType.SCALAR) {
+                this.nonScalarAliasesCount++;
+                if (this.nonScalarAliasesCount > settings.getMaxAliasesForCollections()) {
+                    throw new YamlEngineException(
+                        "Number of aliases for non-scalar nodes exceeds the specified max="
+                            + settings.getMaxAliasesForCollections());
+                }
+            }
+            if (recursiveNodes.remove(node)) {
+                node.setRecursive(true);
+            }
+            // drop comments, they cannot be supported here
+            blockCommentsCollector.consume();
+            inlineCommentsCollector.collectEvents().consume();
+        } else {
+            var event = (NodeEvent) parser.peekEvent();
+            Anchor anchor = event.getAnchor();
+            // the check for duplicate anchors has been removed (issue 174)
+            if (parser.checkEvent(Event.ID.Scalar)) {
+                node = composeScalarNode(anchor, blockCommentsCollector.consume());
+            } else if (parser.checkEvent(Event.ID.SequenceStart)) {
+                node = composeSequenceNode(anchor);
+            } else {
+                node = composeMappingNode(anchor);
+            }
+        }
+        if (parent != null) {
+            recursiveNodes.remove(parent);
+        }
+        return node;
+    }
+
+    private void registerAnchor(Anchor anchor, Node node) {
+        anchors.put(anchor, node);
+        node.setAnchor(anchor);
+    }
+
+    /**
+     * Create ScalarNode
+     *
+     * @param anchor - anchor if present
+     * @param blockComments - comments before the Node
+     * @return Node
+     */
+    protected Node composeScalarNode(Anchor anchor, List<CommentLine> blockComments) {
+        var ev = (ScalarEvent) parser.next();
+        String tag = ev.getTag();
+        boolean resolved = false;
+        Tag nodeTag;
+        if (tag == null || tag.equals("!")) {
+            nodeTag = scalarResolver.resolve(ev.getValue(), ev.getImplicit().canOmitTagInPlainScalar());
+            resolved = true;
+        } else {
+            nodeTag = new Tag(tag);
+        }
+        Node node = new ScalarNode(nodeTag, resolved, ev.getValue(), ev.getScalarStyle(),
+            ev.getStartMark(), ev.getEndMark());
+        if (anchor != null) {
+            registerAnchor(anchor, node);
+        }
+        node.setBlockComments(blockComments);
+        node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
+        return node;
+    }
+
+    /**
+     * Compose a sequence Node from the input starting with SequenceStartEvent
+     *
+     * @param anchor - anchor if present
+     * @return parsed Node
+     */
+    protected SequenceNode composeSequenceNode(Anchor anchor) {
+        var startEvent = (SequenceStartEvent) parser.next();
+        String tag = startEvent.getTag();
+        Tag nodeTag;
+        boolean resolved = false;
+        if (tag == null || tag.equals("!")) {
+            nodeTag = Tag.SEQ;
+            resolved = true;
+        } else {
+            nodeTag = new Tag(tag);
+        }
+        final var children = new ArrayList<Node>();
+        var node = new SequenceNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
+            startEvent.getStartMark(), null);
+        if (startEvent.isFlow()) {
+            node.setBlockComments(blockCommentsCollector.consume());
+        }
+        if (anchor != null) {
+            registerAnchor(anchor, node);
+        }
+        while (!parser.checkEvent(Event.ID.SequenceEnd)) {
+            blockCommentsCollector.collectEvents();
+            if (parser.checkEvent(Event.ID.SequenceEnd)) {
+                break;
+            }
+            children.add(composeNode(node));
+        }
+        if (startEvent.isFlow()) {
+            node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
+        }
+        Event endEvent = parser.next();
+        node.setEndMark(endEvent.getEndMark());
+        inlineCommentsCollector.collectEvents();
+        if (!inlineCommentsCollector.isEmpty()) {
+            node.setInLineComments(inlineCommentsCollector.consume());
+        }
+        return node;
+    }
+
+    /**
+     * Create mapping Node
+     *
+     * @param anchor - anchor if present
+     * @return Node
+     */
+    protected Node composeMappingNode(Anchor anchor) {
+        var startEvent = (MappingStartEvent) parser.next();
+        String tag = startEvent.getTag();
+        Tag nodeTag;
+        boolean resolved = false;
+        if (tag == null || tag.equals("!")) {
+            nodeTag = Tag.MAP;
+            resolved = true;
+        } else {
+            nodeTag = new Tag(tag);
+        }
+
+        final var children = new ArrayList<NodeTuple>();
+        var node = new MappingNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
+            startEvent.getStartMark(), null);
+        if (startEvent.isFlow()) {
+            node.setBlockComments(blockCommentsCollector.consume());
+        }
+        if (anchor != null) {
+            registerAnchor(anchor, node);
+        }
+        while (!parser.checkEvent(Event.ID.MappingEnd)) {
+            blockCommentsCollector.collectEvents();
+            if (parser.checkEvent(Event.ID.MappingEnd)) {
+                break;
+            }
+            composeMappingChildren(children, node);
+        }
+        if (startEvent.isFlow()) {
+            node.setInLineComments(inlineCommentsCollector.collectEvents().consume());
+        }
+        Event endEvent = parser.next();
+        node.setEndMark(endEvent.getEndMark());
+        inlineCommentsCollector.collectEvents();
+        if (!inlineCommentsCollector.isEmpty()) {
+            node.setInLineComments(inlineCommentsCollector.consume());
+        }
+        if (node.hasMergeTag()) {
+            List<NodeTuple> updatedValue = mergeUtils.flatten(node);
+            node.setValue(updatedValue);
+            node.setHasMergeTag(false);
+        }
+        return node;
+    }
+
+    /**
+     * Add the provided Node to the children as the last child
+     *
+     * @param children - the list to be extended
+     * @param node - the child to the children
+     */
+    protected void composeMappingChildren(List<NodeTuple> children, MappingNode node) {
+        Node itemKey = composeKeyNode(node);
+        if (itemKey.getNodeType() != NodeType.SCALAR && !settings.getAllowNonScalarKeys()) {
+            throw new YamlEngineException(
+                "Non scalar key is detected but it is not configured to be allowed.");
+        }
+        if (itemKey.getTag().equals(Tag.MERGE)) {
+            node.setHasMergeTag(true);
+        }
+        Node itemValue = composeValueNode(node);
+        children.add(new NodeTuple(itemKey, itemValue));
+    }
+
+    protected MappingNode asMappingNode(Node node) {
+        if (node instanceof MappingNode) {
+            return (MappingNode) node;
+        } else {
+            Anchor anchor = node.getAnchor();
+            if (anchor != null) {
+                Node ref = anchors.get(anchor);
+                if (ref instanceof MappingNode) {
+                    return (MappingNode) ref;
+                }
+            }
+        }
+        Event ev = parser.peekEvent();
+        throw new ComposerException("Expected mapping node or an anchor referencing mapping",
+            ev.getStartMark());
+    }
+
+    /**
+     * To be able to override composeNode(node) which is a key
+     *
+     * @param node - the source
+     * @return node
+     */
+    protected Node composeKeyNode(MappingNode node) {
+        return composeNode(node);
+    }
+
+    /**
+     * To be able to override composeNode(node) which is a value
+     *
+     * @param node - the source
+     * @return node
+     */
+    protected Node composeValueNode(MappingNode node) {
+        return composeNode(node);
+    }
 }

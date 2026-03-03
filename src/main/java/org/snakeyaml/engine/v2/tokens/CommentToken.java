@@ -14,32 +14,33 @@
 package org.snakeyaml.engine.v2.tokens;
 
 import java.util.Objects;
+
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class CommentToken extends Token {
 
-  private final CommentType type;
-  private final String value;
+    private final CommentType type;
+    private final String value;
 
-  public CommentToken(CommentType type, String value, Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-    Objects.requireNonNull(type);
-    Objects.requireNonNull(value);
-    this.type = type;
-    this.value = value;
-  }
+    public CommentToken(CommentType type, String value, Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(value);
+        this.type = type;
+        this.value = value;
+    }
 
-  public CommentType getCommentType() {
-    return this.type;
-  }
+    public CommentType getCommentType() {
+        return this.type;
+    }
 
-  public String getValue() {
-    return this.value;
-  }
+    public String getValue() {
+        return this.value;
+    }
 
-  @Override
-  public Token.ID getTokenId() {
-    return ID.Comment;
-  }
+    @Override
+    public Token.ID getTokenId() {
+        return ID.Comment;
+    }
 }

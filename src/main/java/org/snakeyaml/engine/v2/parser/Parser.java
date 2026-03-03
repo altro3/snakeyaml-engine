@@ -30,34 +30,34 @@ import org.snakeyaml.engine.v2.exceptions.ParserException;
  */
 public interface Parser extends Iterator<Event> {
 
-  /**
-   * Check if the next event is of the given type.
-   *
-   * @param choice Event ID to match
-   * @return <code>true</code> if the next event has the given ID, <code>false</code> otherwise.
-   * @throws ParserException in case of malformed input.
-   * @throws NoSuchElementException in case no next event is available.
-   */
-  boolean checkEvent(Event.ID choice);
+    /**
+     * Check if the next event is of the given type.
+     *
+     * @param choice Event ID to match
+     * @return <code>true</code> if the next event has the given ID, <code>false</code> otherwise.
+     * @throws ParserException in case of malformed input.
+     * @throws NoSuchElementException in case no next event is available.
+     */
+    boolean checkEvent(Event.ID choice);
 
-  /**
-   * Return the next event, but do not delete it from the stream.
-   *
-   * @return The event that will be returned on the next call to {@link #next}
-   * @throws ParserException in case of malformed input
-   * @throws NoSuchElementException in case no next event is available.
-   */
-  Event peekEvent();
+    /**
+     * Return the next event, but do not delete it from the stream.
+     *
+     * @return The event that will be returned on the next call to {@link #next}
+     * @throws ParserException in case of malformed input
+     * @throws NoSuchElementException in case no next event is available.
+     */
+    Event peekEvent();
 
-  /**
-   * Returns the next event.
-   * <p>
-   * The event will be removed from the stream.
-   * </p>
-   *
-   * @return the next parsed event
-   * @throws ParserException in case of malformed input.
-   * @throws NoSuchElementException in case no next event is available.
-   */
-  Event next();
+    /**
+     * Returns the next event.
+     * <p>
+     * The event will be removed from the stream.
+     * </p>
+     *
+     * @return the next parsed event
+     * @throws ParserException in case of malformed input.
+     * @throws NoSuchElementException in case no next event is available.
+     */
+    Event next();
 }

@@ -20,6 +20,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+
 import org.snakeyaml.engine.external.com.google.gdata.util.common.base.Escaper;
 import org.snakeyaml.engine.external.com.google.gdata.util.common.base.PercentEscaper;
 
@@ -28,44 +29,45 @@ import org.snakeyaml.engine.external.com.google.gdata.util.common.base.PercentEs
  */
 public abstract class UriEncoder {
 
-  private static final CharsetDecoder UTF8Decoder =
-      StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT);
-  // Include the [] chars to the SAFEPATHCHARS_URLENCODER to avoid
-  // its escape as required by spec. See
-  private static final String SAFE_CHARS = PercentEscaper.SAFEPATHCHARS_URLENCODER + "[]/";
-  private static final Escaper escaper = new PercentEscaper(SAFE_CHARS, false);
+    private static final CharsetDecoder UTF8Decoder =
+        StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT);
+    // Include the [] chars to the SAFEPATHCHARS_URLENCODER to avoid
+    // its escape as required by spec. See
+    private static final String SAFE_CHARS = PercentEscaper.SAFEPATHCHARS_URLENCODER + "[]/";
+    private static final Escaper escaper = new PercentEscaper(SAFE_CHARS, false);
 
-  private UriEncoder() {}
+    private UriEncoder() {
+    }
 
-  /**
-   * Escape special characters with '%'
-   *
-   * @param uri URI to be escaped
-   * @return encoded URI
-   */
-  public static String encode(String uri) {
-    return escaper.escape(uri);
-  }
+    /**
+     * Escape special characters with '%'
+     *
+     * @param uri URI to be escaped
+     * @return encoded URI
+     */
+    public static String encode(String uri) {
+        return escaper.escape(uri);
+    }
 
-  /**
-   * Decode '%'-escaped characters. Decoding fails in case of invalid UTF-8
-   *
-   * @param buff data to decode
-   * @return decoded data
-   * @throws CharacterCodingException if cannot be decoded
-   */
-  public static String decode(ByteBuffer buff) throws CharacterCodingException {
-    CharBuffer chars = UTF8Decoder.decode(buff);
-    return chars.toString();
-  }
+    /**
+     * Decode '%'-escaped characters. Decoding fails in case of invalid UTF-8
+     *
+     * @param buff data to decode
+     * @return decoded data
+     * @throws CharacterCodingException if cannot be decoded
+     */
+    public static String decode(ByteBuffer buff) throws CharacterCodingException {
+        CharBuffer chars = UTF8Decoder.decode(buff);
+        return chars.toString();
+    }
 
-  /**
-   * Decode with URLDecoder
-   *
-   * @param buff - the source
-   * @return decoded with UTF-8
-   */
-  public static String decode(String buff) {
-    return URLDecoder.decode(buff, StandardCharsets.UTF_8);
-  }
+    /**
+     * Decode with URLDecoder
+     *
+     * @param buff - the source
+     * @return decoded with UTF-8
+     */
+    public static String decode(String buff) {
+        return URLDecoder.decode(buff, StandardCharsets.UTF_8);
+    }
 }

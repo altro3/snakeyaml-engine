@@ -18,15 +18,15 @@ package org.snakeyaml.engine.v2.exceptions;
  */
 public class DuplicateKeyException extends ConstructorException { // NOSONAR
 
-  /**
-   * Create
-   *
-   * @param contextMark - the context location
-   * @param key - the data used as key more than once in the same mapping
-   * @param problemMark - the problem location
-   */
-  public DuplicateKeyException(Mark contextMark, Object key, Mark problemMark) {
-    super("while constructing a mapping", contextMark, "found duplicate key " + key.toString(),
-        problemMark);
-  }
+    /**
+     * Create
+     *
+     * @param contextMark - the context location
+     * @param key - the data used as key more than once in the same mapping
+     * @param problemMark - the problem location
+     */
+    public DuplicateKeyException(Mark contextMark, Object key, Mark problemMark) {
+        super("while constructing a mapping", contextMark, "found duplicate key " + key.toString(),
+            problemMark);
+    }
 }

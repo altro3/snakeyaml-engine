@@ -17,12 +17,12 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class FlowMappingStartToken extends Token {
 
-  public FlowMappingStartToken(Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-  }
+    public FlowMappingStartToken(Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+    }
 
-  @Override
-  public Token.ID getTokenId() {
-    return ID.FlowMappingStart;
-  }
+    @Override
+    public Token.ID getTokenId() {
+        return ID.FlowMappingStart;
+    }
 }

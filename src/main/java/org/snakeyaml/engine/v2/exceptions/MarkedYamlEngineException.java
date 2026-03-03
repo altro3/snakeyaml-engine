@@ -20,117 +20,117 @@ import java.util.Objects;
  */
 public class MarkedYamlEngineException extends YamlEngineException {
 
-  private final String context;
-  private final Mark contextMark;
-  private final String problem;
-  private final Mark problemMark;
+    private final String context;
+    private final Mark contextMark;
+    private final String problem;
+    private final Mark problemMark;
 
-  /**
-   * Create
-   *
-   * @param context - the context of the problem
-   * @param contextMark - position of the context
-   * @param problem - the issue
-   * @param problemMark - position of the issue
-   * @param cause - exception which was thrown
-   */
-  protected MarkedYamlEngineException(String context, Mark contextMark, String problem,
-      Mark problemMark, Throwable cause) {
-    super(context + "; " + problem + "; " + problemMark, cause);
-    Objects.requireNonNull(contextMark, "contextMark must be provided");
-    Objects.requireNonNull(problemMark, "problemMark must be provided");
-    this.context = context;
-    this.contextMark = contextMark;
-    this.problem = problem;
-    this.problemMark = problemMark;
-  }
-
-  /**
-   * Create
-   *
-   * @param context - the context of the problem
-   * @param contextMark - position of the context
-   * @param problem - the issue
-   * @param problemMark - position of the issue
-   */
-  protected MarkedYamlEngineException(String context, Mark contextMark, String problem,
-      Mark problemMark) {
-    this(context, contextMark, problem, problemMark, null);
-  }
-
-  /**
-   * Getter
-   *
-   * @return the problem
-   */
-  @Override
-  public String getMessage() {
-    return toString();
-  }
-
-  /**
-   * get readable error
-   *
-   * @return readable problem
-   */
-  @Override
-  public String toString() {
-    var lines = new StringBuilder();
-    if (context != null) {
-      lines.append(context);
-      lines.append('\n');
+    /**
+     * Create
+     *
+     * @param context - the context of the problem
+     * @param contextMark - position of the context
+     * @param problem - the issue
+     * @param problemMark - position of the issue
+     * @param cause - exception which was thrown
+     */
+    protected MarkedYamlEngineException(String context, Mark contextMark, String problem,
+                                        Mark problemMark, Throwable cause) {
+        super(context + "; " + problem + "; " + problemMark, cause);
+        Objects.requireNonNull(contextMark, "contextMark must be provided");
+        Objects.requireNonNull(problemMark, "problemMark must be provided");
+        this.context = context;
+        this.contextMark = contextMark;
+        this.problem = problem;
+        this.problemMark = problemMark;
     }
-    if (contextMark != null && (problem == null || problemMark == null
-        || contextMark.getName().equals(problemMark.getName())
-        || (contextMark.getLine() != problemMark.getLine())
-        || (contextMark.getColumn() != problemMark.getColumn()))) {
-      lines.append(contextMark);
-      lines.append('\n');
+
+    /**
+     * Create
+     *
+     * @param context - the context of the problem
+     * @param contextMark - position of the context
+     * @param problem - the issue
+     * @param problemMark - position of the issue
+     */
+    protected MarkedYamlEngineException(String context, Mark contextMark, String problem,
+                                        Mark problemMark) {
+        this(context, contextMark, problem, problemMark, null);
     }
-    if (problem != null) {
-      lines.append(problem);
-      lines.append('\n');
+
+    /**
+     * Getter
+     *
+     * @return the problem
+     */
+    @Override
+    public String getMessage() {
+        return toString();
     }
-    if (problemMark != null) {
-      lines.append(problemMark);
-      lines.append('\n');
+
+    /**
+     * get readable error
+     *
+     * @return readable problem
+     */
+    @Override
+    public String toString() {
+        var lines = new StringBuilder();
+        if (context != null) {
+            lines.append(context);
+            lines.append('\n');
+        }
+        if (contextMark != null && (problem == null || problemMark == null
+            || contextMark.getName().equals(problemMark.getName())
+            || (contextMark.getLine() != problemMark.getLine())
+            || (contextMark.getColumn() != problemMark.getColumn()))) {
+            lines.append(contextMark);
+            lines.append('\n');
+        }
+        if (problem != null) {
+            lines.append(problem);
+            lines.append('\n');
+        }
+        if (problemMark != null) {
+            lines.append(problemMark);
+            lines.append('\n');
+        }
+        return lines.toString();
     }
-    return lines.toString();
-  }
 
-  /**
-   * getter
-   *
-   * @return context of the error
-   */
-  public String getContext() {
-    return context;
-  }
+    /**
+     * getter
+     *
+     * @return context of the error
+     */
+    public String getContext() {
+        return context;
+    }
 
-  /**
-   * getter
-   *
-   * @return position of the context of the error
-   */
-  public Mark getContextMark() {
-    return contextMark;
-  }
+    /**
+     * getter
+     *
+     * @return position of the context of the error
+     */
+    public Mark getContextMark() {
+        return contextMark;
+    }
 
-  /**
-   * getter
-   *
-   * @return the issue
-   */
-  public String getProblem() {
-    return problem;
-  }
+    /**
+     * getter
+     *
+     * @return the issue
+     */
+    public String getProblem() {
+        return problem;
+    }
 
-  /**
-   * getter
-   *
-   * @return position of the issue
-   */
-  public Mark getProblemMark() {
-    return problemMark;
-  }
+    /**
+     * getter
+     *
+     * @return position of the issue
+     */
+    public Mark getProblemMark() {
+        return problemMark;
+    }
 }

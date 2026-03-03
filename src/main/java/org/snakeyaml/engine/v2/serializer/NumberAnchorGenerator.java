@@ -15,6 +15,7 @@ package org.snakeyaml.engine.v2.serializer;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.nodes.Node;
 
@@ -23,36 +24,36 @@ import org.snakeyaml.engine.v2.nodes.Node;
  */
 public class NumberAnchorGenerator implements AnchorGenerator {
 
-  private int lastAnchorId;
+    private int lastAnchorId;
 
-  /**
-   * Create
-   *
-   * @param lastAnchorId - the number to start from
-   */
-  public NumberAnchorGenerator(int lastAnchorId) {
-    this.lastAnchorId = lastAnchorId;
-  }
-
-  /**
-   * Create the anchor name (increasing the number) or keep the one when it was already created in
-   * the node by the low level API
-   *
-   * @param node - the data to anchor
-   * @return unique anchor name or existing anchor name
-   */
-  @Override
-  public Anchor nextAnchor(Node node) {
-    if (node.getAnchor() != null) {
-      // keep the anchor when it is set explicitly
-      return node.getAnchor();
+    /**
+     * Create
+     *
+     * @param lastAnchorId - the number to start from
+     */
+    public NumberAnchorGenerator(int lastAnchorId) {
+        this.lastAnchorId = lastAnchorId;
     }
-    this.lastAnchorId++;
-    var format = NumberFormat.getNumberInstance(Locale.ROOT);
-    format.setMinimumIntegerDigits(3);
-    format.setMaximumFractionDigits(0);// issue 172
-    format.setGroupingUsed(false);
-    String anchorId = format.format(this.lastAnchorId);
-    return new Anchor("id" + anchorId);
-  }
+
+    /**
+     * Create the anchor name (increasing the number) or keep the one when it was already created in
+     * the node by the low level API
+     *
+     * @param node - the data to anchor
+     * @return unique anchor name or existing anchor name
+     */
+    @Override
+    public Anchor nextAnchor(Node node) {
+        if (node.getAnchor() != null) {
+            // keep the anchor when it is set explicitly
+            return node.getAnchor();
+        }
+        this.lastAnchorId++;
+        var format = NumberFormat.getNumberInstance(Locale.ROOT);
+        format.setMinimumIntegerDigits(3);
+        format.setMaximumFractionDigits(0);// issue 172
+        format.setGroupingUsed(false);
+        String anchorId = format.format(this.lastAnchorId);
+        return new Anchor("id" + anchorId);
+    }
 }

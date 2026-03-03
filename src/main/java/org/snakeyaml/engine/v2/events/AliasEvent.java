@@ -21,28 +21,28 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class AliasEvent extends NodeEvent {
 
-  private final Anchor alias;
+    private final Anchor alias;
 
-  public AliasEvent(Anchor anchor, Mark startMark, Mark endMark) {
-    super(anchor, startMark, endMark);
-    alias = anchor;
-  }
+    public AliasEvent(Anchor anchor, Mark startMark, Mark endMark) {
+        super(anchor, startMark, endMark);
+        alias = anchor;
+    }
 
-  public AliasEvent(Anchor anchor) {
-    this(anchor, null, null);
-  }
+    public AliasEvent(Anchor anchor) {
+        this(anchor, null, null);
+    }
 
-  @Override
-  public ID getEventId() {
-    return ID.Alias;
-  }
+    @Override
+    public ID getEventId() {
+        return ID.Alias;
+    }
 
-  @Override
-  public String toString() {
-    return "=ALI *" + alias;
-  }
+    @Override
+    public String toString() {
+        return "=ALI *" + alias;
+    }
 
-  public Anchor getAlias() {
-    return alias;
-  }
+    public Anchor getAlias() {
+        return alias;
+    }
 }

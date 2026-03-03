@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.api;
 
 import java.util.Map;
+
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.NonPrintableStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -28,163 +29,163 @@ import org.snakeyaml.engine.v2.serializer.AnchorGenerator;
  */
 public final class DumpSettings {
 
-  private final boolean explicitStart;
-  private final boolean explicitEnd;
-  private final NonPrintableStyle nonPrintableStyle;
-  private final Tag explicitRootTag;
-  private final AnchorGenerator anchorGenerator;
-  private final SpecVersion yamlDirective;
-  private final Map<String, String> tagDirective;
-  private final FlowStyle defaultFlowStyle;
-  private final ScalarStyle defaultScalarStyle;
-  private final Boolean dereferenceAliases;
+    private final boolean explicitStart;
+    private final boolean explicitEnd;
+    private final NonPrintableStyle nonPrintableStyle;
+    private final Tag explicitRootTag;
+    private final AnchorGenerator anchorGenerator;
+    private final SpecVersion yamlDirective;
+    private final Map<String, String> tagDirective;
+    private final FlowStyle defaultFlowStyle;
+    private final ScalarStyle defaultScalarStyle;
+    private final Boolean dereferenceAliases;
 
-  // emitter
-  private final boolean canonical;
-  private final boolean multiLineFlow;
-  private final boolean useUnicodeEncoding;
-  private final int indent;
-  private final int indicatorIndent;
-  private final int width;
-  private final String bestLineBreak;
-  private final boolean splitLines;
-  private final int maxSimpleKeyLength;
-  private final boolean indentWithIndicator;
-  private final boolean dumpComments;
-  private final Schema schema;
+    // emitter
+    private final boolean canonical;
+    private final boolean multiLineFlow;
+    private final boolean useUnicodeEncoding;
+    private final int indent;
+    private final int indicatorIndent;
+    private final int width;
+    private final String bestLineBreak;
+    private final boolean splitLines;
+    private final int maxSimpleKeyLength;
+    private final boolean indentWithIndicator;
+    private final boolean dumpComments;
+    private final Schema schema;
 
 
-  // general
-  private final Map<SettingKey, Object> customProperties;
+    // general
+    private final Map<SettingKey, Object> customProperties;
 
-  DumpSettings(boolean explicitStart, boolean explicitEnd, Tag explicitRootTag,
-      AnchorGenerator anchorGenerator, SpecVersion yamlDirective, Map<String, String> tagDirective,
-      FlowStyle defaultFlowStyle, ScalarStyle defaultScalarStyle,
-      NonPrintableStyle nonPrintableStyle, Schema schema, Boolean dereferenceAliases,
-      // emitter
-      boolean canonical, boolean multiLineFlow, boolean useUnicodeEncoding, int indent,
-      int indicatorIndent, int width, String bestLineBreak, boolean splitLines,
-      int maxSimpleKeyLength, Map<SettingKey, Object> customProperties, boolean indentWithIndicator,
-      boolean dumpComments) {
-    this.explicitStart = explicitStart;
-    this.explicitEnd = explicitEnd;
-    this.nonPrintableStyle = nonPrintableStyle;
-    this.explicitRootTag = explicitRootTag;
-    this.anchorGenerator = anchorGenerator;
-    this.yamlDirective = yamlDirective;
-    this.tagDirective = tagDirective;
-    this.defaultFlowStyle = defaultFlowStyle;
-    this.defaultScalarStyle = defaultScalarStyle;
-    this.schema = schema;
-    this.canonical = canonical;
-    this.multiLineFlow = multiLineFlow;
-    this.useUnicodeEncoding = useUnicodeEncoding;
-    this.indent = indent;
-    this.indicatorIndent = indicatorIndent;
-    this.width = width;
-    this.bestLineBreak = bestLineBreak;
-    this.splitLines = splitLines;
-    this.maxSimpleKeyLength = maxSimpleKeyLength;
-    this.customProperties = customProperties;
-    this.indentWithIndicator = indentWithIndicator;
-    this.dumpComments = dumpComments;
-    this.dereferenceAliases = dereferenceAliases;
-  }
+    DumpSettings(boolean explicitStart, boolean explicitEnd, Tag explicitRootTag,
+                 AnchorGenerator anchorGenerator, SpecVersion yamlDirective, Map<String, String> tagDirective,
+                 FlowStyle defaultFlowStyle, ScalarStyle defaultScalarStyle,
+                 NonPrintableStyle nonPrintableStyle, Schema schema, Boolean dereferenceAliases,
+                 // emitter
+                 boolean canonical, boolean multiLineFlow, boolean useUnicodeEncoding, int indent,
+                 int indicatorIndent, int width, String bestLineBreak, boolean splitLines,
+                 int maxSimpleKeyLength, Map<SettingKey, Object> customProperties, boolean indentWithIndicator,
+                 boolean dumpComments) {
+        this.explicitStart = explicitStart;
+        this.explicitEnd = explicitEnd;
+        this.nonPrintableStyle = nonPrintableStyle;
+        this.explicitRootTag = explicitRootTag;
+        this.anchorGenerator = anchorGenerator;
+        this.yamlDirective = yamlDirective;
+        this.tagDirective = tagDirective;
+        this.defaultFlowStyle = defaultFlowStyle;
+        this.defaultScalarStyle = defaultScalarStyle;
+        this.schema = schema;
+        this.canonical = canonical;
+        this.multiLineFlow = multiLineFlow;
+        this.useUnicodeEncoding = useUnicodeEncoding;
+        this.indent = indent;
+        this.indicatorIndent = indicatorIndent;
+        this.width = width;
+        this.bestLineBreak = bestLineBreak;
+        this.splitLines = splitLines;
+        this.maxSimpleKeyLength = maxSimpleKeyLength;
+        this.customProperties = customProperties;
+        this.indentWithIndicator = indentWithIndicator;
+        this.dumpComments = dumpComments;
+        this.dereferenceAliases = dereferenceAliases;
+    }
 
-  public static DumpSettingsBuilder builder() {
-    return new DumpSettingsBuilder();
-  }
+    public static DumpSettingsBuilder builder() {
+        return new DumpSettingsBuilder();
+    }
 
-  public FlowStyle getDefaultFlowStyle() {
-    return defaultFlowStyle;
-  }
+    public FlowStyle getDefaultFlowStyle() {
+        return defaultFlowStyle;
+    }
 
-  public ScalarStyle getDefaultScalarStyle() {
-    return defaultScalarStyle;
-  }
+    public ScalarStyle getDefaultScalarStyle() {
+        return defaultScalarStyle;
+    }
 
-  public boolean isExplicitStart() {
-    return explicitStart;
-  }
+    public boolean isExplicitStart() {
+        return explicitStart;
+    }
 
-  public AnchorGenerator getAnchorGenerator() {
-    return anchorGenerator;
-  }
+    public AnchorGenerator getAnchorGenerator() {
+        return anchorGenerator;
+    }
 
-  public boolean isExplicitEnd() {
-    return explicitEnd;
-  }
+    public boolean isExplicitEnd() {
+        return explicitEnd;
+    }
 
-  public Tag getExplicitRootTag() {
-    return explicitRootTag;
-  }
+    public Tag getExplicitRootTag() {
+        return explicitRootTag;
+    }
 
-  public SpecVersion getYamlDirective() {
-    return yamlDirective;
-  }
+    public SpecVersion getYamlDirective() {
+        return yamlDirective;
+    }
 
-  public Map<String, String> getTagDirective() {
-    return tagDirective;
-  }
+    public Map<String, String> getTagDirective() {
+        return tagDirective;
+    }
 
-  public boolean isCanonical() {
-    return canonical;
-  }
+    public boolean isCanonical() {
+        return canonical;
+    }
 
-  public boolean isMultiLineFlow() {
-    return multiLineFlow;
-  }
+    public boolean isMultiLineFlow() {
+        return multiLineFlow;
+    }
 
-  public boolean isUseUnicodeEncoding() {
-    return useUnicodeEncoding;
-  }
+    public boolean isUseUnicodeEncoding() {
+        return useUnicodeEncoding;
+    }
 
-  public int getIndent() {
-    return indent;
-  }
+    public int getIndent() {
+        return indent;
+    }
 
-  public int getIndicatorIndent() {
-    return indicatorIndent;
-  }
+    public int getIndicatorIndent() {
+        return indicatorIndent;
+    }
 
-  public int getWidth() {
-    return width;
-  }
+    public int getWidth() {
+        return width;
+    }
 
-  public String getBestLineBreak() {
-    return bestLineBreak;
-  }
+    public String getBestLineBreak() {
+        return bestLineBreak;
+    }
 
-  public boolean isSplitLines() {
-    return splitLines;
-  }
+    public boolean isSplitLines() {
+        return splitLines;
+    }
 
-  public int getMaxSimpleKeyLength() {
-    return maxSimpleKeyLength;
-  }
+    public int getMaxSimpleKeyLength() {
+        return maxSimpleKeyLength;
+    }
 
-  public NonPrintableStyle getNonPrintableStyle() {
-    return nonPrintableStyle;
-  }
+    public NonPrintableStyle getNonPrintableStyle() {
+        return nonPrintableStyle;
+    }
 
-  public Object getCustomProperty(SettingKey key) {
-    return customProperties.get(key);
-  }
+    public Object getCustomProperty(SettingKey key) {
+        return customProperties.get(key);
+    }
 
-  public boolean getIndentWithIndicator() {
-    return indentWithIndicator;
-  }
+    public boolean getIndentWithIndicator() {
+        return indentWithIndicator;
+    }
 
-  public boolean getDumpComments() {
-    return dumpComments;
-  }
+    public boolean getDumpComments() {
+        return dumpComments;
+    }
 
-  public Schema getSchema() {
-    return schema;
-  }
+    public Schema getSchema() {
+        return schema;
+    }
 
-  public Boolean isDereferenceAliases() {
-    return dereferenceAliases;
-  }
+    public Boolean isDereferenceAliases() {
+        return dereferenceAliases;
+    }
 }
 

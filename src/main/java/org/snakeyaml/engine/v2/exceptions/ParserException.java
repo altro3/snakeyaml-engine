@@ -20,25 +20,25 @@ import org.snakeyaml.engine.v2.parser.Parser;
  */
 public class ParserException extends MarkedYamlEngineException { // NOSONAR
 
-  /**
-   * Constructs an instance.
-   *
-   * @param context Part of the input document in which vicinity the problem occurred.
-   * @param contextMark Position of the <code>context</code> within the document.
-   * @param problem Part of the input document that caused the problem.
-   * @param problemMark Position of the <code>problem</code>. within the document.
-   */
-  public ParserException(String context, Mark contextMark, String problem, Mark problemMark) {
-    super(context, contextMark, problem, problemMark, null);
-  }
+    /**
+     * Constructs an instance.
+     *
+     * @param context Part of the input document in which vicinity the problem occurred.
+     * @param contextMark Position of the <code>context</code> within the document.
+     * @param problem Part of the input document that caused the problem.
+     * @param problemMark Position of the <code>problem</code>. within the document.
+     */
+    public ParserException(String context, Mark contextMark, String problem, Mark problemMark) {
+        super(context, contextMark, problem, problemMark, null);
+    }
 
-  /**
-   * Create
-   *
-   * @param problem - the issue
-   * @param problemMark - the position of the issue
-   */
-  public ParserException(String problem, Mark problemMark) {
-    super(null, null, problem, problemMark, null);
-  }
+    /**
+     * Create
+     *
+     * @param problem - the issue
+     * @param problemMark - the position of the issue
+     */
+    public ParserException(String problem, Mark problemMark) {
+        super(null, null, problem, problemMark, null);
+    }
 }

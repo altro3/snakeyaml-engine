@@ -24,10 +24,10 @@ import org.snakeyaml.engine.v2.events.Event;
  */
 interface Production {
 
-  /**
-   * Produce parsed event
-   *
-   * @return parsed event to be added to the stream of events
-   */
-  Event produce();
+    /**
+     * Produce parsed event
+     *
+     * @return parsed event to be added to the stream of events
+     */
+    Event produce();
 }

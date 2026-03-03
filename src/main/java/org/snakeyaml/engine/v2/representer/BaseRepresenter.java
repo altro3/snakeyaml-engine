@@ -19,6 +19,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.snakeyaml.engine.v2.api.RepresentToNode;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -36,203 +37,203 @@ import org.snakeyaml.engine.v2.nodes.Tag;
  */
 public abstract class BaseRepresenter {
 
-  /**
-   * Keep representers which must match the class exactly
-   */
-  protected final Map<Class<?>, RepresentToNode> representers = new HashMap<>();
-  /**
-   * Keep representers which match a parent of the class to be represented
-   */
-  protected final Map<Class<?>, RepresentToNode> parentClassRepresenters = new LinkedHashMap<>();
-  /**
-   * Keep references of already represented instances. The order is important (map can be also a
-   * sequence of key-values)
-   */
-  protected final Map<Object, Node> representedObjects = new IdentityHashMap<>() {
-    @Override
-    public Node put(Object key, Node value) {
-      return super.put(key, new AnchorNode(value));
-    }
-  };
-  /**
-   * in Java 'null' is not a type. So we have to keep the null representer separately
-   */
-  protected RepresentToNode nullRepresenter;
-  /**
-   * scalar style
-   */
-  protected ScalarStyle defaultScalarStyle = ScalarStyle.PLAIN;
-  /**
-   * flow style for collections
-   */
-  protected FlowStyle defaultFlowStyle = FlowStyle.AUTO;
-  /**
-   * the current object to be converted to Node
-   */
-  protected Object objectToRepresent;
-
-  /**
-   * Represent the provided Java instance to a Node
-   *
-   * @param data - Java instance to be represented
-   * @return The Node to be serialized
-   */
-  public Node represent(Object data) {
-    Node node = representData(data);
-    representedObjects.clear();
-    objectToRepresent = null;
-    return node;
-  }
-
-  /**
-   * Find the representer which is suitable to represent the internal structure of the provided
-   * instance to a Node
-   *
-   * @param data - the data to be serialized
-   * @return RepresentToNode to call to create a Node
-   */
-  protected RepresentToNode findRepresenterFor(Object data) {
-    Class<?> clazz = data.getClass();
-    // check the same class
-    if (representers.containsKey(clazz)) {
-      return representers.get(clazz);
-    } else {
-      // check the parents
-      for (Map.Entry<Class<?>, RepresentToNode> parentRepresenterEntry : parentClassRepresenters
-          .entrySet()) {
-        if (parentRepresenterEntry.getKey().isInstance(data)) {
-          return parentRepresenterEntry.getValue();
+    /**
+     * Keep representers which must match the class exactly
+     */
+    protected final Map<Class<?>, RepresentToNode> representers = new HashMap<>();
+    /**
+     * Keep representers which match a parent of the class to be represented
+     */
+    protected final Map<Class<?>, RepresentToNode> parentClassRepresenters = new LinkedHashMap<>();
+    /**
+     * Keep references of already represented instances. The order is important (map can be also a
+     * sequence of key-values)
+     */
+    protected final Map<Object, Node> representedObjects = new IdentityHashMap<>() {
+        @Override
+        public Node put(Object key, Node value) {
+            return super.put(key, new AnchorNode(value));
         }
-      }
-      return null;
-    }
-  }
+    };
+    /**
+     * in Java 'null' is not a type. So we have to keep the null representer separately
+     */
+    protected RepresentToNode nullRepresenter;
+    /**
+     * scalar style
+     */
+    protected ScalarStyle defaultScalarStyle = ScalarStyle.PLAIN;
+    /**
+     * flow style for collections
+     */
+    protected FlowStyle defaultFlowStyle = FlowStyle.AUTO;
+    /**
+     * the current object to be converted to Node
+     */
+    protected Object objectToRepresent;
 
-  /**
-   * Find the representer and use it to create the Node from instance
-   *
-   * @param data - the source
-   * @return Node for the provided source
-   */
-  protected final Node representData(Object data) {
-    objectToRepresent = data;
-    // check for identity
-    if (representedObjects.containsKey(objectToRepresent)) {
-      return representedObjects.get(objectToRepresent);
+    /**
+     * Represent the provided Java instance to a Node
+     *
+     * @param data - Java instance to be represented
+     * @return The Node to be serialized
+     */
+    public Node represent(Object data) {
+        Node node = representData(data);
+        representedObjects.clear();
+        objectToRepresent = null;
+        return node;
     }
-    // check for null first
-    if (data == null) {
-      return nullRepresenter.representData(null);
-    }
-    RepresentToNode representer = findRepresenterFor(data);
-    if (representer == null) {
-      throw new YamlEngineException("Representer is not defined for " + data.getClass());
-    }
-    return representer.representData(data);
-  }
 
-  /**
-   * Create scalar node for the provided string object.
-   *
-   * @param tag - the tag to emit
-   * @param value - the value to emit
-   * @param style - scalar style when preferred
-   * @return Node to emit
-   */
-  protected Node representScalar(Tag tag, String value, ScalarStyle style) {
-    if (style == ScalarStyle.PLAIN) {
-      style = this.defaultScalarStyle;
+    /**
+     * Find the representer which is suitable to represent the internal structure of the provided
+     * instance to a Node
+     *
+     * @param data - the data to be serialized
+     * @return RepresentToNode to call to create a Node
+     */
+    protected RepresentToNode findRepresenterFor(Object data) {
+        Class<?> clazz = data.getClass();
+        // check the same class
+        if (representers.containsKey(clazz)) {
+            return representers.get(clazz);
+        } else {
+            // check the parents
+            for (Map.Entry<Class<?>, RepresentToNode> parentRepresenterEntry : parentClassRepresenters
+                .entrySet()) {
+                if (parentRepresenterEntry.getKey().isInstance(data)) {
+                    return parentRepresenterEntry.getValue();
+                }
+            }
+            return null;
+        }
     }
-    return new ScalarNode(tag, value, style);
-  }
 
-  /**
-   * Create Node for string using PLAIN scalar style if possible
-   *
-   * @param tag - the tag for Node
-   * @param value - the surce
-   * @return Node for string
-   */
-  protected Node representScalar(Tag tag, String value) {
-    return representScalar(tag, value, ScalarStyle.PLAIN);
-  }
+    /**
+     * Find the representer and use it to create the Node from instance
+     *
+     * @param data - the source
+     * @return Node for the provided source
+     */
+    protected final Node representData(Object data) {
+        objectToRepresent = data;
+        // check for identity
+        if (representedObjects.containsKey(objectToRepresent)) {
+            return representedObjects.get(objectToRepresent);
+        }
+        // check for null first
+        if (data == null) {
+            return nullRepresenter.representData(null);
+        }
+        RepresentToNode representer = findRepresenterFor(data);
+        if (representer == null) {
+            throw new YamlEngineException("Representer is not defined for " + data.getClass());
+        }
+        return representer.representData(data);
+    }
 
-  /**
-   * Create Node
-   *
-   * @param tag - tag to use in Node
-   * @param sequence - the source
-   * @param flowStyle - the flow style
-   * @return the Node from the source iterable
-   */
-  protected Node representSequence(Tag tag, Iterable<?> sequence, FlowStyle flowStyle) {
-    int size = 10; // default for ArrayList
-    if (sequence instanceof List<?>) {
-      size = ((List<?>) sequence).size();
+    /**
+     * Create scalar node for the provided string object.
+     *
+     * @param tag - the tag to emit
+     * @param value - the value to emit
+     * @param style - scalar style when preferred
+     * @return Node to emit
+     */
+    protected Node representScalar(Tag tag, String value, ScalarStyle style) {
+        if (style == ScalarStyle.PLAIN) {
+            style = this.defaultScalarStyle;
+        }
+        return new ScalarNode(tag, value, style);
     }
-    List<Node> value = new ArrayList<>(size);
-    SequenceNode node = new SequenceNode(tag, value, flowStyle);
-    representedObjects.put(objectToRepresent, node);
-    FlowStyle bestStyle = FlowStyle.FLOW;
-    for (Object item : sequence) {
-      Node nodeItem = representData(item);
-      if (!(nodeItem instanceof ScalarNode && ((ScalarNode) nodeItem).isPlain())) {
-        bestStyle = FlowStyle.BLOCK;
-      }
-      value.add(nodeItem);
-    }
-    if (flowStyle == FlowStyle.AUTO) {
-      if (defaultFlowStyle != FlowStyle.AUTO) {
-        node.setFlowStyle(defaultFlowStyle);
-      } else {
-        node.setFlowStyle(bestStyle);
-      }
-    }
-    return node;
-  }
 
-  /**
-   * Create a tuple for one key pair
-   *
-   * @param entry - Map entry
-   * @return the tuple where both key and value are converted to Node
-   */
-  protected NodeTuple representMappingEntry(Map.Entry<?, ?> entry) {
-    return new NodeTuple(representData(entry.getKey()), representData(entry.getValue()));
-  }
+    /**
+     * Create Node for string using PLAIN scalar style if possible
+     *
+     * @param tag - the tag for Node
+     * @param value - the surce
+     * @return Node for string
+     */
+    protected Node representScalar(Tag tag, String value) {
+        return representScalar(tag, value, ScalarStyle.PLAIN);
+    }
 
-  /**
-   * Create Node for the provided Map
-   *
-   * @param tag - the tag for Node
-   * @param mapping - the source
-   * @param flowStyle - the style of Node
-   * @return Node for the source Map
-   */
-  protected Node representMapping(Tag tag, Map<?, ?> mapping, FlowStyle flowStyle) {
-    List<NodeTuple> value = new ArrayList<>(mapping.size());
-    MappingNode node = new MappingNode(tag, value, flowStyle);
-    representedObjects.put(objectToRepresent, node);
-    FlowStyle bestStyle = FlowStyle.FLOW;
-    for (Map.Entry<?, ?> entry : mapping.entrySet()) {
-      NodeTuple tuple = representMappingEntry(entry);
-      if (!(tuple.getKeyNode() instanceof ScalarNode
-          && ((ScalarNode) tuple.getKeyNode()).isPlain())) {
-        bestStyle = FlowStyle.BLOCK;
-      }
-      if (!(tuple.getValueNode() instanceof ScalarNode
-          && ((ScalarNode) tuple.getValueNode()).isPlain())) {
-        bestStyle = FlowStyle.BLOCK;
-      }
-      value.add(tuple);
+    /**
+     * Create Node
+     *
+     * @param tag - tag to use in Node
+     * @param sequence - the source
+     * @param flowStyle - the flow style
+     * @return the Node from the source iterable
+     */
+    protected Node representSequence(Tag tag, Iterable<?> sequence, FlowStyle flowStyle) {
+        int size = 10; // default for ArrayList
+        if (sequence instanceof List<?>) {
+            size = ((List<?>) sequence).size();
+        }
+        List<Node> value = new ArrayList<>(size);
+        SequenceNode node = new SequenceNode(tag, value, flowStyle);
+        representedObjects.put(objectToRepresent, node);
+        FlowStyle bestStyle = FlowStyle.FLOW;
+        for (Object item : sequence) {
+            Node nodeItem = representData(item);
+            if (!(nodeItem instanceof ScalarNode && ((ScalarNode) nodeItem).isPlain())) {
+                bestStyle = FlowStyle.BLOCK;
+            }
+            value.add(nodeItem);
+        }
+        if (flowStyle == FlowStyle.AUTO) {
+            if (defaultFlowStyle != FlowStyle.AUTO) {
+                node.setFlowStyle(defaultFlowStyle);
+            } else {
+                node.setFlowStyle(bestStyle);
+            }
+        }
+        return node;
     }
-    if (flowStyle == FlowStyle.AUTO) {
-      if (defaultFlowStyle != FlowStyle.AUTO) {
-        node.setFlowStyle(defaultFlowStyle);
-      } else {
-        node.setFlowStyle(bestStyle);
-      }
+
+    /**
+     * Create a tuple for one key pair
+     *
+     * @param entry - Map entry
+     * @return the tuple where both key and value are converted to Node
+     */
+    protected NodeTuple representMappingEntry(Map.Entry<?, ?> entry) {
+        return new NodeTuple(representData(entry.getKey()), representData(entry.getValue()));
     }
-    return node;
-  }
+
+    /**
+     * Create Node for the provided Map
+     *
+     * @param tag - the tag for Node
+     * @param mapping - the source
+     * @param flowStyle - the style of Node
+     * @return Node for the source Map
+     */
+    protected Node representMapping(Tag tag, Map<?, ?> mapping, FlowStyle flowStyle) {
+        List<NodeTuple> value = new ArrayList<>(mapping.size());
+        MappingNode node = new MappingNode(tag, value, flowStyle);
+        representedObjects.put(objectToRepresent, node);
+        FlowStyle bestStyle = FlowStyle.FLOW;
+        for (Map.Entry<?, ?> entry : mapping.entrySet()) {
+            NodeTuple tuple = representMappingEntry(entry);
+            if (!(tuple.getKeyNode() instanceof ScalarNode
+                && ((ScalarNode) tuple.getKeyNode()).isPlain())) {
+                bestStyle = FlowStyle.BLOCK;
+            }
+            if (!(tuple.getValueNode() instanceof ScalarNode
+                && ((ScalarNode) tuple.getValueNode()).isPlain())) {
+                bestStyle = FlowStyle.BLOCK;
+            }
+            value.add(tuple);
+        }
+        if (flowStyle == FlowStyle.AUTO) {
+            if (defaultFlowStyle != FlowStyle.AUTO) {
+                node.setFlowStyle(defaultFlowStyle);
+            } else {
+                node.setFlowStyle(bestStyle);
+            }
+        }
+        return node;
+    }
 }

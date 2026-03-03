@@ -22,8 +22,8 @@ import org.snakeyaml.engine.v2.nodes.ScalarNode;
  */
 public class ConstructYamlCoreFloat extends ConstructYamlJsonFloat {
 
-  protected String constructScalar(Node node) {
-    // to lower case to parse the special values in any case
-    return ((ScalarNode) node).getValue().toLowerCase();
-  }
+    protected String constructScalar(Node node) {
+        // to lower case to parse the special values in any case
+        return ((ScalarNode) node).getValue().toLowerCase();
+    }
 }

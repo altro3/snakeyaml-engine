@@ -17,12 +17,12 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class StreamEndToken extends Token {
 
-  public StreamEndToken(Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-  }
+    public StreamEndToken(Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+    }
 
-  @Override
-  public Token.ID getTokenId() {
-    return ID.StreamEnd;
-  }
+    @Override
+    public Token.ID getTokenId() {
+        return ID.StreamEnd;
+    }
 }

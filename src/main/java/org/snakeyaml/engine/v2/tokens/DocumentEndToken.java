@@ -17,12 +17,12 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
 
 public final class DocumentEndToken extends Token {
 
-  public DocumentEndToken(Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-  }
+    public DocumentEndToken(Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+    }
 
-  @Override
-  public Token.ID getTokenId() {
-    return ID.DocumentEnd;
-  }
+    @Override
+    public Token.ID getTokenId() {
+        return ID.DocumentEnd;
+    }
 }

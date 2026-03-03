@@ -23,25 +23,25 @@ import java.util.Objects;
  */
 class VersionTagsTuple {
 
-  private final SpecVersion specVersion;
-  private final Map<String, String> tags;
+    private final SpecVersion specVersion;
+    private final Map<String, String> tags;
 
-  public VersionTagsTuple(SpecVersion specVersion, Map<String, String> tags) {
-    Objects.requireNonNull(specVersion);
-    this.specVersion = specVersion;
-    this.tags = tags;
-  }
+    public VersionTagsTuple(SpecVersion specVersion, Map<String, String> tags) {
+        Objects.requireNonNull(specVersion);
+        this.specVersion = specVersion;
+        this.tags = tags;
+    }
 
-  public SpecVersion getSpecVersion() {
-    return specVersion;
-  }
+    public SpecVersion getSpecVersion() {
+        return specVersion;
+    }
 
-  public Map<String, String> getTags() {
-    return tags;
-  }
+    public Map<String, String> getTags() {
+        return tags;
+    }
 
-  @Override
-  public String toString() {
-    return String.format("VersionTagsTuple<%s, %s>", specVersion, tags);
-  }
+    @Override
+    public String toString() {
+        return String.format("VersionTagsTuple<%s, %s>", specVersion, tags);
+    }
 }

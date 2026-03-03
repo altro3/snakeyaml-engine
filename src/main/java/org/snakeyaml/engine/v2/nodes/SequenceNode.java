@@ -16,6 +16,7 @@ package org.snakeyaml.engine.v2.nodes;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -27,51 +28,51 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public class SequenceNode extends CollectionNode<Node> {
 
-  private final List<Node> value;
+    private final List<Node> value;
 
-  public SequenceNode(Tag tag, boolean resolved, List<Node> value, FlowStyle flowStyle,
-      Mark startMark, Mark endMark) {
-    super(tag, flowStyle, startMark, endMark);
-    Objects.requireNonNull(value, "value in a Node is required.");
-    this.value = value;
-    this.resolved = resolved;
-  }
-
-  public SequenceNode(Tag tag, List<Node> value, FlowStyle flowStyle) {
-    this(tag, true, value, flowStyle, null, null);
-  }
-
-  @Override
-  public NodeType getNodeType() {
-    return NodeType.SEQUENCE;
-  }
-
-  /**
-   * Returns the elements in this sequence.
-   *
-   * @return Nodes in the specified order.
-   */
-  @Override
-  public List<Node> getValue() {
-    return value;
-  }
-
-  @Override
-  public String toString() {
-    var buf = new StringBuilder();
-    var isFirst = true;
-    for (Node node : value) {
-      if (isFirst) {
-        buf.append(',');
-      }
-      if (node instanceof CollectionNode) {
-        // to avoid overflow in case of recursive structures
-        buf.append(System.identityHashCode(node));
-      } else {
-        buf.append(node.toString());
-      }
-      isFirst = false;
+    public SequenceNode(Tag tag, boolean resolved, List<Node> value, FlowStyle flowStyle,
+                        Mark startMark, Mark endMark) {
+        super(tag, flowStyle, startMark, endMark);
+        Objects.requireNonNull(value, "value in a Node is required.");
+        this.value = value;
+        this.resolved = resolved;
     }
-    return "<SequenceNode (tag=" + tag + ", value=[" + buf + "])>";
-  }
+
+    public SequenceNode(Tag tag, List<Node> value, FlowStyle flowStyle) {
+        this(tag, true, value, flowStyle, null, null);
+    }
+
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.SEQUENCE;
+    }
+
+    /**
+     * Returns the elements in this sequence.
+     *
+     * @return Nodes in the specified order.
+     */
+    @Override
+    public List<Node> getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        var buf = new StringBuilder();
+        var isFirst = true;
+        for (Node node : value) {
+            if (isFirst) {
+                buf.append(',');
+            }
+            if (node instanceof CollectionNode) {
+                // to avoid overflow in case of recursive structures
+                buf.append(System.identityHashCode(node));
+            } else {
+                buf.append(node.toString());
+            }
+            isFirst = false;
+        }
+        return "<SequenceNode (tag=" + tag + ", value=[" + buf + "])>";
+    }
 }

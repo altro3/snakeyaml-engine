@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.resolver;
 
 import java.util.regex.Pattern;
+
 import org.snakeyaml.engine.v2.nodes.Tag;
 
 /**
@@ -23,41 +24,41 @@ import org.snakeyaml.engine.v2.nodes.Tag;
  */
 public class JsonScalarResolver extends BaseScalarResolver {
 
-  /**
-   * Boolean as defined in JSON
-   */
-  public static final Pattern BOOL = Pattern.compile("^(?:true|false)$");
-
-  /**
-   * Float as defined in JSON (Number which is Float)
-   */
-  public static final Pattern FLOAT =
-      Pattern.compile("^(-?(0|[1-9][0-9]*)(\\.[0-9]*)?([eE][-+]?[0-9]+)?)|(-?\\.inf)|(\\.nan)$");
-
-  /**
-   * Integer as defined in JSON (Number which is Integer)
-   */
-  public static final Pattern INT = Pattern.compile("^-?(0|[1-9][0-9]*)$");
-
-  /**
-   * Null as defined in JSON
-   */
-  public static final Pattern NULL = Pattern.compile("^(?:null)$");
-
-  /**
-   * Register all the resolvers to be applied
-   */
-  @Override
-  protected void addImplicitResolvers() {
-    addImplicitResolver(Tag.NULL, EMPTY, null);
-    addImplicitResolver(Tag.BOOL, BOOL, "tf");
-    /*
-     * INT must be before FLOAT because the regular expression for FLOAT matches INT (see issue 130)
-     * http://code.google.com/p/snakeyaml/issues/detail?id=130
+    /**
+     * Boolean as defined in JSON
      */
-    addImplicitResolver(Tag.INT, INT, "-0123456789");
-    addImplicitResolver(Tag.FLOAT, FLOAT, "-0123456789.");
-    addImplicitResolver(Tag.NULL, NULL, "n\u0000");
-    addImplicitResolver(Tag.ENV_TAG, ENV_FORMAT, "$");
-  }
+    public static final Pattern BOOL = Pattern.compile("^(?:true|false)$");
+
+    /**
+     * Float as defined in JSON (Number which is Float)
+     */
+    public static final Pattern FLOAT =
+        Pattern.compile("^(-?(0|[1-9][0-9]*)(\\.[0-9]*)?([eE][-+]?[0-9]+)?)|(-?\\.inf)|(\\.nan)$");
+
+    /**
+     * Integer as defined in JSON (Number which is Integer)
+     */
+    public static final Pattern INT = Pattern.compile("^-?(0|[1-9][0-9]*)$");
+
+    /**
+     * Null as defined in JSON
+     */
+    public static final Pattern NULL = Pattern.compile("^(?:null)$");
+
+    /**
+     * Register all the resolvers to be applied
+     */
+    @Override
+    protected void addImplicitResolvers() {
+        addImplicitResolver(Tag.NULL, EMPTY, null);
+        addImplicitResolver(Tag.BOOL, BOOL, "tf");
+        /*
+         * INT must be before FLOAT because the regular expression for FLOAT matches INT (see issue 130)
+         * http://code.google.com/p/snakeyaml/issues/detail?id=130
+         */
+        addImplicitResolver(Tag.INT, INT, "-0123456789");
+        addImplicitResolver(Tag.FLOAT, FLOAT, "-0123456789.");
+        addImplicitResolver(Tag.NULL, NULL, "n\u0000");
+        addImplicitResolver(Tag.ENV_TAG, ENV_FORMAT, "$");
+    }
 }

@@ -20,12 +20,12 @@ import org.snakeyaml.engine.v2.nodes.Tag;
  */
 public interface ScalarResolver {
 
-  /**
-   * Resolve (detect) the tag of the scalar node of the given type.
-   *
-   * @param value - the value of the scalar node
-   * @param implicit - true if there was no tag specified (the tag will be resolved)
-   * @return the Tag that matches the contents
-   */
-  Tag resolve(String value, Boolean implicit);
+    /**
+     * Resolve (detect) the tag of the scalar node of the given type.
+     *
+     * @param value - the value of the scalar node
+     * @param implicit - true if there was no tag specified (the tag will be resolved)
+     * @return the Tag that matches the contents
+     */
+    Tag resolve(String value, Boolean implicit);
 }

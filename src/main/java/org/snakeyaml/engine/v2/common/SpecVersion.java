@@ -20,63 +20,63 @@ import java.io.Serializable;
  */
 public enum SpecVersion implements Serializable {
 
-  V_1_2(1, 2),
-  ;
+    V_1_2(1, 2),
+    ;
 
-  /**
-   * keep major
-   */
-  private final int major;
-  /**
-   * keep minor
-   */
-  private final int minor;
-  /**
-   * String representation like "1.2"
-   */
-  private final String representation;
+    /**
+     * keep major
+     */
+    private final int major;
+    /**
+     * keep minor
+     */
+    private final int minor;
+    /**
+     * String representation like "1.2"
+     */
+    private final String representation;
 
-  /**
-   * Create
-   *
-   * @param major - major part ov version
-   * @param minor - minor part of version
-   */
-  SpecVersion(int major, int minor) {
-    this.major = major;
-    this.minor = minor;
-    representation = major + "." + minor;
-  }
+    /**
+     * Create
+     *
+     * @param major - major part ov version
+     * @param minor - minor part of version
+     */
+    SpecVersion(int major, int minor) {
+        this.major = major;
+        this.minor = minor;
+        representation = major + "." + minor;
+    }
 
-  /**
-   * getter
-   *
-   * @return 1
-   */
-  public int getMajor() {
-    return major;
-  }
+    /**
+     * getter
+     *
+     * @return 1
+     */
+    public int getMajor() {
+        return major;
+    }
 
-  /**
-   * getter
-   *
-   * @return 0 or 1
-   */
-  public int getMinor() {
-    return minor;
-  }
+    /**
+     * getter
+     *
+     * @return 0 or 1
+     */
+    public int getMinor() {
+        return minor;
+    }
 
-  /**
-   * create readable text
-   *
-   * @return text
-   */
-  public String getRepresentation() {
-    return representation;
-  }
+    /**
+     * create readable text
+     *
+     * @return text
+     */
+    public String getRepresentation() {
+        return representation;
+    }
 
-  @Override
-  public String toString() {
-    return "Version{" + "major=" + major + ", minor=" + minor + '}';
-  }
+    @Override
+    public String toString() {
+        return "Version{" + "major=" + major + ", minor=" + minor + '}';
+    }
 }

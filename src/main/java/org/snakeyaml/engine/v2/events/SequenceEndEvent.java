@@ -22,21 +22,21 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class SequenceEndEvent extends CollectionEndEvent {
 
-  public SequenceEndEvent(Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-  }
+    public SequenceEndEvent(Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+    }
 
-  public SequenceEndEvent() {
-    super();
-  }
+    public SequenceEndEvent() {
+        super();
+    }
 
-  @Override
-  public ID getEventId() {
-    return ID.SequenceEnd;
-  }
+    @Override
+    public ID getEventId() {
+        return ID.SequenceEnd;
+    }
 
-  @Override
-  public String toString() {
-    return "-SEQ";
-  }
+    @Override
+    public String toString() {
+        return "-SEQ";
+    }
 }

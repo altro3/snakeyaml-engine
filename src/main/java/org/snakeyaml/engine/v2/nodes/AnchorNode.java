@@ -18,29 +18,29 @@ package org.snakeyaml.engine.v2.nodes;
  */
 public class AnchorNode extends Node {
 
-  private final Node realNode;
+    private final Node realNode;
 
-  /**
-   * Create
-   *
-   * @param realNode - the source node
-   */
-  public AnchorNode(Node realNode) {
-    super(realNode.getTag(), realNode.getStartMark(), realNode.getEndMark());
-    this.realNode = realNode;
-  }
+    /**
+     * Create
+     *
+     * @param realNode - the source node
+     */
+    public AnchorNode(Node realNode) {
+        super(realNode.getTag(), realNode.getStartMark(), realNode.getEndMark());
+        this.realNode = realNode;
+    }
 
-  @Override
-  public NodeType getNodeType() {
-    return NodeType.ANCHOR;
-  }
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.ANCHOR;
+    }
 
-  /**
-   * getter
-   *
-   * @return the origin
-   */
-  public Node getRealNode() {
-    return realNode;
-  }
+    /**
+     * getter
+     *
+     * @return the origin
+     */
+    public Node getRealNode() {
+        return realNode;
+    }
 }

@@ -20,11 +20,11 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class CollectionEndEvent extends Event {
 
-  public CollectionEndEvent(Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-  }
+    public CollectionEndEvent(Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+    }
 
-  public CollectionEndEvent() {
-    super();
-  }
+    public CollectionEndEvent() {
+        super();
+    }
 }

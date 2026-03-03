@@ -21,10 +21,10 @@ import org.snakeyaml.engine.v2.nodes.Node;
  */
 public class ConstructYamlCoreBool extends ConstructScalar {
 
-  @Override
-  public Object construct(Node node) {
-    String val = constructScalar(node);
-    // any case
-    return BOOL_VALUES.get(val.toLowerCase());
-  }
+    @Override
+    public Object construct(Node node) {
+        String val = constructScalar(node);
+        // any case
+        return BOOL_VALUES.get(val.toLowerCase());
+    }
 }

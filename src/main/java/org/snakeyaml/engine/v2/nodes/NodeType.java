@@ -17,5 +17,5 @@ package org.snakeyaml.engine.v2.nodes;
  * Enum for the basic YAML types: scalar, sequence and mapping.
  */
 public enum NodeType {
-  SCALAR, SEQUENCE, MAPPING, ANCHOR
+    SCALAR, SEQUENCE, MAPPING, ANCHOR
 }

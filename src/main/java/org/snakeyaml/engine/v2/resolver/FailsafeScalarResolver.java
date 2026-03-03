@@ -23,11 +23,11 @@ import org.snakeyaml.engine.v2.nodes.Tag;
 public class FailsafeScalarResolver extends BaseScalarResolver {
 
 
-  /**
-   * Register all the resolvers to be applied
-   */
-  @Override
-  protected void addImplicitResolvers() {
-    addImplicitResolver(Tag.NULL, EMPTY, null);
-  }
+    /**
+     * Register all the resolvers to be applied
+     */
+    @Override
+    protected void addImplicitResolvers() {
+        addImplicitResolver(Tag.NULL, EMPTY, null);
+    }
 }

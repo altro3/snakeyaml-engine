@@ -21,9 +21,9 @@ import org.snakeyaml.engine.v2.nodes.Node;
  */
 public class ConstructYamlJsonBool extends ConstructScalar {
 
-  @Override
-  public Object construct(Node node) {
-    String val = constructScalar(node);
-    return BOOL_VALUES.get(val);
-  }
+    @Override
+    public Object construct(Node node) {
+        String val = constructScalar(node);
+        return BOOL_VALUES.get(val);
+    }
 }

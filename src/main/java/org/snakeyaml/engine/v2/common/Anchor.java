@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.snakeyaml.engine.v2.exceptions.EmitterException;
 
 /**
@@ -25,72 +26,72 @@ import org.snakeyaml.engine.v2.exceptions.EmitterException;
  */
 public class Anchor {
 
-  private static final Set<Character> INVALID_ANCHOR = new HashSet<>();
-  private static final Pattern SPACES_PATTERN = Pattern.compile("\\s");
+    private static final Set<Character> INVALID_ANCHOR = new HashSet<>();
+    private static final Pattern SPACES_PATTERN = Pattern.compile("\\s");
 
-  static {
-    INVALID_ANCHOR.add('[');
-    INVALID_ANCHOR.add(']');
-    INVALID_ANCHOR.add('{');
-    INVALID_ANCHOR.add('}');
-    INVALID_ANCHOR.add(',');
-    INVALID_ANCHOR.add('*');
-    INVALID_ANCHOR.add('&');
-  }
-
-  private final String value;
-
-  /**
-   * Create
-   *
-   * @param value - the anchor value
-   */
-  public Anchor(String value) {
-    Objects.requireNonNull(value);
-    if (value.isEmpty()) {
-      throw new IllegalArgumentException("Empty anchor.");
+    static {
+        INVALID_ANCHOR.add('[');
+        INVALID_ANCHOR.add(']');
+        INVALID_ANCHOR.add('{');
+        INVALID_ANCHOR.add('}');
+        INVALID_ANCHOR.add(',');
+        INVALID_ANCHOR.add('*');
+        INVALID_ANCHOR.add('&');
     }
-    for (int i = 0; i < value.length(); i++) {
-      char ch = value.charAt(i);
-      if (INVALID_ANCHOR.contains(ch)) {
-        throw new EmitterException("Invalid character '" + ch + "' in the anchor: " + value);
-      }
-    }
-    Matcher matcher = SPACES_PATTERN.matcher(value);
-    if (matcher.find()) {
-      throw new EmitterException("Anchor may not contain spaces: " + value);
-    }
-    this.value = value;
-  }
 
-  /**
-   * getter
-   *
-   * @return anchor value
-   */
-  public String getValue() {
-    return value;
-  }
+    private final String value;
 
-  @Override
-  public String toString() {
-    return value;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    /**
+     * Create
+     *
+     * @param value - the anchor value
+     */
+    public Anchor(String value) {
+        Objects.requireNonNull(value);
+        if (value.isEmpty()) {
+            throw new IllegalArgumentException("Empty anchor.");
+        }
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (INVALID_ANCHOR.contains(ch)) {
+                throw new EmitterException("Invalid character '" + ch + "' in the anchor: " + value);
+            }
+        }
+        Matcher matcher = SPACES_PATTERN.matcher(value);
+        if (matcher.find()) {
+            throw new EmitterException("Anchor may not contain spaces: " + value);
+        }
+        this.value = value;
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Anchor anchor1 = (Anchor) o;
-    return Objects.equals(value, anchor1.value);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(value);
-  }
+    /**
+     * getter
+     *
+     * @return anchor value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Anchor anchor1 = (Anchor) o;
+        return Objects.equals(value, anchor1.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }

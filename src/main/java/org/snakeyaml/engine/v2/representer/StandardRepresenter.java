@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
+
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.RepresentToNode;
 import org.snakeyaml.engine.v2.common.FlowStyle;
@@ -42,409 +43,409 @@ import org.snakeyaml.engine.v2.scanner.StreamReader;
  */
 public class StandardRepresenter extends BaseRepresenter {
 
-  /**
-   * all chars that represent a new line
-   */
-  public static final Pattern MULTILINE_PATTERN = Pattern.compile("[\n\u0085]");
-  /**
-   * Connect classes to their tags
-   */
-  protected Map<Class<?>, Tag> classTags;
-  /**
-   * keep the options
-   */
-  protected DumpSettings settings;
+    /**
+     * all chars that represent a new line
+     */
+    public static final Pattern MULTILINE_PATTERN = Pattern.compile("[\n\u0085]");
+    /**
+     * Connect classes to their tags
+     */
+    protected Map<Class<?>, Tag> classTags;
+    /**
+     * keep the options
+     */
+    protected DumpSettings settings;
 
-  /**
-   * Create
-   *
-   * @param settings - configuration options
-   */
-  public StandardRepresenter(DumpSettings settings) {
-    this.defaultFlowStyle = settings.getDefaultFlowStyle();
-    this.defaultScalarStyle = settings.getDefaultScalarStyle();
+    /**
+     * Create
+     *
+     * @param settings - configuration options
+     */
+    public StandardRepresenter(DumpSettings settings) {
+        this.defaultFlowStyle = settings.getDefaultFlowStyle();
+        this.defaultScalarStyle = settings.getDefaultScalarStyle();
 
-    this.nullRepresenter = new RepresentNull();
-    this.representers.put(String.class, new RepresentString());
-    this.representers.put(Boolean.class, new RepresentBoolean());
-    this.representers.put(Character.class, new RepresentString());
-    this.representers.put(UUID.class, new RepresentUuid());
-    this.representers.put(Optional.class, new RepresentOptional());
-    this.representers.put(byte[].class, new RepresentByteArray());
+        this.nullRepresenter = new RepresentNull();
+        this.representers.put(String.class, new RepresentString());
+        this.representers.put(Boolean.class, new RepresentBoolean());
+        this.representers.put(Character.class, new RepresentString());
+        this.representers.put(UUID.class, new RepresentUuid());
+        this.representers.put(Optional.class, new RepresentOptional());
+        this.representers.put(byte[].class, new RepresentByteArray());
 
-    var primitiveArray = new RepresentPrimitiveArray();
-    representers.put(short[].class, primitiveArray);
-    representers.put(int[].class, primitiveArray);
-    representers.put(long[].class, primitiveArray);
-    representers.put(float[].class, primitiveArray);
-    representers.put(double[].class, primitiveArray);
-    representers.put(char[].class, primitiveArray);
-    representers.put(boolean[].class, primitiveArray);
+        var primitiveArray = new RepresentPrimitiveArray();
+        representers.put(short[].class, primitiveArray);
+        representers.put(int[].class, primitiveArray);
+        representers.put(long[].class, primitiveArray);
+        representers.put(float[].class, primitiveArray);
+        representers.put(double[].class, primitiveArray);
+        representers.put(char[].class, primitiveArray);
+        representers.put(boolean[].class, primitiveArray);
 
-    this.parentClassRepresenters.put(Number.class, new RepresentNumber());
-    this.parentClassRepresenters.put(List.class, new RepresentList());
-    this.parentClassRepresenters.put(Map.class, new RepresentMap());
-    this.parentClassRepresenters.put(Set.class, new RepresentSet());
-    this.parentClassRepresenters.put(Iterator.class, new RepresentIterator());
-    this.parentClassRepresenters.put(Object[].class, new RepresentArray());
-    this.parentClassRepresenters.put(Enum.class, new RepresentEnum());
-    classTags = new HashMap<>();
-    this.settings = settings;
-  }
-
-  /**
-   * Define the way to get the Tag for any class
-   *
-   * @param clazz - the class to serialize
-   * @param defaultTag - the tag to use if there is no explicit configuration
-   * @return the Tag for output
-   */
-  protected Tag getTag(Class<?> clazz, Tag defaultTag) {
-    return classTags.getOrDefault(clazz, defaultTag);
-  }
-
-  /**
-   * Define a tag for the <code>Class</code> to serialize. Should be replaced later with the beans
-   * project.
-   *
-   * @param clazz <code>Class</code> which tag is changed
-   * @param tag new tag to be used for every instance of the specified <code>Class</code>
-   * @return the previous tag associated with the <code>Class</code>
-   * @deprecated should be replaced with the Beans project
-   */
-  @Deprecated(forRemoval = true, since = "2.0")
-  public Tag addClassTag(Class<?> clazz, Tag tag) {
-    if (tag == null) {
-      throw new NullPointerException("Tag must be provided.");
-    }
-    return classTags.put(clazz, tag);
-  }
-
-  private static class IteratorWrapper implements Iterable<Object> {
-
-    private final Iterator<Object> iter;
-
-    public IteratorWrapper(Iterator<Object> iter) {
-      this.iter = iter;
+        this.parentClassRepresenters.put(Number.class, new RepresentNumber());
+        this.parentClassRepresenters.put(List.class, new RepresentList());
+        this.parentClassRepresenters.put(Map.class, new RepresentMap());
+        this.parentClassRepresenters.put(Set.class, new RepresentSet());
+        this.parentClassRepresenters.put(Iterator.class, new RepresentIterator());
+        this.parentClassRepresenters.put(Object[].class, new RepresentArray());
+        this.parentClassRepresenters.put(Enum.class, new RepresentEnum());
+        classTags = new HashMap<>();
+        this.settings = settings;
     }
 
-    @Override
-    public Iterator<Object> iterator() {
-      return iter;
+    /**
+     * Define the way to get the Tag for any class
+     *
+     * @param clazz - the class to serialize
+     * @param defaultTag - the tag to use if there is no explicit configuration
+     * @return the Tag for output
+     */
+    protected Tag getTag(Class<?> clazz, Tag defaultTag) {
+        return classTags.getOrDefault(clazz, defaultTag);
     }
-  }
 
-  /**
-   * Create null Node
-   */
-  protected class RepresentNull implements RepresentToNode {
-
-    @Override
-    public Node representData(Object data) {
-      return representScalar(Tag.NULL, "null");
-    }
-  }
-
-  /**
-   * Create Node for String
-   */
-  public class RepresentString implements RepresentToNode {
-
-    @Override
-    public Node representData(Object data) {
-      Tag tag = Tag.STR;
-      var style = ScalarStyle.PLAIN;
-      String value = data.toString();
-      if (settings.getNonPrintableStyle() == NonPrintableStyle.BINARY
-          && !StreamReader.isPrintable(value)) {
-        tag = Tag.BINARY;
-        final byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-        // sometimes the above will just silently fail - it will return incomplete data
-        // it happens when String has invalid code points
-        // (for example, half-surrogate character without the other half)
-        final String checkValue = new String(bytes, StandardCharsets.UTF_8);
-        if (!checkValue.equals(value)) {
-          throw new YamlEngineException("invalid string value has occurred");
+    /**
+     * Define a tag for the <code>Class</code> to serialize. Should be replaced later with the beans
+     * project.
+     *
+     * @param clazz <code>Class</code> which tag is changed
+     * @param tag new tag to be used for every instance of the specified <code>Class</code>
+     * @return the previous tag associated with the <code>Class</code>
+     * @deprecated should be replaced with the Beans project
+     */
+    @Deprecated(forRemoval = true, since = "2.0")
+    public Tag addClassTag(Class<?> clazz, Tag tag) {
+        if (tag == null) {
+            throw new NullPointerException("Tag must be provided.");
         }
-        value = Base64.getEncoder().encodeToString(bytes);
-        style = ScalarStyle.LITERAL;
-      }
-      // if no other scalar style is explicitly set, use literal style for
-      // multiline scalars
-      if (defaultScalarStyle == ScalarStyle.PLAIN && MULTILINE_PATTERN.matcher(value).find()) {
-        style = ScalarStyle.LITERAL;
-      }
-      return representScalar(tag, value, style);
+        return classTags.put(clazz, tag);
     }
-  }
 
-  /**
-   * Create Node for Boolean
-   */
-  public class RepresentBoolean implements RepresentToNode {
+    private static class IteratorWrapper implements Iterable<Object> {
 
-    @Override
-    public Node representData(Object data) {
-      String value;
-      if (Boolean.TRUE.equals(data)) {
-        value = "true";
-      } else {
-        value = "false";
-      }
-      return representScalar(Tag.BOOL, value);
-    }
-  }
+        private final Iterator<Object> iter;
 
-  /**
-   * Create Node for Byte, Short, Integer, Long, BigInteger
-   */
-  public class RepresentNumber implements RepresentToNode {
-
-    @Override
-    public Node representData(Object data) {
-      Tag tag;
-      String value;
-      if (data instanceof Byte || data instanceof Short || data instanceof Integer
-          || data instanceof Long || data instanceof BigInteger) {
-        tag = Tag.INT;
-        value = data.toString();
-      } else {
-        Number number = (Number) data;
-        tag = Tag.FLOAT;
-        if (number.equals(Double.NaN) || number.equals(Float.NaN)) {
-          value = ".nan";
-        } else if (number.equals(Double.POSITIVE_INFINITY)
-            || number.equals(Float.POSITIVE_INFINITY)) {
-          value = ".inf";
-        } else if (number.equals(Double.NEGATIVE_INFINITY)
-            || number.equals(Float.NEGATIVE_INFINITY)) {
-          value = "-.inf";
-        } else {
-          value = number.toString();
+        public IteratorWrapper(Iterator<Object> iter) {
+            this.iter = iter;
         }
-      }
-      return representScalar(getTag(data.getClass(), tag), value);
-    }
-  }
 
-  /**
-   * Create Node for List
-   */
-  public class RepresentList implements RepresentToNode {
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Node representData(Object data) {
-      return representSequence(getTag(data.getClass(), Tag.SEQ), (List<Object>) data,
-          settings.getDefaultFlowStyle());
-    }
-  }
-
-  /**
-   * Create Node for Iterator
-   */
-  public class RepresentIterator implements RepresentToNode {
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Node representData(Object data) {
-      var iter = (Iterator<Object>) data;
-      return representSequence(getTag(data.getClass(), Tag.SEQ), new IteratorWrapper(iter),
-          settings.getDefaultFlowStyle());
-    }
-  }
-
-  /**
-   * Create Node for Object[]
-   */
-  public class RepresentArray implements RepresentToNode {
-
-    @Override
-    public Node representData(Object data) {
-      var array = (Object[]) data;
-      var list = Arrays.asList(array);
-      return representSequence(Tag.SEQ, list, settings.getDefaultFlowStyle());
-    }
-  }
-
-  /**
-   * Represents primitive arrays, such as short[] and float[], by converting them into equivalent
-   * {@link List} using the appropriate autoboxing type.
-   */
-  public class RepresentPrimitiveArray implements RepresentToNode {
-
-    @Override
-    public Node representData(Object data) {
-      Class<?> type = data.getClass().getComponentType();
-
-      FlowStyle style = settings.getDefaultFlowStyle();
-      List<?> list;
-      if (short.class == type) {
-        list = asShortList(data);
-      } else if (int.class == type) {
-        list = asIntList(data);
-      } else if (long.class == type) {
-        list = asLongList(data);
-      } else if (float.class == type) {
-        list = asFloatList(data);
-      } else if (double.class == type) {
-        list = asDoubleList(data);
-      } else if (char.class == type) {
-        list = asCharList(data);
-      } else if (boolean.class == type) {
-        list = asBooleanList(data);
-      } else {
-        throw new YamlEngineException("Unexpected primitive '" + type.getCanonicalName() + "'");
-      }
-
-      return representSequence(Tag.SEQ, list, style);
+        @Override
+        public Iterator<Object> iterator() {
+            return iter;
+        }
     }
 
-    private List<Short> asShortList(Object in) {
-      var array = (short[]) in;
-      var list = new ArrayList<Short>(array.length);
-      for (short value : array) {
-        list.add(value);
-      }
-      return list;
+    /**
+     * Create null Node
+     */
+    protected class RepresentNull implements RepresentToNode {
+
+        @Override
+        public Node representData(Object data) {
+            return representScalar(Tag.NULL, "null");
+        }
     }
 
-    private List<Integer> asIntList(Object in) {
-      var array = (int[]) in;
-      var list = new ArrayList<Integer>(array.length);
-      for (int j : array) {
-        list.add(j);
-      }
-      return list;
+    /**
+     * Create Node for String
+     */
+    public class RepresentString implements RepresentToNode {
+
+        @Override
+        public Node representData(Object data) {
+            Tag tag = Tag.STR;
+            var style = ScalarStyle.PLAIN;
+            String value = data.toString();
+            if (settings.getNonPrintableStyle() == NonPrintableStyle.BINARY
+                && !StreamReader.isPrintable(value)) {
+                tag = Tag.BINARY;
+                final byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+                // sometimes the above will just silently fail - it will return incomplete data
+                // it happens when String has invalid code points
+                // (for example, half-surrogate character without the other half)
+                final String checkValue = new String(bytes, StandardCharsets.UTF_8);
+                if (!checkValue.equals(value)) {
+                    throw new YamlEngineException("invalid string value has occurred");
+                }
+                value = Base64.getEncoder().encodeToString(bytes);
+                style = ScalarStyle.LITERAL;
+            }
+            // if no other scalar style is explicitly set, use literal style for
+            // multiline scalars
+            if (defaultScalarStyle == ScalarStyle.PLAIN && MULTILINE_PATTERN.matcher(value).find()) {
+                style = ScalarStyle.LITERAL;
+            }
+            return representScalar(tag, value, style);
+        }
     }
 
-    private List<Long> asLongList(Object in) {
-      var array = (long[]) in;
-      var list = new ArrayList<Long>(array.length);
-      for (long l : array) {
-        list.add(l);
-      }
-      return list;
+    /**
+     * Create Node for Boolean
+     */
+    public class RepresentBoolean implements RepresentToNode {
+
+        @Override
+        public Node representData(Object data) {
+            String value;
+            if (Boolean.TRUE.equals(data)) {
+                value = "true";
+            } else {
+                value = "false";
+            }
+            return representScalar(Tag.BOOL, value);
+        }
     }
 
-    private List<Float> asFloatList(Object in) {
-      var array = (float[]) in;
-      var list = new ArrayList<Float>(array.length);
-      for (float v : array) {
-        list.add(v);
-      }
-      return list;
+    /**
+     * Create Node for Byte, Short, Integer, Long, BigInteger
+     */
+    public class RepresentNumber implements RepresentToNode {
+
+        @Override
+        public Node representData(Object data) {
+            Tag tag;
+            String value;
+            if (data instanceof Byte || data instanceof Short || data instanceof Integer
+                || data instanceof Long || data instanceof BigInteger) {
+                tag = Tag.INT;
+                value = data.toString();
+            } else {
+                Number number = (Number) data;
+                tag = Tag.FLOAT;
+                if (number.equals(Double.NaN) || number.equals(Float.NaN)) {
+                    value = ".nan";
+                } else if (number.equals(Double.POSITIVE_INFINITY)
+                    || number.equals(Float.POSITIVE_INFINITY)) {
+                    value = ".inf";
+                } else if (number.equals(Double.NEGATIVE_INFINITY)
+                    || number.equals(Float.NEGATIVE_INFINITY)) {
+                    value = "-.inf";
+                } else {
+                    value = number.toString();
+                }
+            }
+            return representScalar(getTag(data.getClass(), tag), value);
+        }
     }
 
-    private List<Double> asDoubleList(Object in) {
-      var array = (double[]) in;
-      var list = new ArrayList<Double>(array.length);
-      for (double v : array) {
-        list.add(v);
-      }
-      return list;
+    /**
+     * Create Node for List
+     */
+    public class RepresentList implements RepresentToNode {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Node representData(Object data) {
+            return representSequence(getTag(data.getClass(), Tag.SEQ), (List<Object>) data,
+                settings.getDefaultFlowStyle());
+        }
     }
 
-    private List<Character> asCharList(Object in) {
-      var array = (char[]) in;
-      var list = new ArrayList<Character>(array.length);
-      for (char c : array) {
-        list.add(c);
-      }
-      return list;
+    /**
+     * Create Node for Iterator
+     */
+    public class RepresentIterator implements RepresentToNode {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Node representData(Object data) {
+            var iter = (Iterator<Object>) data;
+            return representSequence(getTag(data.getClass(), Tag.SEQ), new IteratorWrapper(iter),
+                settings.getDefaultFlowStyle());
+        }
     }
 
-    private List<Boolean> asBooleanList(Object in) {
-      var array = (boolean[]) in;
-      var list = new ArrayList<Boolean>(array.length);
-      for (boolean b : array) {
-        list.add(b);
-      }
-      return list;
+    /**
+     * Create Node for Object[]
+     */
+    public class RepresentArray implements RepresentToNode {
+
+        @Override
+        public Node representData(Object data) {
+            var array = (Object[]) data;
+            var list = Arrays.asList(array);
+            return representSequence(Tag.SEQ, list, settings.getDefaultFlowStyle());
+        }
     }
-  }
 
-  /**
-   * Create Node for Map instance
-   */
-  public class RepresentMap implements RepresentToNode {
+    /**
+     * Represents primitive arrays, such as short[] and float[], by converting them into equivalent
+     * {@link List} using the appropriate autoboxing type.
+     */
+    public class RepresentPrimitiveArray implements RepresentToNode {
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Node representData(Object data) {
-      return representMapping(getTag(data.getClass(), Tag.MAP), (Map<Object, Object>) data,
-          settings.getDefaultFlowStyle());
+        @Override
+        public Node representData(Object data) {
+            Class<?> type = data.getClass().getComponentType();
+
+            FlowStyle style = settings.getDefaultFlowStyle();
+            List<?> list;
+            if (short.class == type) {
+                list = asShortList(data);
+            } else if (int.class == type) {
+                list = asIntList(data);
+            } else if (long.class == type) {
+                list = asLongList(data);
+            } else if (float.class == type) {
+                list = asFloatList(data);
+            } else if (double.class == type) {
+                list = asDoubleList(data);
+            } else if (char.class == type) {
+                list = asCharList(data);
+            } else if (boolean.class == type) {
+                list = asBooleanList(data);
+            } else {
+                throw new YamlEngineException("Unexpected primitive '" + type.getCanonicalName() + "'");
+            }
+
+            return representSequence(Tag.SEQ, list, style);
+        }
+
+        private List<Short> asShortList(Object in) {
+            var array = (short[]) in;
+            var list = new ArrayList<Short>(array.length);
+            for (short value : array) {
+                list.add(value);
+            }
+            return list;
+        }
+
+        private List<Integer> asIntList(Object in) {
+            var array = (int[]) in;
+            var list = new ArrayList<Integer>(array.length);
+            for (int j : array) {
+                list.add(j);
+            }
+            return list;
+        }
+
+        private List<Long> asLongList(Object in) {
+            var array = (long[]) in;
+            var list = new ArrayList<Long>(array.length);
+            for (long l : array) {
+                list.add(l);
+            }
+            return list;
+        }
+
+        private List<Float> asFloatList(Object in) {
+            var array = (float[]) in;
+            var list = new ArrayList<Float>(array.length);
+            for (float v : array) {
+                list.add(v);
+            }
+            return list;
+        }
+
+        private List<Double> asDoubleList(Object in) {
+            var array = (double[]) in;
+            var list = new ArrayList<Double>(array.length);
+            for (double v : array) {
+                list.add(v);
+            }
+            return list;
+        }
+
+        private List<Character> asCharList(Object in) {
+            var array = (char[]) in;
+            var list = new ArrayList<Character>(array.length);
+            for (char c : array) {
+                list.add(c);
+            }
+            return list;
+        }
+
+        private List<Boolean> asBooleanList(Object in) {
+            var array = (boolean[]) in;
+            var list = new ArrayList<Boolean>(array.length);
+            for (boolean b : array) {
+                list.add(b);
+            }
+            return list;
+        }
     }
-  }
 
-  /**
-   * Create Node for Set instances
-   */
-  public class RepresentSet implements RepresentToNode {
+    /**
+     * Create Node for Map instance
+     */
+    public class RepresentMap implements RepresentToNode {
 
-    @Override
-    public Node representData(Object data) {
-      var value = new LinkedHashMap<>();
-      @SuppressWarnings("unchecked")
-      var set = (Set<Object>) data;
-      for (Object key : set) {
-        value.put(key, null);
-      }
-      return representMapping(getTag(data.getClass(), Tag.SET), value,
-          settings.getDefaultFlowStyle());
+        @SuppressWarnings("unchecked")
+        @Override
+        public Node representData(Object data) {
+            return representMapping(getTag(data.getClass(), Tag.MAP), (Map<Object, Object>) data,
+                settings.getDefaultFlowStyle());
+        }
     }
-  }
 
-  /**
-   * Create eNode for Enums
-   */
-  public class RepresentEnum implements RepresentToNode {
+    /**
+     * Create Node for Set instances
+     */
+    public class RepresentSet implements RepresentToNode {
 
-    @Override
-    public Node representData(Object data) {
-      var tag = new Tag(data.getClass());
-      return representScalar(getTag(data.getClass(), tag), ((Enum<?>) data).name());
+        @Override
+        public Node representData(Object data) {
+            var value = new LinkedHashMap<>();
+            @SuppressWarnings("unchecked")
+            var set = (Set<Object>) data;
+            for (Object key : set) {
+                value.put(key, null);
+            }
+            return representMapping(getTag(data.getClass(), Tag.SET), value,
+                settings.getDefaultFlowStyle());
+        }
     }
-  }
 
-  /**
-   * Create Node for byte[]
-   */
-  public class RepresentByteArray implements RepresentToNode {
+    /**
+     * Create eNode for Enums
+     */
+    public class RepresentEnum implements RepresentToNode {
 
-    @Override
-    public Node representData(Object data) {
-      return representScalar(Tag.BINARY, Base64.getEncoder().encodeToString((byte[]) data),
-          ScalarStyle.LITERAL);
+        @Override
+        public Node representData(Object data) {
+            var tag = new Tag(data.getClass());
+            return representScalar(getTag(data.getClass(), tag), ((Enum<?>) data).name());
+        }
     }
-  }
 
-  /**
-   * Create Node for UUID
-   */
-  public class RepresentUuid implements RepresentToNode {
+    /**
+     * Create Node for byte[]
+     */
+    public class RepresentByteArray implements RepresentToNode {
 
-    @Override
-    public Node representData(Object data) {
-      return representScalar(getTag(data.getClass(), new Tag(UUID.class)), data.toString());
+        @Override
+        public Node representData(Object data) {
+            return representScalar(Tag.BINARY, Base64.getEncoder().encodeToString((byte[]) data),
+                ScalarStyle.LITERAL);
+        }
     }
-  }
 
-  /**
-   * Create Node for Optional instance (the value of null)
-   */
-  public class RepresentOptional implements RepresentToNode {
+    /**
+     * Create Node for UUID
+     */
+    public class RepresentUuid implements RepresentToNode {
 
-    @Override
-    public Node representData(Object data) {
-      var opt = (Optional<?>) data;
-      if (opt.isPresent()) {
-        Node node = represent(opt.get());
-        node.setTag(new Tag(Optional.class));
-        return node;
-      } else {
-        return representScalar(Tag.NULL, "null");
-      }
+        @Override
+        public Node representData(Object data) {
+            return representScalar(getTag(data.getClass(), new Tag(UUID.class)), data.toString());
+        }
     }
-  }
+
+    /**
+     * Create Node for Optional instance (the value of null)
+     */
+    public class RepresentOptional implements RepresentToNode {
+
+        @Override
+        public Node representData(Object data) {
+            var opt = (Optional<?>) data;
+            if (opt.isPresent()) {
+                Node node = represent(opt.get());
+                node.setTag(new Tag(Optional.class));
+                return node;
+            } else {
+                return representScalar(Tag.NULL, "null");
+            }
+        }
+    }
 }

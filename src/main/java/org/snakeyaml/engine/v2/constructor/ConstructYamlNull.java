@@ -20,8 +20,8 @@ import org.snakeyaml.engine.v2.nodes.Node;
  */
 public class ConstructYamlNull extends ConstructScalar {
 
-  @Override
-  public Object construct(Node node) {
-    return null;
-  }
+    @Override
+    public Object construct(Node node) {
+        return null;
+    }
 }

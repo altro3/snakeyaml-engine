@@ -18,12 +18,12 @@ package org.snakeyaml.engine.v2.exceptions;
  */
 public class EmitterException extends YamlEngineException {
 
-  /**
-   * Create
-   *
-   * @param msg - the issue
-   */
-  public EmitterException(String msg) {
-    super(msg);
-  }
+    /**
+     * Create
+     *
+     * @param msg - the issue
+     */
+    public EmitterException(String msg) {
+        super(msg);
+    }
 }

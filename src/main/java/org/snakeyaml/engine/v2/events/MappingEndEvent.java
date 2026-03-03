@@ -22,21 +22,21 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class MappingEndEvent extends CollectionEndEvent {
 
-  public MappingEndEvent(Mark startMark, Mark endMark) {
-    super(startMark, endMark);
-  }
+    public MappingEndEvent(Mark startMark, Mark endMark) {
+        super(startMark, endMark);
+    }
 
-  public MappingEndEvent() {
-    super();
-  }
+    public MappingEndEvent() {
+        super();
+    }
 
-  @Override
-  public ID getEventId() {
-    return ID.MappingEnd;
-  }
+    @Override
+    public ID getEventId() {
+        return ID.MappingEnd;
+    }
 
-  @Override
-  public String toString() {
-    return "-MAP";
-  }
+    @Override
+    public String toString() {
+        return "-MAP";
+    }
 }
