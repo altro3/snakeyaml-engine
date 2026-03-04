@@ -13,6 +13,18 @@
  */
 package org.snakeyaml.engine.v2.api;
 
+import org.jspecify.annotations.NonNull;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PushbackInputStream;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
+
 /**
  * version: 1.1 / 2007-01-25 - changed BOM recognition ordering (longer boms first)
  * <p>
@@ -26,20 +38,8 @@ package org.snakeyaml.engine.v2.api;
  * <p>
  * <p>
  * Win2k Notepad: Unicode format = UTF-16LE
- ***/
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PushbackInputStream;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
-import java.nio.charset.StandardCharsets;
-
-/**
- * Generic unicode textreader, which will use BOM mark to identify the encoding to be used. If BOM
+ * <p>
+ * Generic Unicode text reader, which will use BOM mark to identify the encoding to be used. If BOM
  * is not found then use a given default or system encoding.
  */
 public class YamlUnicodeReader extends Reader {
@@ -119,12 +119,14 @@ public class YamlUnicodeReader extends Reader {
         internalIn2 = new InputStreamReader(internalIn, decoder);
     }
 
+    @Override
     public void close() throws IOException {
         init();
         internalIn2.close();
     }
 
-    public int read(char[] cbuf, int off, int len) throws IOException {
+    @Override
+    public int read(char @NonNull [] cbuf, int off, int len) throws IOException {
         init();
         return internalIn2.read(cbuf, off, len);
     }

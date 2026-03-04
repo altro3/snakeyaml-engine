@@ -63,7 +63,7 @@ public class EmptyStringOutputTest {
         Emitter emitter = new Emitter(settings, writer);
         emitter.emit(new StreamStartEvent());
         emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
-        emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, false), value,
+        emitter.emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_FALSE, value,
             ScalarStyle.PLAIN, null, null));
         return writer.toString();
     }

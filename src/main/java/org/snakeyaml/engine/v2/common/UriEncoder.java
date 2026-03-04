@@ -28,11 +28,11 @@ import java.nio.charset.StandardCharsets;
  */
 public abstract class UriEncoder {
 
-    private static final CharsetDecoder UTF8Decoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT);
+    private static final CharsetDecoder UTF8_DECODER = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT);
     // Include the [] chars to the SAFEPATHCHARS_URLENCODER to avoid
     // its escape as required by spec. See
     private static final String SAFE_CHARS = PercentEscaper.SAFEPATHCHARS_URLENCODER + "[]/";
-    private static final Escaper escaper = new PercentEscaper(SAFE_CHARS, false);
+    private static final Escaper ESCAPER = new PercentEscaper(SAFE_CHARS, false);
 
     private UriEncoder() {
     }
@@ -44,7 +44,7 @@ public abstract class UriEncoder {
      * @return encoded URI
      */
     public static String encode(String uri) {
-        return escaper.escape(uri);
+        return ESCAPER.escape(uri);
     }
 
     /**
@@ -55,7 +55,7 @@ public abstract class UriEncoder {
      * @throws CharacterCodingException if it cannot be decoded
      */
     public static String decode(ByteBuffer buff) throws CharacterCodingException {
-        return UTF8Decoder.decode(buff).toString();
+        return UTF8_DECODER.decode(buff).toString();
     }
 
     /**

@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -24,7 +26,7 @@ public abstract class Event {
     private final Mark startMark;
     private final Mark endMark;
 
-    public Event(Mark startMark, Mark endMark) {
+    public Event(@Nullable Mark startMark, @Nullable Mark endMark) {
         if ((startMark != null && endMark == null) || (startMark == null && endMark != null)) {
             throw new NullPointerException("Both marks must be either present or absent.");
         }
@@ -39,11 +41,11 @@ public abstract class Event {
         this(null, null);
     }
 
-    public Mark getStartMark() {
+    public @Nullable Mark getStartMark() {
         return startMark;
     }
 
-    public Mark getEndMark() {
+    public @Nullable Mark getEndMark() {
         return endMark;
     }
 
@@ -52,12 +54,22 @@ public abstract class Event {
      *
      * @return the ID of this Event
      */
-    public abstract Event.ID getEventId();
+    public abstract @NonNull Id getEventId();
 
     /**
      * ID of a non-abstract Event
      */
-    public enum ID {
-        Alias, Comment, DocumentEnd, DocumentStart, MappingEnd, MappingStart, Scalar, SequenceEnd, SequenceStart, StreamEnd, StreamStart // NOSONAR
+    public enum Id {
+        Alias,
+        Comment,
+        DocumentEnd,
+        DocumentStart,
+        MappingEnd,
+        MappingStart,
+        Scalar,
+        SequenceEnd,
+        SequenceStart,
+        StreamEnd,
+        StreamStart, // NOSONAR
     }
 }

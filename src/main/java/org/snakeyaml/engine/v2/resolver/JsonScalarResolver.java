@@ -13,9 +13,9 @@
  */
 package org.snakeyaml.engine.v2.resolver;
 
-import java.util.regex.Pattern;
-
 import org.snakeyaml.engine.v2.nodes.Tag;
+
+import java.util.regex.Pattern;
 
 /**
  * ScalarResolver for JSON Schema
@@ -32,8 +32,7 @@ public class JsonScalarResolver extends BaseScalarResolver {
     /**
      * Float as defined in JSON (Number which is Float)
      */
-    public static final Pattern FLOAT =
-        Pattern.compile("^(-?(0|[1-9][0-9]*)(\\.[0-9]*)?([eE][-+]?[0-9]+)?)|(-?\\.inf)|(\\.nan)$");
+    public static final Pattern FLOAT = Pattern.compile("^(-?(0|[1-9][0-9]*)(\\.[0-9]*)?([eE][-+]?[0-9]+)?)|(-?\\.inf)|(\\.nan)$");
 
     /**
      * Integer as defined in JSON (Number which is Integer)
@@ -43,7 +42,7 @@ public class JsonScalarResolver extends BaseScalarResolver {
     /**
      * Null as defined in JSON
      */
-    public static final Pattern NULL = Pattern.compile("^(?:null)$");
+    public static final Pattern NULL = Pattern.compile("^null$");
 
     /**
      * Register all the resolvers to be applied

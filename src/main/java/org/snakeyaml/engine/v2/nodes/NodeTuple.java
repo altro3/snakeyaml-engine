@@ -13,43 +13,14 @@
  */
 package org.snakeyaml.engine.v2.nodes;
 
-import java.util.Objects;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Stores one key value pair used in a map.
  */
-public final class NodeTuple {
+public record NodeTuple(
+    @NonNull Node keyNode,
+    @NonNull Node valueNode
+) {
 
-    private final Node keyNode;
-    private final Node valueNode;
-
-    public NodeTuple(Node keyNode, Node valueNode) {
-        Objects.requireNonNull(keyNode, "keyNode must be provided.");
-        Objects.requireNonNull(valueNode, "value Node must be provided");
-        this.keyNode = keyNode;
-        this.valueNode = valueNode;
-    }
-
-    /**
-     * Key node.
-     *
-     * @return the node used as key
-     */
-    public Node getKeyNode() {
-        return keyNode;
-    }
-
-    /**
-     * Value node.
-     *
-     * @return node used as value
-     */
-    public Node getValueNode() {
-        return valueNode;
-    }
-
-    @Override
-    public String toString() {
-        return "<NodeTuple keyNode=" + keyNode + "; valueNode=" + valueNode + ">";
-    }
 }

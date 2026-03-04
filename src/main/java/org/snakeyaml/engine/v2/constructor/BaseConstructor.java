@@ -19,9 +19,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.exceptions.ConstructorException;
@@ -42,6 +42,7 @@ public abstract class BaseConstructor {
      * It maps the (explicit or implicit) tag to the Construct implementation.
      */
     protected final Map<Tag, ConstructNode> tagConstructors;
+    protected ConstructNullNode nullConstructor;
     final Map<Node, Object> constructedObjects;
     private final Set<Node> recursiveObjects;
     private final ArrayList<RecursiveTuple<Map<Object, Object>, RecursiveTuple<Object, Object>>> maps2fill;
@@ -105,14 +106,14 @@ public abstract class BaseConstructor {
     private void fillRecursive() {
         if (!maps2fill.isEmpty()) {
             for (RecursiveTuple<Map<Object, Object>, RecursiveTuple<Object, Object>> entry : maps2fill) {
-                RecursiveTuple<Object, Object> keyValueTuple = entry.getValue2();
-                entry.getValue1().put(keyValueTuple.getValue1(), keyValueTuple.getValue2());
+                RecursiveTuple<Object, Object> keyValueTuple = entry.value2();
+                entry.value1().put(keyValueTuple.value1(), keyValueTuple.value2());
             }
             maps2fill.clear();
         }
         if (!sets2fill.isEmpty()) {
             for (RecursiveTuple<Set<Object>, Object> value : sets2fill) {
-                value.getValue1().add(value.getValue2());
+                value.value1().add(value.value2());
             }
             sets2fill.clear();
         }
@@ -125,8 +126,7 @@ public abstract class BaseConstructor {
      * @param node Node to be constructed
      * @return Java instance
      */
-    protected Object constructObject(Node node) {
-        Objects.requireNonNull(node, "Node cannot be null");
+    protected Object constructObject(@NonNull Node node) {
         if (constructedObjects.containsKey(node)) {
             return constructedObjects.get(node);
         }
@@ -142,17 +142,14 @@ public abstract class BaseConstructor {
      */
     protected Object constructObjectNoCheck(Node node) {
         if (recursiveObjects.contains(node)) {
-            throw new ConstructorException(null, null, "found unconstructable recursive node",
-                node.getStartMark());
+            throw new ConstructorException(null, null, "found unconstructable recursive node", node.getStartMark());
         }
         recursiveObjects.add(node);
         ConstructNode constructor = findConstructorFor(node);
         if (constructor == null) {
-            throw new ConstructorException(null, null,
-                "could not determine a constructor for the tag " + node.getTag(), node.getStartMark());
+            throw new ConstructorException(null, null, "could not determine a constructor for the tag " + node.getTag(), node.getStartMark());
         }
-        Object data = (constructedObjects.containsKey(node)) ? constructedObjects.get(node)
-            : constructor.construct(node);
+        Object data = constructedObjects.containsKey(node) ? constructedObjects.get(node) : constructor.construct(node);
 
         constructedObjects.put(node, data);
         recursiveObjects.remove(node);
@@ -171,14 +168,10 @@ public abstract class BaseConstructor {
      */
     protected ConstructNode findConstructorFor(Node node) {
         Tag tag = node.getTag();
-        if (settings.getTagConstructors().containsKey(tag)) {
-            return settings.getTagConstructors().get(tag);
+        if (settings.tagConstructors().containsKey(tag)) {
+            return settings.tagConstructors().get(tag);
         } else {
-            if (tagConstructors.containsKey(tag)) {
-                return tagConstructors.get(tag);
-            } else {
-                return null;
-            }
+            return tagConstructors.getOrDefault(tag, null);
         }
     }
 
@@ -202,7 +195,7 @@ public abstract class BaseConstructor {
      * @return empty List to fill
      */
     protected List<Object> createEmptyListForNode(SequenceNode node) {
-        return settings.getDefaultList().apply(node.getValue().size());
+        return settings.defaultList().apply(node.getValue().size());
     }
 
     /**
@@ -213,7 +206,7 @@ public abstract class BaseConstructor {
      * @return empty Set to fill
      */
     protected Set<Object> createEmptySetForNode(MappingNode node) {
-        return settings.getDefaultSet().apply(node.getValue().size());
+        return settings.defaultSet().apply(node.getValue().size());
     }
 
     /**
@@ -224,7 +217,7 @@ public abstract class BaseConstructor {
      * @return empty Map to fill
      */
     protected Map<Object, Object> createEmptyMapFor(MappingNode node) {
-        return settings.getDefaultMap().apply(node.getValue().size());
+        return settings.defaultMap().apply(node.getValue().size());
     }
 
     // <<<< DEFAULTS <<<<
@@ -240,7 +233,7 @@ public abstract class BaseConstructor {
      * @return filled List
      */
     protected List<Object> constructSequence(SequenceNode node) {
-        List<Object> result = settings.getDefaultList().apply(node.getValue().size());
+        List<Object> result = settings.defaultList().apply(node.getValue().size());
         constructSequenceStep2(node, result);
         return result;
     }
@@ -264,7 +257,7 @@ public abstract class BaseConstructor {
      * @return filled Set
      */
     protected Set<Object> constructSet(MappingNode node) {
-        final Set<Object> set = settings.getDefaultSet().apply(node.getValue().size());
+        final Set<Object> set = settings.defaultSet().apply(node.getValue().size());
         constructSet2ndStep(node, set);
         return set;
     }
@@ -276,7 +269,7 @@ public abstract class BaseConstructor {
      * @return filled Map
      */
     protected Map<Object, Object> constructMapping(MappingNode node) {
-        final Map<Object, Object> mapping = settings.getDefaultMap().apply(node.getValue().size());
+        final Map<Object, Object> mapping = settings.defaultMap().apply(node.getValue().size());
         constructMapping2ndStep(node, mapping);
         return mapping;
     }
@@ -290,24 +283,22 @@ public abstract class BaseConstructor {
     protected void constructMapping2ndStep(MappingNode node, Map<Object, Object> mapping) {
         List<NodeTuple> nodeValue = node.getValue();
         for (NodeTuple tuple : nodeValue) {
-            Node keyNode = tuple.getKeyNode();
-            Node valueNode = tuple.getValueNode();
+            Node keyNode = tuple.keyNode();
+            Node valueNode = tuple.valueNode();
             Object key = constructObject(keyNode);
             if (key != null) {
                 try {
                     key.hashCode();// check circular dependencies
                 } catch (Exception e) {
-                    throw new ConstructorException("while constructing a mapping", node.getStartMark(),
-                        "found unacceptable key " + key, tuple.getKeyNode().getStartMark(), e);
+                    throw new ConstructorException("While constructing a mapping", node.getStartMark(), "found unacceptable key " + key, tuple.keyNode().getStartMark(), e);
                 }
             }
             Object value = constructObject(valueNode);
             if (keyNode.isRecursive()) {
-                if (settings.getAllowRecursiveKeys()) {
+                if (settings.allowRecursiveKeys()) {
                     postponeMapFilling(mapping, key, value);
                 } else {
-                    throw new YamlEngineException(
-                        "Recursive key for mapping is detected but it is not configured to be allowed.");
+                    throw new YamlEngineException("Recursive key for mapping is detected but it is not configured to be allowed.");
                 }
             } else {
                 mapping.put(key, value);
@@ -334,25 +325,24 @@ public abstract class BaseConstructor {
      * @param node - the source
      * @param set - empty set to fill
      */
-    protected void constructSet2ndStep(MappingNode node, Set<Object> set) {
+    protected void constructSet2ndStep(@NonNull MappingNode node, @NonNull Set<Object> set) {
         List<NodeTuple> nodeValue = node.getValue();
         for (NodeTuple tuple : nodeValue) {
-            Node keyNode = tuple.getKeyNode();
+            Node keyNode = tuple.keyNode();
             Object key = constructObject(keyNode);
             if (key != null) {
                 try {
                     key.hashCode();// check circular dependencies
                 } catch (Exception e) {
                     throw new ConstructorException("while constructing a Set", node.getStartMark(),
-                        "found unacceptable key " + key, tuple.getKeyNode().getStartMark(), e);
+                        "found unacceptable key " + key, tuple.keyNode().getStartMark(), e);
                 }
             }
             if (keyNode.isRecursive()) {
-                if (settings.getAllowRecursiveKeys()) {
+                if (settings.allowRecursiveKeys()) {
                     postponeSetFilling(set, key);
                 } else {
-                    throw new YamlEngineException(
-                        "Recursive key for mapping is detected but it is not configured to be allowed.");
+                    throw new YamlEngineException("Recursive key for mapping is detected but it is not configured to be allowed.");
                 }
             } else {
                 set.add(key);
@@ -372,22 +362,10 @@ public abstract class BaseConstructor {
         sets2fill.add(0, new RecursiveTuple<>(set, key));
     }
 
-    private static class RecursiveTuple<T, K> {
+    private record RecursiveTuple<T, K>(
+        @NonNull T value1,
+        @NonNull K value2
+    ) {
 
-        private final T value1;
-        private final K value2;
-
-        public RecursiveTuple(T value1, K value2) {
-            this.value1 = value1;
-            this.value2 = value2;
-        }
-
-        public K getValue2() {
-            return value2;
-        }
-
-        public T getValue1() {
-            return value1;
-        }
     }
 }

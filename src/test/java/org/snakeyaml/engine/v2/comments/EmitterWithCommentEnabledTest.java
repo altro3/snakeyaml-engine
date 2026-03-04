@@ -371,11 +371,10 @@ public class EmitterWithCommentEnabledTest {
         Emitter emitter = producePrettyFlowEmitter(output);
 
         emitter.emit(new StreamStartEvent(null, null));
-        emitter
-            .emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
+        emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
         emitter.emit(new MappingStartEvent(null, "yaml.org,2002:map", true, FlowStyle.FLOW));
         emitter.emit(new CommentEvent(CommentType.BLOCK, " I'm first", null, null));
-        ImplicitTuple allImplicit = new ImplicitTuple(true, true);
+        var allImplicit = ImplicitTuple.TRUE_TRUE;
         emitter.emit(new ScalarEvent(null, "yaml.org,2002:str", allImplicit, "a", ScalarStyle.PLAIN,
             null, null));
         emitter.emit(new ScalarEvent(null, "yaml.org,2002:str", allImplicit, "Hello", ScalarStyle.PLAIN,
@@ -430,7 +429,7 @@ public class EmitterWithCommentEnabledTest {
     public void testCommentInFlowSequence() {
         var output = new MyWriter();
         Emitter emitter = producePrettyFlowEmitter(output);
-        var allImplicit = new ImplicitTuple(true, true);
+        var allImplicit = ImplicitTuple.TRUE_TRUE;
 
         emitter.emit(new StreamStartEvent(null, null));
         emitter

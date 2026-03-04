@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -56,7 +55,10 @@ public class DumpWithoutCommentsTest {
     @DisplayName("Issue 53 - Serialization failure of commented Node")
     @Test
     public void dumpMapWithComments() {
-        final String yaml = "a: 1 # A\n" + "b: 2 # B\n";
+        final String yaml = """
+            a: 1 # A
+            b: 2 # B
+            """;
         DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(false).build();
         Emitter emitter = new Emitter(dumpSettings,
             new YamlOutputStreamWriter(new ByteArrayOutputStream(), StandardCharsets.UTF_8) {
@@ -78,8 +80,8 @@ public class DumpWithoutCommentsTest {
         DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(false).build();
         Serialize serializer = new Serialize(dumpSettings);
         List<Event> events = serializer.serializeOne(createNodeWithComments(source));
-        List<Event> commentEvents = events.stream().filter(e -> e.getEventId() == Event.ID.Comment)
-            .collect(Collectors.toList());
+        List<Event> commentEvents = events.stream().filter(e -> e.getEventId() == Event.Id.Comment)
+            .toList();
         assertEquals(0, commentEvents.size(), "Unexpected: " + commentEvents);
     }
 }

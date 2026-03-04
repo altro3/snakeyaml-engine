@@ -16,35 +16,24 @@ package org.snakeyaml.engine.v2.common;
 import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.EmitterException;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Value inside Anchor and Alias
+ *
+ * @param value - the anchor value
  */
-public class Anchor {
+public record Anchor(
+    @NonNull
+    String value
+) {
 
-    private static final Set<Character> INVALID_ANCHOR = Set.of(
-        '[',
-        ']',
-        '{',
-        '}',
-        ',',
-        '*',
-        '&'
-    );
+    private static final Set<Character> INVALID_ANCHOR = Set.of('[', ']', '{', '}', ',', '*', '&');
     private static final Pattern SPACES_PATTERN = Pattern.compile("\\s");
 
-    private final String value;
-
-    /**
-     * Create
-     *
-     * @param value - the anchor value
-     */
-    public Anchor(@NonNull String value) {
+    public Anchor {
         if (value.isEmpty()) {
             throw new IllegalArgumentException("Empty anchor.");
         }
@@ -58,37 +47,5 @@ public class Anchor {
         if (matcher.find()) {
             throw new EmitterException("Anchor may not contain spaces: " + value);
         }
-        this.value = value;
-    }
-
-    /**
-     * getter
-     *
-     * @return anchor value
-     */
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Anchor anchor1 = (Anchor) o;
-        return Objects.equals(value, anchor1.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-    @Override
-    public String toString() {
-        return value;
     }
 }

@@ -61,6 +61,6 @@ class ComposerTest {
         var compose = new Compose(LoadSettings.builder().build());
         Node node = compose.composeString(data);
         assertNotNull(node);
-        assertEquals("113", node.getAnchor().getValue());
+        assertEquals("113", node.getAnchor().value());
     }
 }

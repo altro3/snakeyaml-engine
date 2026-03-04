@@ -13,36 +13,17 @@
  */
 package org.snakeyaml.engine.v2.resolver;
 
-import java.util.Objects;
-import java.util.regex.Pattern;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.nodes.Tag;
+
+import java.util.regex.Pattern;
 
 /**
  * Hold 2 values, tag and pattern
  */
-final class ResolverTuple {
+public record ResolverTuple(
+    @NonNull Tag tag,
+    @NonNull Pattern regexp
+) {
 
-    private final Tag tag;
-    private final Pattern regexp;
-
-    public ResolverTuple(Tag tag, Pattern regexp) {
-        Objects.requireNonNull(tag);
-        Objects.requireNonNull(regexp);
-        this.tag = tag;
-        this.regexp = regexp;
-    }
-
-    public Tag getTag() {
-        return tag;
-    }
-
-    public Pattern getRegexp() {
-        return regexp;
-    }
-
-    @Override
-    public String toString() {
-        return "Tuple tag=" + tag + " regexp=" + regexp;
-    }
 }

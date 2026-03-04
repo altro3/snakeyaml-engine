@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.api;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -55,7 +57,7 @@ public class YamlOutputStreamWriter extends OutputStreamWriter implements Stream
     }
 
     @Override
-    public void write(String str, int off, int len) {
+    public void write(@NonNull String str, int off, int len) {
         try {
             super.write(str, off, len);
         } catch (IOException e) {
@@ -64,7 +66,7 @@ public class YamlOutputStreamWriter extends OutputStreamWriter implements Stream
     }
 
     @Override
-    public void write(String str) {
+    public void write(@NonNull String str) {
         try {
             super.write(str);
         } catch (IOException e) {

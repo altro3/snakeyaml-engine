@@ -38,7 +38,7 @@ public interface Parser extends Iterator<Event> {
      * @throws ParserException in case of malformed input.
      * @throws NoSuchElementException in case no next event is available.
      */
-    boolean checkEvent(Event.ID choice);
+    boolean checkEvent(Event.Id choice);
 
     /**
      * Return the next event, but do not delete it from the stream.

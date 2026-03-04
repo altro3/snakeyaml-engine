@@ -28,7 +28,7 @@ public abstract class CollectionNode<T> extends Node {
 
     private FlowStyle flowStyle;
 
-    public CollectionNode(Tag tag, @NonNull FlowStyle flowStyle, Mark startMark, Mark endMark) {
+    public CollectionNode(@NonNull Tag tag, @NonNull FlowStyle flowStyle, Mark startMark, Mark endMark) {
         super(tag, startMark, endMark);
         this.flowStyle = flowStyle;
     }

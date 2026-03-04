@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -43,8 +44,8 @@ public final class MappingStartEvent extends CollectionStartEvent {
     }
 
     @Override
-    public ID getEventId() {
-        return ID.MappingStart;
+    public @NonNull Id getEventId() {
+        return Id.MappingStart;
     }
 
     @Override

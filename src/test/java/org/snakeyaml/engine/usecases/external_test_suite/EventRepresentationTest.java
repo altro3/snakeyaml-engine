@@ -113,15 +113,15 @@ class EventRepresentationTest {
     @Test
     @DisplayName("Represent ScalarEvent")
     void testScalarEvent() {
-        valid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+        valid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
             ScalarStyle.FOLDED), "=VAL &a <ttt> >v1");
-        invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
             ScalarStyle.PLAIN), "=VAL <ttt> >v1");
-        invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
             ScalarStyle.PLAIN), "=VAL &a >v1");
-        invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
             ScalarStyle.PLAIN), "=VAL &a <ttt>");
-        invalid(new ScalarEvent(new Anchor("a"), "ttt", new ImplicitTuple(false, false), "v1",
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
             ScalarStyle.PLAIN), "=VAL &a <ttt> |v1");
     }
 

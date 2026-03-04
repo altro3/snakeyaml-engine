@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
@@ -75,11 +74,11 @@ public class RepresentEntryTest {
             NodeTuple tuple = super.representMappingEntry(entry);
             var keyBlockComments = new ArrayList<CommentLine>();
             keyBlockComments.add(new CommentLine(null, null, "Key node block comment", CommentType.BLOCK));
-            tuple.getKeyNode().setBlockComments(keyBlockComments);
+            tuple.keyNode().setBlockComments(keyBlockComments);
 
             var valueEndComments = new ArrayList<CommentLine>();
             valueEndComments.add(new CommentLine(null, null, "Value node inline comment", CommentType.IN_LINE));
-            tuple.getValueNode().setEndComments(valueEndComments);
+            tuple.valueNode().setEndComments(valueEndComments);
 
             return tuple;
         }

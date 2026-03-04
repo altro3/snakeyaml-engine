@@ -13,14 +13,6 @@
  */
 package org.snakeyaml.engine.v2.constructor;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-
 import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -36,6 +28,14 @@ import org.snakeyaml.engine.v2.nodes.NodeTuple;
 import org.snakeyaml.engine.v2.nodes.SequenceNode;
 import org.snakeyaml.engine.v2.nodes.Tag;
 import org.snakeyaml.engine.v2.resolver.JsonScalarResolver;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
 
 /**
  * Construct standard Java classes
@@ -56,10 +56,11 @@ public class StandardConstructor extends BaseConstructor {
         this.tagConstructors.put(Tag.ENV_TAG, new ConstructEnv());
 
         // apply the tag constructors from the provided schema
-        this.tagConstructors.putAll(settings.getSchema().getSchemaTagConstructors());
+        this.tagConstructors.putAll(settings.schema().getSchemaTagConstructors());
 
         // the explicit config overrides all
-        this.tagConstructors.putAll(settings.getTagConstructors());
+        this.tagConstructors.putAll(settings.tagConstructors());
+        nullConstructor = settings.nullConstructor();
     }
 
     protected void flattenMapping(MappingNode node) {
@@ -73,21 +74,20 @@ public class StandardConstructor extends BaseConstructor {
      */
     protected void processDuplicateKeys(MappingNode node) {
         List<NodeTuple> nodeValue = node.getValue();
-        Map<Object, Integer> keys = new HashMap<>(nodeValue.size());
-        TreeSet<Integer> toRemove = new TreeSet<>();
+        var keys = new HashMap<Object, Integer>(nodeValue.size());
+        var toRemove = new TreeSet<Integer>();
         int i = 0;
         for (NodeTuple tuple : nodeValue) {
-            Node keyNode = tuple.getKeyNode();
-            Object key = constructKey(keyNode, node.getStartMark(), tuple.getKeyNode().getStartMark());
+            Node keyNode = tuple.keyNode();
+            Object key = constructKey(keyNode, node.getStartMark(), tuple.keyNode().getStartMark());
             Integer prevIndex = keys.put(key, i);
             if (prevIndex != null) {
-                if (!settings.getAllowDuplicateKeys()) {
-                    throw new DuplicateKeyException(node.getStartMark(), key,
-                        tuple.getKeyNode().getStartMark());
+                if (!settings.allowDuplicateKeys()) {
+                    throw new DuplicateKeyException(node.getStartMark(), key, tuple.keyNode().getStartMark());
                 }
                 toRemove.add(prevIndex);
             }
-            i = i + 1;
+            i++;
         }
 
         Iterator<Integer> indices2remove = toRemove.descendingIterator();
@@ -102,8 +102,7 @@ public class StandardConstructor extends BaseConstructor {
             try {
                 key.hashCode();// check circular dependencies
             } catch (Exception e) {
-                throw new ConstructorException("while constructing a mapping", contextMark,
-                    "found unacceptable key " + key, problemMark, e);
+                throw new ConstructorException("While constructing a mapping", contextMark, "found unacceptable key " + key, problemMark, e);
             }
         }
         return key;
@@ -116,7 +115,7 @@ public class StandardConstructor extends BaseConstructor {
     }
 
     @Override
-    protected void constructSet2ndStep(MappingNode node, Set<Object> set) {
+    protected void constructSet2ndStep(@NonNull MappingNode node, @NonNull Set<Object> set) {
         flattenMapping(node);
         super.constructSet2ndStep(node, set);
     }
@@ -129,28 +128,25 @@ public class StandardConstructor extends BaseConstructor {
         @Override
         public Object construct(@NonNull Node node) {
             if (node.isRecursive()) {
-                return constructedObjects.containsKey(node) ? constructedObjects.get(node)
-                    : createEmptySetForNode((MappingNode) node);
-            } else {
-                return constructSet((MappingNode) node);
+                return constructedObjects.containsKey(node) ? constructedObjects.get(node) : createEmptySetForNode((MappingNode) node);
             }
+            return constructSet((MappingNode) node);
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public void constructRecursive(@NonNull Node node, Object object) {
-            if (node.isRecursive()) {
-                constructSet2ndStep((MappingNode) node, (Set<Object>) object);
-            } else {
+            if (!node.isRecursive()) {
                 throw new YamlEngineException("Unexpected recursive set structure. Node: " + node);
             }
+            constructSet2ndStep((MappingNode) node, (Set<Object>) object);
         }
     }
 
     /**
      * Create String instances
      */
-    public class ConstructYamlStr extends ConstructScalar {
+    public static class ConstructYamlStr extends ConstructScalar {
 
         @Override
         public Object construct(@NonNull Node node) {
@@ -176,11 +172,10 @@ public class StandardConstructor extends BaseConstructor {
         @Override
         @SuppressWarnings("unchecked")
         public void constructRecursive(@NonNull Node node, Object data) {
-            if (node.isRecursive()) {
-                constructSequenceStep2((SequenceNode) node, (List<Object>) data);
-            } else {
+            if (!node.isRecursive()) {
                 throw new YamlEngineException("Unexpected recursive sequence structure. Node: " + node);
             }
+            constructSequenceStep2((SequenceNode) node, (List<Object>) data);
         }
     }
 
@@ -191,7 +186,7 @@ public class StandardConstructor extends BaseConstructor {
 
         @Override
         public Object construct(@NonNull Node node) {
-            MappingNode mappingNode = (MappingNode) node;
+            var mappingNode = (MappingNode) node;
             if (node.isRecursive()) {
                 return createEmptyMapFor(mappingNode);
             } else {
@@ -202,11 +197,10 @@ public class StandardConstructor extends BaseConstructor {
         @Override
         @SuppressWarnings("unchecked")
         public void constructRecursive(@NonNull Node node, Object object) {
-            if (node.isRecursive()) {
-                constructMapping2ndStep((MappingNode) node, (Map<Object, Object>) object);
-            } else {
+            if (!node.isRecursive()) {
                 throw new YamlEngineException("Unexpected recursive mapping structure. Node: " + node);
             }
+            constructMapping2ndStep((MappingNode) node, (Map<Object, Object>) object);
         }
     }
 
@@ -223,7 +217,7 @@ public class StandardConstructor extends BaseConstructor {
         @Override
         public Object construct(@NonNull Node node) {
             String val = constructScalar(node);
-            EnvConfig config = settings.getEnvConfig();
+            EnvConfig config = settings.envConfig();
             if (config == null) {
                 return val;
             }
@@ -256,18 +250,15 @@ public class StandardConstructor extends BaseConstructor {
                 // there is a default value or error
                 if (separator.equals("?")) {
                     if (environment == null) {
-                        throw new MissingEnvironmentVariableException(
-                            "Missing mandatory variable " + name + ": " + value);
+                        throw new MissingEnvironmentVariableException("Missing mandatory variable " + name + ": " + value);
                     }
                 }
                 if (separator.equals(":?")) {
                     if (environment == null) {
-                        throw new MissingEnvironmentVariableException(
-                            "Missing mandatory variable " + name + ": " + value);
+                        throw new MissingEnvironmentVariableException("Missing mandatory variable " + name + ": " + value);
                     }
                     if (environment.isEmpty()) {
-                        throw new MissingEnvironmentVariableException(
-                            "Empty mandatory variable " + name + ": " + value);
+                        throw new MissingEnvironmentVariableException("Empty mandatory variable " + name + ": " + value);
                     }
                 }
                 if (separator.startsWith(":")) {

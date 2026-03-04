@@ -173,7 +173,7 @@ public class ParserImpl implements Parser {
      * Check the ID of the next event.
      */
     @Override
-    public boolean checkEvent(Event.ID id) {
+    public boolean checkEvent(Event.Id id) {
         peekEvent();
         return currentEvent != null && currentEvent.getEventId() == id;
     }
@@ -358,7 +358,7 @@ public class ParserImpl implements Parser {
                 // No content follows - this is an empty scalar case.
                 // Create the scalar event and set up state to emit DocumentEnd, then the comments.
                 boolean implicit = tag == null;
-                var scalarEvent = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "", ScalarStyle.PLAIN, startMark, endMark);
+                var scalarEvent = new ScalarEvent(anchor, tag, ImplicitTuple.byValues(implicit, false), "", ScalarStyle.PLAIN, startMark, endMark);
                 // Pop states to maintain stack consistency (normally ParseDocumentEnd would be popped)
                 states.pop();
                 // The next state should emit DocumentEnd, then the collected comments, then continue
@@ -376,11 +376,11 @@ public class ParserImpl implements Parser {
                     endMark = token.getEndMark();
                     ImplicitTuple implicitValues;
                     if (token.isPlain() && tag == null) {
-                        implicitValues = new ImplicitTuple(true, false);
+                        implicitValues = ImplicitTuple.TRUE_FALSE;
                     } else if (tag == null) {
-                        implicitValues = new ImplicitTuple(false, true);
+                        implicitValues = ImplicitTuple.FALSE_TRUE;
                     } else {
-                        implicitValues = new ImplicitTuple(false, false);
+                        implicitValues = ImplicitTuple.FALSE_FALSE;
                     }
                     event = new ScalarEvent(anchor, tag, implicitValues, token.getValue(), token.getStyle(), startMark, endMark);
                     state = states.pop();
@@ -402,7 +402,7 @@ public class ParserImpl implements Parser {
                     state = new ParseBlockMappingFirstKey();
                 } else if (anchor != null || tag != null) {
                     // Empty scalars are allowed even if a tag or an anchor is specified.
-                    event = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "", ScalarStyle.PLAIN, startMark, endMark);
+                    event = new ScalarEvent(anchor, tag, ImplicitTuple.byValues(implicit, false), "", ScalarStyle.PLAIN, startMark, endMark);
                     state = states.pop();
                 } else {
                     Token token = scanner.peekToken();
@@ -422,8 +422,7 @@ public class ParserImpl implements Parser {
      * </pre>
      */
     private Event processEmptyScalar(Mark mark) {
-        return new ScalarEvent(null, null, new ImplicitTuple(true, false), "", ScalarStyle.PLAIN, mark,
-            mark);
+        return new ScalarEvent(null, null, ImplicitTuple.TRUE_FALSE, "", ScalarStyle.PLAIN, mark, mark);
     }
 
     private Mark markPop() {
@@ -455,20 +454,18 @@ public class ParserImpl implements Parser {
                 state = new ParseImplicitDocumentStart();
                 return produceCommentEvent((CommentToken) scanner.next());
             }
-            if (!scanner.checkToken(Token.Id.Directive, Token.Id.DocumentStart, Token.Id.StreamEnd)) {
-                // Parse an implicit document.
-                Token token = scanner.peekToken();
-                Mark startMark = token.getStartMark();
-                Event event =
-                    new DocumentStartEvent(false, null, Collections.emptyMap(), startMark, startMark);
-                // Prepare the next state.
-                states.push(new ParseDocumentEnd());
-                state = new ParseBlockNode();
-                return event;
-            } else {
+            if (scanner.checkToken(Token.Id.Directive, Token.Id.DocumentStart, Token.Id.StreamEnd)) {
                 // explicit document detected
                 return new ParseDocumentStart().produce();
             }
+            // Parse an implicit document.
+            Token token = scanner.peekToken();
+            Mark startMark = token.getStartMark();
+            Event event = new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap(), startMark, startMark);
+            // Prepare the next state.
+            states.push(new ParseDocumentEnd());
+            state = new ParseBlockNode();
+            return event;
         }
     }
 
@@ -1141,14 +1138,13 @@ public class ParserImpl implements Parser {
                 endMark = token.getEndMark();
                 ImplicitTuple implicitValues;
                 if ((token.isPlain() && tag.isEmpty())) {
-                    implicitValues = new ImplicitTuple(true, false);
+                    implicitValues = ImplicitTuple.TRUE_FALSE;
                 } else if (tag.isEmpty()) {
-                    implicitValues = new ImplicitTuple(false, true);
+                    implicitValues = ImplicitTuple.FALSE_TRUE;
                 } else {
-                    implicitValues = new ImplicitTuple(false, false);
+                    implicitValues = ImplicitTuple.FALSE_FALSE;
                 }
-                event = new ScalarEvent(anchor, tag, implicitValues, token.getValue(), token.getStyle(),
-                    startMark, endMark);
+                event = new ScalarEvent(anchor, tag, implicitValues, token.getValue(), token.getStyle(), startMark, endMark);
                 state = nextState;
             } else if (scanner.checkToken(Token.Id.FlowSequenceStart)) {
                 endMark = scanner.peekToken().getEndMark();
@@ -1172,7 +1168,7 @@ public class ParserImpl implements Parser {
                 state = new ParseBlockMappingFirstKey();
             } else if (anchor != null || tag != null) {
                 // Empty scalars are allowed even if a tag or an anchor is specified.
-                event = new ScalarEvent(anchor, tag, new ImplicitTuple(implicit, false), "",
+                event = new ScalarEvent(anchor, tag, ImplicitTuple.byValues(implicit, false), "",
                     ScalarStyle.PLAIN, startMark, endMark);
                 state = nextState;
             } else {

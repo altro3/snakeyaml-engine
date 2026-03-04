@@ -13,7 +13,7 @@
  */
 package org.snakeyaml.engine.v2.api;
 
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.nodes.Node;
 
 /**
@@ -30,5 +30,5 @@ public interface RepresentToNode {
      * @param data the instance to represent
      * @return Node to dump
      */
-    Node representData(@Nullable Object data);
+    Node representData(@NonNull Object data);
 }

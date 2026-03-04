@@ -13,13 +13,13 @@
  */
 package org.snakeyaml.engine.v2.resolver;
 
+import org.snakeyaml.engine.v2.nodes.Tag;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import org.snakeyaml.engine.v2.nodes.Tag;
 
 /**
  * Base resolver
@@ -34,9 +34,8 @@ public abstract class BaseScalarResolver implements ScalarResolver {
     /**
      * group 1: name, group 2: separator, group 3: value
      */
-    @java.lang.SuppressWarnings("squid:S4784")
-    public static final Pattern ENV_FORMAT =
-        Pattern.compile("^\\$\\{\\s*(?:(\\w+)(?:(:?[-?])(\\w+)?)?)\\s*\\}$");
+    @SuppressWarnings("squid:S4784")
+    public static final Pattern ENV_FORMAT = Pattern.compile("^\\$\\{\\s*(\\w+)(?:(:?[-?])(\\w+)?)?\\s*}$");
 
     /**
      * Map from the char to the resolver which may begin with this char
@@ -61,19 +60,17 @@ public abstract class BaseScalarResolver implements ScalarResolver {
      */
     public void addImplicitResolver(Tag tag, Pattern regexp, String first) {
         if (first == null) {
-            List<ResolverTuple> curr =
-                yamlImplicitResolvers.computeIfAbsent(null, c -> new ArrayList<>());
+            List<ResolverTuple> curr = yamlImplicitResolvers.computeIfAbsent(null, c -> new ArrayList<>());
             curr.add(new ResolverTuple(tag, regexp));
         } else {
-            char[] chrs = first.toCharArray();
-            for (int i = 0; i < chrs.length; i++) {
-                Character theC = chrs[i];
+            char[] chars = first.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                Character theC = chars[i];
                 if (theC == 0) {
                     // special case: for null
                     theC = null;
                 }
-                List<ResolverTuple> curr =
-                    yamlImplicitResolvers.computeIfAbsent(theC, k -> new ArrayList<>());
+                List<ResolverTuple> curr = yamlImplicitResolvers.computeIfAbsent(theC, k -> new ArrayList<>());
                 curr.add(new ResolverTuple(tag, regexp));
             }
         }
@@ -97,8 +94,8 @@ public abstract class BaseScalarResolver implements ScalarResolver {
         }
         if (resolvers != null) {
             for (ResolverTuple v : resolvers) {
-                Tag tag = v.getTag();
-                Pattern regexp = v.getRegexp();
+                Tag tag = v.tag();
+                Pattern regexp = v.regexp();
                 if (regexp.matcher(value).matches()) {
                     return tag;
                 }
@@ -106,8 +103,8 @@ public abstract class BaseScalarResolver implements ScalarResolver {
         }
         if (yamlImplicitResolvers.containsKey(null)) {
             for (ResolverTuple v : yamlImplicitResolvers.get(null)) {
-                Tag tag = v.getTag();
-                Pattern regexp = v.getRegexp();
+                Tag tag = v.tag();
+                Pattern regexp = v.regexp();
                 if (regexp.matcher(value).matches()) {
                     return tag;
                 }

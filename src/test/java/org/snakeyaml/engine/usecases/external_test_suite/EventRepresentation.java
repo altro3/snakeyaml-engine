@@ -79,8 +79,8 @@ public class EventRepresentation {
             var e = (NodeEvent) event;
             if (e.getAnchor() != null) {
                 int indexOfAlias = 1;
-                if (event.getEventId().equals(Event.ID.SequenceStart)
-                    || event.getEventId().equals(Event.ID.MappingStart)) {
+                if (event.getEventId().equals(Event.Id.SequenceStart)
+                    || event.getEventId().equals(Event.Id.MappingStart)) {
                     var start = (CollectionStartEvent) event;
                     if (start.getFlowStyle() == FlowStyle.FLOW) {
                         indexOfAlias = 2;

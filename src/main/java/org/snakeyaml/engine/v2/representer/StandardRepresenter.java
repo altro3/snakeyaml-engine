@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.DumpSettings;
+import org.snakeyaml.engine.v2.api.NullRepresentToNode;
 import org.snakeyaml.engine.v2.api.RepresentToNode;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.NonPrintableStyle;
@@ -139,10 +140,10 @@ public class StandardRepresenter extends BaseRepresenter {
     /**
      * Create null Node
      */
-    protected class RepresentNull implements RepresentToNode {
+    protected class RepresentNull implements NullRepresentToNode {
 
         @Override
-        public Node representData(@NonNull Object data) {
+        public Node representData() {
             return representScalar(Tag.NULL, "null");
         }
     }
@@ -205,8 +206,12 @@ public class StandardRepresenter extends BaseRepresenter {
         public Node representData(@NonNull Object data) {
             Tag tag;
             String value;
-            if (data instanceof Byte || data instanceof Short || data instanceof Integer
-                || data instanceof Long || data instanceof BigInteger) {
+            if (data instanceof Byte
+                || data instanceof Short
+                || data instanceof Integer
+                || data instanceof Long
+                || data instanceof BigInteger
+            ) {
                 tag = Tag.INT;
                 value = data.toString();
             } else {
@@ -371,8 +376,7 @@ public class StandardRepresenter extends BaseRepresenter {
         @SuppressWarnings("unchecked")
         @Override
         public Node representData(@NonNull Object data) {
-            return representMapping(getTag(data.getClass(), Tag.MAP), (Map<Object, Object>) data,
-                settings.getDefaultFlowStyle());
+            return representMapping(getTag(data.getClass(), Tag.MAP), (Map<Object, Object>) data, settings.defaultFlowStyle());
         }
     }
 
@@ -389,8 +393,7 @@ public class StandardRepresenter extends BaseRepresenter {
             for (Object key : set) {
                 value.put(key, null);
             }
-            return representMapping(getTag(data.getClass(), Tag.SET), value,
-                settings.getDefaultFlowStyle());
+            return representMapping(getTag(data.getClass(), Tag.SET), value, settings.defaultFlowStyle());
         }
     }
 
@@ -413,8 +416,7 @@ public class StandardRepresenter extends BaseRepresenter {
 
         @Override
         public Node representData(@NonNull Object data) {
-            return representScalar(Tag.BINARY, Base64.getEncoder().encodeToString((byte[]) data),
-                ScalarStyle.LITERAL);
+            return representScalar(Tag.BINARY, Base64.getEncoder().encodeToString((byte[]) data), ScalarStyle.LITERAL);
         }
     }
 
@@ -441,9 +443,8 @@ public class StandardRepresenter extends BaseRepresenter {
                 Node node = represent(opt.get());
                 node.setTag(new Tag(Optional.class));
                 return node;
-            } else {
-                return representScalar(Tag.NULL, "null");
             }
+            return representScalar(Tag.NULL, "null");
         }
     }
 }

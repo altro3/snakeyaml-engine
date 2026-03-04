@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -31,8 +32,8 @@ public final class MappingEndEvent extends CollectionEndEvent {
     }
 
     @Override
-    public ID getEventId() {
-        return ID.MappingEnd;
+    public @NonNull Id getEventId() {
+        return Id.MappingEnd;
     }
 
     @Override

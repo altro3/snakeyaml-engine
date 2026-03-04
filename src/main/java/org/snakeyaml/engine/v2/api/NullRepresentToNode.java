@@ -11,18 +11,22 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.snakeyaml.engine.v2.events;
+package org.snakeyaml.engine.v2.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.snakeyaml.engine.v2.nodes.Node;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+/**
+ * Create a Node Graph out of the provided Native Data Structure (Java instance). (this is opposite
+ * to ConstructNode)
+ *
+ * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
+ */
+public interface NullRepresentToNode {
 
-@Tag("fast")
-class ImplicitTupleTest {
-
-    @Test
-    void testToString() {
-        assertEquals("implicit=[true, false]", ImplicitTuple.TRUE_FALSE.toString());
-    }
+    /**
+     * Create a Node for a null.
+     *
+     * @return Node to dump
+     */
+    Node representData();
 }

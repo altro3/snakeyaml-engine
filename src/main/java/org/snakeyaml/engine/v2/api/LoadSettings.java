@@ -13,7 +13,9 @@
  */
 package org.snakeyaml.engine.v2.api;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.SpecVersion;
+import org.snakeyaml.engine.v2.constructor.ConstructYamlNull;
 import org.snakeyaml.engine.v2.env.EnvConfig;
 import org.snakeyaml.engine.v2.exceptions.YamlVersionException;
 import org.snakeyaml.engine.v2.nodes.Tag;
@@ -26,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
@@ -98,8 +99,7 @@ public record LoadSettings(
          * @param label - meaningful label to indicate the input source
          * @return the builder with the provided value
          */
-        public Builder setLabel(String label) {
-            Objects.requireNonNull(label, "label cannot be null");
+        public Builder setLabel(@NonNull String label) {
             this.label = label;
             return this;
         }
@@ -110,7 +110,7 @@ public record LoadSettings(
          * @param tagConstructors - the map from a Tag to its constructor
          * @return the builder with the provided value
          */
-        public Builder setTagConstructors(Map<Tag, ConstructNode> tagConstructors) {
+        public Builder setTagConstructors(@NonNull Map<Tag, ConstructNode> tagConstructors) {
             this.tagConstructors = tagConstructors;
             return this;
         }
@@ -121,8 +121,7 @@ public record LoadSettings(
          * @param defaultList - specified List implementation (as a function from init size)
          * @return the builder with the provided value
          */
-        public Builder setDefaultList(IntFunction<List<Object>> defaultList) {
-            Objects.requireNonNull(defaultList, "defaultList cannot be null");
+        public Builder setDefaultList(@NonNull IntFunction<List<Object>> defaultList) {
             this.defaultList = defaultList;
             return this;
         }
@@ -133,8 +132,7 @@ public record LoadSettings(
          * @param defaultSet - specified Set implementation (as a function from init size)
          * @return the builder with the provided value
          */
-        public Builder setDefaultSet(IntFunction<Set<Object>> defaultSet) {
-            Objects.requireNonNull(defaultSet, "defaultSet cannot be null");
+        public Builder setDefaultSet(@NonNull IntFunction<Set<Object>> defaultSet) {
             this.defaultSet = defaultSet;
             return this;
         }
@@ -145,8 +143,7 @@ public record LoadSettings(
          * @param defaultMap - specified Map implementation (as a function from init size)
          * @return the builder with the provided value
          */
-        public Builder setDefaultMap(IntFunction<Map<Object, Object>> defaultMap) {
-            Objects.requireNonNull(defaultMap, "defaultMap cannot be null");
+        public Builder setDefaultMap(@NonNull IntFunction<Map<Object, Object>> defaultMap) {
             this.defaultMap = defaultMap;
             return this;
         }
@@ -158,7 +155,7 @@ public record LoadSettings(
          * @param bufferSize - buffer size (in bytes) for input data
          * @return the builder with the provided value
          */
-        public Builder setBufferSize(Integer bufferSize) {
+        public Builder setBufferSize(@NonNull Integer bufferSize) {
             this.bufferSize = bufferSize;
             return this;
         }
@@ -229,8 +226,7 @@ public record LoadSettings(
          *     is thown)
          * @return the builder with the provided value
          */
-        public Builder setVersionFunction(UnaryOperator<SpecVersion> versionFunction) {
-            Objects.requireNonNull(versionFunction, "versionFunction cannot be null");
+        public Builder setVersionFunction(@NonNull UnaryOperator<SpecVersion> versionFunction) {
             this.versionFunction = versionFunction;
             return this;
         }
@@ -257,7 +253,7 @@ public record LoadSettings(
          * @param value - the value behind the key
          * @return the builder with the provided value
          */
-        public Builder setCustomProperty(SettingKey key, Object value) {
+        public Builder setCustomProperty(@NonNull SettingKey key, Object value) {
             customProperties.put(key, value);
             return this;
         }
@@ -297,7 +293,7 @@ public record LoadSettings(
          * @param schema to be used for parsing
          * @return the builder with the provided value
          */
-        public Builder setSchema(Schema schema) {
+        public Builder setSchema(@NonNull Schema schema) {
             this.schema = schema;
             return this;
         }

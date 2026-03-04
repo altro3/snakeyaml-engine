@@ -135,6 +135,7 @@ public class CanonicalScanner implements Scanner {
         return checkToken();
     }
 
+    @Override
     public Token next() {
         if (!scanned) {
             scan();

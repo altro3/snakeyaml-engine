@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -25,7 +27,7 @@ public final class DocumentEndEvent extends Event {
 
     private final boolean explicit;
 
-    public DocumentEndEvent(boolean explicit, Mark startMark, Mark endMark) {
+    public DocumentEndEvent(boolean explicit, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(startMark, endMark);
         this.explicit = explicit;
     }
@@ -39,8 +41,8 @@ public final class DocumentEndEvent extends Event {
     }
 
     @Override
-    public ID getEventId() {
-        return ID.DocumentEnd;
+    public @NonNull Id getEventId() {
+        return Id.DocumentEnd;
     }
 
     @Override

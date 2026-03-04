@@ -82,8 +82,8 @@ public class ComposerWithCommentEnabledTest {
             printWithIndent(mappingNode.getClass().getSimpleName(), level, out);
             for (NodeTuple childNodeTuple : mappingNode.getValue()) {
                 printWithIndent("Tuple", level + 1, out);
-                printNodeInternal(childNodeTuple.getKeyNode(), level + 2, out);
-                printNodeInternal(childNodeTuple.getValueNode(), level + 2, out);
+                printNodeInternal(childNodeTuple.keyNode(), level + 2, out);
+                printNodeInternal(childNodeTuple.valueNode(), level + 2, out);
             }
             printInLineComment(mappingNode, level, out);
             printEndComment(mappingNode, level, out);

@@ -102,7 +102,7 @@ public class CanonicalParser implements Parser {
             }
             if (scanner.checkToken(Token.Id.Scalar)) {
                 var token = (ScalarToken) scanner.next();
-                events.add(new ScalarEvent(anchor, tag, new ImplicitTuple(false, false), token.getValue(), ScalarStyle.PLAIN, null, null));
+                events.add(new ScalarEvent(anchor, tag, ImplicitTuple.FALSE_FALSE, token.getValue(), ScalarStyle.PLAIN, null, null));
             } else if (scanner.checkToken(Token.Id.FlowSequenceStart)) {
                 events.add(new SequenceStartEvent(anchor, Tag.SEQ.getValue(), false, FlowStyle.AUTO, null, null));
                 parseSequence();
@@ -172,7 +172,7 @@ public class CanonicalParser implements Parser {
      * Check the type of the next event.
      */
     @Override
-    public boolean checkEvent(Event.ID choice) {
+    public boolean checkEvent(Event.Id choice) {
         if (!parsed) {
             parse();
         }

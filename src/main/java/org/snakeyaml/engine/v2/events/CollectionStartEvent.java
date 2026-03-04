@@ -13,8 +13,8 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -31,13 +31,10 @@ public abstract class CollectionStartEvent extends NodeEvent {
     // flag indicates if a collection is block or flow
     protected final FlowStyle flowStyle;
 
-    public CollectionStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
-                                Mark startMark, Mark endMark) {
+    public CollectionStartEvent(@NonNull Anchor anchor, @NonNull String tag, boolean implicit, @NonNull FlowStyle flowStyle, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(anchor, startMark, endMark);
-        Objects.requireNonNull(tag);
         this.tag = tag;
         this.implicit = implicit;
-        Objects.requireNonNull(flowStyle);
         this.flowStyle = flowStyle;
     }
 
@@ -46,7 +43,7 @@ public abstract class CollectionStartEvent extends NodeEvent {
      *
      * @return The tag of this collection, or <code>empty</code> if no explicit tag is available.
      */
-    public String getTag() {
+    public @NonNull String getTag() {
         return this.tag;
     }
 
@@ -64,7 +61,7 @@ public abstract class CollectionStartEvent extends NodeEvent {
      *
      * @return If this collection is in flow style.
      */
-    public FlowStyle getFlowStyle() {
+    public @NonNull FlowStyle getFlowStyle() {
         return this.flowStyle;
     }
 

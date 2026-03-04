@@ -13,8 +13,8 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -25,21 +25,20 @@ public abstract class NodeEvent extends Event {
 
     protected final Anchor anchor;
 
-    public NodeEvent(Anchor anchor, Mark startMark, Mark endMark) {
+    public NodeEvent(@NonNull Anchor anchor, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(startMark, endMark);
-        Objects.requireNonNull(anchor);
         this.anchor = anchor;
     }
 
     /**
      * Node anchor by which this node might later be referenced by a {@link AliasEvent}.
      * <p>
-     * Note that {@link AliasEvent}s are by it self <code>NodeEvent</code>s and use this property to
+     * Note that {@link AliasEvent}s are by itself <code>NodeEvent</code>s and use this property to
      * indicate the referenced anchor.
      *
      * @return Anchor of this node or <code>null</code> if no anchor is defined.
      */
-    public Anchor getAnchor() {
+    public @NonNull Anchor getAnchor() {
         return this.anchor;
     }
 }

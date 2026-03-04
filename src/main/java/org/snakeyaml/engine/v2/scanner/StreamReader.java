@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.scanner;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.common.CharConstants;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -124,7 +125,7 @@ public final class StreamReader {
      *
      * @return {@link Mark} of the current position or null otherwise
      */
-    public Mark getMark() {
+    public @Nullable Mark getMark() {
         if (!useMarks) {
             return null;
         }

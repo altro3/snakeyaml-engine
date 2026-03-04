@@ -32,25 +32,28 @@ class NullConstructorTest {
 
     @Test
     void customConstructorMustBeCalledWithoutNode() {
-        Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
+        var tagConstructors = new HashMap<Tag, ConstructNode>();
         tagConstructors.put(Tag.NULL, new MyConstructNull());
-        LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
-        Load loader = new Load(settings);
+        LoadSettings settings = LoadSettings.builder()
+            .setTagConstructors(tagConstructors)
+            .build();
+        var loader = new Load(settings);
         assertNotNull(loader.loadFromString(""), "Expected MyConstructNull to be called.");
         assertEquals("absent", loader.loadFromString(""), "Expected MyConstructNull to be called.");
     }
 
     @Test
     void customConstructorMustBeCalledWithNode() {
-        Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
+        var tagConstructors = new HashMap<Tag, ConstructNode>();
         tagConstructors.put(Tag.NULL, new MyConstructNull());
-        LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
-        Load loader = new Load(settings);
-        assertEquals("present", loader.loadFromString("!!null null"),
-            "Expected MyConstructNull to be called.");
+        LoadSettings settings = LoadSettings.builder()
+            .setTagConstructors(tagConstructors)
+            .build();
+        var loader = new Load(settings);
+        assertEquals("Present", loader.loadFromString("!!null null"), "Expected MyConstructNull to be called.");
     }
 
-    private class MyConstructNull implements ConstructNode {
+    private static class MyConstructNull implements ConstructNode {
 
         @Override
         public Object construct(@NonNull Node node) {

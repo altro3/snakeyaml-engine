@@ -317,7 +317,7 @@ public final class Emitter implements Emitable {
 
         @Override
         public void expect() {
-            if (event.getEventId() == Event.ID.StreamStart) {
+            if (event.getEventId() == Event.Id.StreamStart) {
                 writeStreamStart();
                 state = new ExpectFirstDocumentStart();
             } else {
@@ -354,11 +354,11 @@ public final class Emitter implements Emitable {
 
         @Override
         public void expect() {
-            if (event.getEventId() == Event.ID.DocumentStart) {
+            if (event.getEventId() == Event.Id.DocumentStart) {
                 var ev = (DocumentStartEvent) event;
                 handleDocumentStartEvent(ev);
                 state = new ExpectDocumentRoot();
-            } else if (event.getEventId() == Event.ID.StreamEnd) {
+            } else if (event.getEventId() == Event.Id.StreamEnd) {
                 writeStreamEnd();
                 state = new ExpectNothing();
             } else if (event instanceof CommentEvent) {
@@ -404,11 +404,11 @@ public final class Emitter implements Emitable {
         }
 
         private boolean checkEmptyDocument() {
-            if (event.getEventId() != Event.ID.DocumentStart || events.isEmpty()) {
+            if (event.getEventId() != Event.Id.DocumentStart || events.isEmpty()) {
                 return false;
             }
             Event nextEvent = events.peek();
-            if (nextEvent.getEventId() == Event.ID.Scalar) {
+            if (nextEvent.getEventId() == Event.Id.Scalar) {
                 var e = (ScalarEvent) nextEvent;
                 return e.getAnchor() == null && e.getTag().isEmpty() && e.getImplicit() != null && e.getValue().isEmpty();
             }
@@ -422,7 +422,7 @@ public final class Emitter implements Emitable {
         public void expect() {
             event = blockCommentsCollector.collectEventsAndPoll(event);
             writeBlockComment();
-            if (event.getEventId() == Event.ID.DocumentEnd) {
+            if (event.getEventId() == Event.Id.DocumentEnd) {
                 writeIndent();
                 if (((DocumentEndEvent) event).isExplicit()) {
                     writeIndicator("...", true, false, false);
@@ -459,9 +459,9 @@ public final class Emitter implements Emitable {
         rootContext = root;
         mappingContext = mapping;
         simpleKeyContext = simpleKey;
-        if (event.getEventId() == Event.ID.Alias) {
+        if (event.getEventId() == Event.Id.Alias) {
             expectAlias(simpleKey); // key indicator is needed to detect the trailing space for alias
-        } else if (event.getEventId() == Event.ID.Scalar || event.getEventId() == Event.ID.SequenceStart || event.getEventId() == Event.ID.MappingStart) {
+        } else if (event.getEventId() == Event.Id.Scalar || event.getEventId() == Event.Id.SequenceStart || event.getEventId() == Event.Id.MappingStart) {
             processAnchor();
             processTag();
             handleNodeEvent(event.getEventId());
@@ -470,7 +470,7 @@ public final class Emitter implements Emitable {
         }
     }
 
-    private void handleNodeEvent(Event.ID id) {
+    private void handleNodeEvent(Event.Id id) {
         switch (id) {
             case Scalar:
                 expectScalar();
@@ -532,7 +532,7 @@ public final class Emitter implements Emitable {
 
         @Override
         public void expect() {
-            if (event.getEventId() == Event.ID.SequenceEnd) {
+            if (event.getEventId() == Event.Id.SequenceEnd) {
                 indent = indents.pop();
                 flowLevel--;
                 writeIndicator("]", false, false, false);
@@ -558,7 +558,7 @@ public final class Emitter implements Emitable {
 
         @Override
         public void expect() {
-            if (event.getEventId() == Event.ID.SequenceEnd) {
+            if (event.getEventId() == Event.Id.SequenceEnd) {
                 indent = indents.pop();
                 flowLevel--;
                 if (canonical) {
@@ -608,7 +608,7 @@ public final class Emitter implements Emitable {
         public void expect() {
             event = blockCommentsCollector.collectEventsAndPoll(event);
             writeBlockComment();
-            if (event.getEventId() == Event.ID.MappingEnd) {
+            if (event.getEventId() == Event.Id.MappingEnd) {
                 indent = indents.pop();
                 flowLevel--;
                 writeIndicator("}", false, false, false);
@@ -635,7 +635,7 @@ public final class Emitter implements Emitable {
 
         @Override
         public void expect() {
-            if (event.getEventId() == Event.ID.MappingEnd) {
+            if (event.getEventId() == Event.Id.MappingEnd) {
                 indent = indents.pop();
                 flowLevel--;
                 if (canonical) {
@@ -725,7 +725,7 @@ public final class Emitter implements Emitable {
 
         @Override
         public void expect() {
-            if (!this.first && event.getEventId() == Event.ID.SequenceEnd) {
+            if (!this.first && event.getEventId() == Event.Id.SequenceEnd) {
                 indent = indents.pop();
                 state = states.pop();
             } else if (event instanceof CommentEvent) {
@@ -791,7 +791,7 @@ public final class Emitter implements Emitable {
         public void expect() {
             event = blockCommentsCollector.collectEventsAndPoll(event);
             writeBlockComment();
-            if (!this.first && event.getEventId() == Event.ID.MappingEnd) {
+            if (!this.first && event.getEventId() == Event.Id.MappingEnd) {
                 indent = indents.pop();
                 state = states.pop();
             } else {
@@ -809,7 +809,7 @@ public final class Emitter implements Emitable {
     }
 
     private boolean isFoldedOrLiteral(Event event) {
-        if (event.getEventId() != Event.ID.Scalar) {
+        if (event.getEventId() != Event.Id.Scalar) {
             return false;
         }
         ScalarEvent scalarEvent = (ScalarEvent) event;
@@ -864,13 +864,13 @@ public final class Emitter implements Emitable {
     // Checkers.
 
     private boolean checkEmptySequence() {
-        return event.getEventId() == Event.ID.SequenceStart && !events.isEmpty()
-            && events.peek().getEventId() == Event.ID.SequenceEnd;
+        return event.getEventId() == Event.Id.SequenceStart && !events.isEmpty()
+            && events.peek().getEventId() == Event.Id.SequenceEnd;
     }
 
     private boolean checkEmptyMapping() {
-        return event.getEventId() == Event.ID.MappingStart && !events.isEmpty()
-            && events.peek().getEventId() == Event.ID.MappingEnd;
+        return event.getEventId() == Event.Id.MappingStart && !events.isEmpty()
+            && events.peek().getEventId() == Event.Id.MappingEnd;
     }
 
     private boolean checkSimpleKey() {
@@ -881,11 +881,11 @@ public final class Emitter implements Emitable {
                 if (preparedAnchor == null) {
                     preparedAnchor = anchor;
                 }
-                length += anchor.getValue().length();
+                length += anchor.value().length();
             }
         }
         String tag = null;
-        if (event.getEventId() == Event.ID.Scalar) {
+        if (event.getEventId() == Event.Id.Scalar) {
             tag = ((ScalarEvent) event).getTag();
         } else if (event instanceof CollectionStartEvent) {
             tag = ((CollectionStartEvent) event).getTag();
@@ -896,14 +896,14 @@ public final class Emitter implements Emitable {
             }
             length += preparedTag.length();
         }
-        if (event.getEventId() == Event.ID.Scalar) {
+        if (event.getEventId() == Event.Id.Scalar) {
             if (analysis == null) {
                 analysis = analyzeScalar(((ScalarEvent) event).getValue());
             }
             length += analysis.scalar().length();
         }
-        return length < maxSimpleKeyLength && (event.getEventId() == Event.ID.Alias
-            || (event.getEventId() == Event.ID.Scalar && !analysis.empty() && !analysis.multiline())
+        return length < maxSimpleKeyLength && (event.getEventId() == Event.Id.Alias
+            || (event.getEventId() == Event.Id.Scalar && !analysis.empty() && !analysis.multiline())
             || checkEmptySequence() || checkEmptyMapping());
     }
 
@@ -939,7 +939,7 @@ public final class Emitter implements Emitable {
      */
     private void processTag() {
         String tag;
-        if (event.getEventId() == Event.ID.Scalar) {
+        if (event.getEventId() == Event.Id.Scalar) {
             ScalarEvent ev = (ScalarEvent) event;
             tag = ev.getTag();
             if (scalarStyle == null) {
@@ -947,12 +947,12 @@ public final class Emitter implements Emitable {
             }
             // check when no tag is required
             if ((!canonical || tag.isEmpty()) && ((scalarStyle == ScalarStyle.PLAIN
-                && ev.getImplicit().canOmitTagInPlainScalar())
+                && ev.getImplicit().isCanOmitTagInPlainScalar())
                 || (scalarStyle != ScalarStyle.PLAIN && ev.getImplicit().canOmitTagInNonPlainScalar()))) {
                 preparedTag = null;
                 return; // no tag required
             }
-            if (ev.getImplicit().canOmitTagInPlainScalar() && tag.isEmpty()) {
+            if (ev.getImplicit().isCanOmitTagInPlainScalar() && tag.isEmpty()) {
                 tag = "!";
                 preparedTag = null;
             }
@@ -991,7 +991,7 @@ public final class Emitter implements Emitable {
             // special case for strings which are always double-quoted in JSON
             return ScalarStyle.DOUBLE_QUOTED;
         }
-        if ((ev.isPlain() || ev.isJson()) && ev.getImplicit().canOmitTagInPlainScalar()) {
+        if ((ev.isPlain() || ev.isJson()) && ev.getImplicit().isCanOmitTagInPlainScalar()) {
             if (!(simpleKeyContext && (analysis.empty() || analysis.multiline()))
                 && ((flowLevel != 0 && analysis.allowFlowPlain())
                 || (flowLevel == 0 && analysis.allowBlockPlain()))) {

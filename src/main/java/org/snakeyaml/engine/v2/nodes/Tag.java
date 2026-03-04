@@ -13,8 +13,7 @@
  */
 package org.snakeyaml.engine.v2.nodes;
 
-import java.util.Objects;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.UriEncoder;
 
 public final class Tag {
@@ -38,8 +37,7 @@ public final class Tag {
 
     private final String value;
 
-    public Tag(String tag) {
-        Objects.requireNonNull(tag, "Tag must be provided.");
+    public Tag(@NonNull String tag) {
         if (tag.isEmpty()) {
             throw new IllegalArgumentException("Tag must not be empty.");
         } else if (tag.trim().length() != tag.length()) {
@@ -53,8 +51,7 @@ public final class Tag {
      *
      * @param clazz - the class to use the name
      */
-    public Tag(Class<?> clazz) {
-        Objects.requireNonNull(clazz, "Class for tag must be provided.");
+    public Tag(@NonNull Class<?> clazz) {
         this.value = Tag.PREFIX + UriEncoder.encode(clazz.getName());
     }
 
@@ -64,11 +61,10 @@ public final class Tag {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Tag) {
-            return value.equals(((Tag) obj).getValue());
-        } else {
-            return false;
+        if (obj instanceof Tag tag) {
+            return value.equals(tag.getValue());
         }
+        return false;
     }
 
     @Override

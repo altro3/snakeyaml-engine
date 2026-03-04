@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.constructor;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.ConstructNode;
@@ -40,10 +41,8 @@ class DefaultConstructorTest {
     void failWhenUnknown() {
         var settings = LoadSettings.builder().build();
         var load = new Load(settings);
-        var exception =
-            assertThrows(YamlEngineException.class, () -> load.loadFromString("!unknownLocalTag a"));
-        assertTrue(exception.getMessage()
-            .startsWith("could not determine a constructor for the tag !unknownLocalTag"));
+        var exception = assertThrows(YamlEngineException.class, () -> load.loadFromString("!unknownLocalTag a"));
+        assertTrue(exception.getMessage().startsWith("Could not determine a constructor for the tag !unknownLocalTag"));
     }
 
     /**

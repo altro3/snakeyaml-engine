@@ -38,15 +38,15 @@ class ParserTest {
         ScannerImpl scanner = new ScannerImpl(settings, reader);
         Parser parser = new ParserImpl(settings, scanner);
         assertTrue(parser.hasNext());
-        assertEquals(Event.ID.StreamStart, parser.next().getEventId());
+        assertEquals(Event.Id.StreamStart, parser.next().getEventId());
         assertTrue(parser.hasNext());
-        assertEquals(Event.ID.DocumentStart, parser.next().getEventId());
+        assertEquals(Event.Id.DocumentStart, parser.next().getEventId());
         assertTrue(parser.hasNext());
-        assertEquals(Event.ID.Scalar, parser.next().getEventId());
+        assertEquals(Event.Id.Scalar, parser.next().getEventId());
         assertTrue(parser.hasNext());
-        assertEquals(Event.ID.DocumentEnd, parser.next().getEventId());
+        assertEquals(Event.Id.DocumentEnd, parser.next().getEventId());
         assertTrue(parser.hasNext());
-        assertEquals(Event.ID.StreamEnd, parser.next().getEventId());
+        assertEquals(Event.Id.StreamEnd, parser.next().getEventId());
         assertFalse(parser.hasNext());
         try {
             parser.next();

@@ -95,7 +95,7 @@ public abstract class Node {
     /**
      * @return scalar, sequence, mapping
      */
-    public abstract NodeType getNodeType();
+    public abstract @NonNull NodeType getNodeType();
 
     public Mark getStartMark() {
         return startMark;

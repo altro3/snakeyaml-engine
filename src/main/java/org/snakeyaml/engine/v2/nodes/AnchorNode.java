@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.nodes;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * This class is only used during representation (dumping)
  */
@@ -31,7 +33,7 @@ public class AnchorNode extends Node {
     }
 
     @Override
-    public NodeType getNodeType() {
+    public @NonNull NodeType getNodeType() {
         return NodeType.ANCHOR;
     }
 

@@ -13,13 +13,14 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.common.CharConstants;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
+
+import java.util.stream.Collectors;
 
 /**
  * Marks a scalar value.
@@ -35,20 +36,16 @@ public final class ScalarEvent extends NodeEvent {
     // and non-plain style correspondingly.
     private final ImplicitTuple implicit;
 
-    public ScalarEvent(Anchor anchor, String tag, ImplicitTuple implicit, String value,
-                       ScalarStyle style, Mark startMark, Mark endMark) {
+    public ScalarEvent(@NonNull Anchor anchor, @NonNull String tag, @NonNull ImplicitTuple implicit, @NonNull String value,
+                       @NonNull ScalarStyle style, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(anchor, startMark, endMark);
-        Objects.requireNonNull(tag);
         this.tag = tag;
         this.implicit = implicit;
-        Objects.requireNonNull(value);
         this.value = value;
-        Objects.requireNonNull(style);
         this.style = style;
     }
 
-    public ScalarEvent(Anchor anchor, String tag, ImplicitTuple implicit, String value,
-                       ScalarStyle style) {
+    public ScalarEvent(@NonNull Anchor anchor, @NonNull String tag, @NonNull ImplicitTuple implicit, @NonNull String value, @NonNull ScalarStyle style) {
         this(anchor, tag, implicit, value, style, null, null);
     }
 
@@ -57,7 +54,7 @@ public final class ScalarEvent extends NodeEvent {
      *
      * @return The tag of this scalar, or <code>null</code> if no explicit tag is available.
      */
-    public String getTag() {
+    public @NonNull String getTag() {
         return this.tag;
     }
 
@@ -78,7 +75,7 @@ public final class ScalarEvent extends NodeEvent {
      *
      * @return Style of the scalar.
      */
-    public ScalarStyle getScalarStyle() {
+    public @NonNull ScalarStyle getScalarStyle() {
         return this.style;
     }
 
@@ -90,17 +87,17 @@ public final class ScalarEvent extends NodeEvent {
      *
      * @return Value as Unicode string.
      */
-    public String getValue() {
+    public @NonNull String getValue() {
         return this.value;
     }
 
-    public ImplicitTuple getImplicit() {
+    public @NonNull ImplicitTuple getImplicit() {
         return this.implicit;
     }
 
     @Override
-    public ID getEventId() {
-        return ID.Scalar;
+    public @NonNull Id getEventId() {
+        return Id.Scalar;
     }
 
     public boolean isPlain() {
@@ -136,12 +133,14 @@ public final class ScalarEvent extends NodeEvent {
         if (implicit.bothFalse() && tag != null) {
             builder.append(" <").append(tag).append('>');
         }
-        return builder.append(' ').append(style.toString()).append(escapedValue()).toString();
+        return builder.append(' ').append(style.toString()).append(escapedValue())
+            .toString();
     }
 
     // escape
     public String escapedValue() {
-        return value.codePoints().filter(i -> i < Character.MAX_VALUE)
+        return value.codePoints()
+            .filter(i -> i < Character.MAX_VALUE)
             .mapToObj(ch -> CharConstants.escapeChar(new String(Character.toChars(ch))))
             .collect(Collectors.joining(""));
     }

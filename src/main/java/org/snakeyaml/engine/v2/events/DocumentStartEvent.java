@@ -16,6 +16,8 @@ package org.snakeyaml.engine.v2.events;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -31,16 +33,14 @@ public final class DocumentStartEvent extends Event {
     private final SpecVersion specVersion;
     private final Map<String, String> tags;
 
-    public DocumentStartEvent(boolean explicit, SpecVersion specVersion, Map<String, String> tags, Mark startMark, Mark endMark) {
+    public DocumentStartEvent(boolean explicit, @NonNull SpecVersion specVersion, @NonNull Map<String, String> tags, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(startMark, endMark);
-        Objects.requireNonNull(specVersion);
-        Objects.requireNonNull(tags);
         this.explicit = explicit;
         this.specVersion = specVersion;
         this.tags = tags;
     }
 
-    public DocumentStartEvent(boolean explicit, SpecVersion specVersion, Map<String, String> tags) {
+    public DocumentStartEvent(boolean explicit, @NonNull SpecVersion specVersion, @NonNull Map<String, String> tags) {
         this(explicit, specVersion, tags, null, null);
     }
 
@@ -51,7 +51,7 @@ public final class DocumentStartEvent extends Event {
     /**
      * @return YAML version the document conforms to.
      */
-    public SpecVersion getSpecVersion() {
+    public @NonNull SpecVersion getSpecVersion() {
         return specVersion;
     }
 
@@ -60,13 +60,13 @@ public final class DocumentStartEvent extends Event {
      *
      * @return Mapping of 'handles' to 'prefixes' (the handles include the '!' characters).
      */
-    public Map<String, String> getTags() {
+    public @NonNull Map<String, String> getTags() {
         return tags;
     }
 
     @Override
-    public ID getEventId() {
-        return ID.DocumentStart;
+    public @NonNull Id getEventId() {
+        return Id.DocumentStart;
     }
 
     @Override

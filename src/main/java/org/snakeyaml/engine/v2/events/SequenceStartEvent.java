@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -27,18 +29,17 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class SequenceStartEvent extends CollectionStartEvent {
 
-    public SequenceStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
-                              Mark startMark, Mark endMark) {
+    public SequenceStartEvent(@NonNull Anchor anchor, @NonNull String tag, boolean implicit, @NonNull FlowStyle flowStyle, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(anchor, tag, implicit, flowStyle, startMark, endMark);
     }
 
-    public SequenceStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle) {
+    public SequenceStartEvent(@NonNull Anchor anchor, @NonNull String tag, boolean implicit, @NonNull FlowStyle flowStyle) {
         this(anchor, tag, implicit, flowStyle, null, null);
     }
 
     @Override
-    public ID getEventId() {
-        return ID.SequenceStart;
+    public @NonNull Id getEventId() {
+        return Id.SequenceStart;
     }
 
     @Override
@@ -47,7 +48,7 @@ public final class SequenceStartEvent extends CollectionStartEvent {
         if (flowStyle == FlowStyle.FLOW) {
             builder.append(" []");
         }
-        builder.append(super.toString());
-        return builder.toString();
+        return builder.append(super.toString())
+            .toString();
     }
 }

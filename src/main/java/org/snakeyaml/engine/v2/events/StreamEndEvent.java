@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -27,7 +29,7 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class StreamEndEvent extends Event {
 
-    public StreamEndEvent(Mark startMark, Mark endMark) {
+    public StreamEndEvent(@Nullable Mark startMark, @Nullable Mark endMark) {
         super(startMark, endMark);
     }
 
@@ -36,8 +38,8 @@ public final class StreamEndEvent extends Event {
     }
 
     @Override
-    public ID getEventId() {
-        return ID.StreamEnd;
+    public @NonNull Id getEventId() {
+        return Id.StreamEnd;
     }
 
     @Override

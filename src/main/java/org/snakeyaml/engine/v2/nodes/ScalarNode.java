@@ -13,9 +13,7 @@
  */
 package org.snakeyaml.engine.v2.nodes;
 
-import java.util.Objects;
-import java.util.Optional;
-
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -30,11 +28,8 @@ public class ScalarNode extends Node {
     private final ScalarStyle style;
     private final String value;
 
-    public ScalarNode(Tag tag, boolean resolved, String value, ScalarStyle style, Mark startMark,
-                      Mark endMark) {
+    public ScalarNode(Tag tag, boolean resolved, @NonNull String value, @NonNull ScalarStyle style, Mark startMark, Mark endMark) {
         super(tag, startMark, endMark);
-        Objects.requireNonNull(value, "value in a Node is required.");
-        Objects.requireNonNull(style, "Scalar style must be provided.");
         this.value = value;
         this.style = style;
         this.resolved = resolved;
@@ -52,12 +47,12 @@ public class ScalarNode extends Node {
      *     https://yaml.org/spec/1.2/spec.html#id2786942 Block styles -
      *     https://yaml.org/spec/1.2/spec.html#id2793652
      */
-    public ScalarStyle getScalarStyle() {
+    public @NonNull ScalarStyle getScalarStyle() {
         return style;
     }
 
     @Override
-    public NodeType getNodeType() {
+    public @NonNull NodeType getNodeType() {
         return NodeType.SCALAR;
     }
 
@@ -66,7 +61,7 @@ public class ScalarNode extends Node {
      *
      * @return Scalar's value.
      */
-    public String getValue() {
+    public @NonNull String getValue() {
         return value;
     }
 

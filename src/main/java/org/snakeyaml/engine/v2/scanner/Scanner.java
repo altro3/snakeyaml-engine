@@ -71,6 +71,7 @@ public interface Scanner extends Iterator<Token> {
      * @throws ScannerException Thrown in case of malformed input.
      * @throws IndexOutOfBoundsException if no more token left
      */
+    @Override
     Token next();
 
     /**

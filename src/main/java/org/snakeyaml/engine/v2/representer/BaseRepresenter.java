@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
+import org.snakeyaml.engine.v2.api.NullRepresentToNode;
 import org.snakeyaml.engine.v2.api.RepresentToNode;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -59,7 +60,7 @@ public abstract class BaseRepresenter {
     /**
      * in Java 'null' is not a type. So we have to keep the null representer separately
      */
-    protected RepresentToNode nullRepresenter;
+    protected NullRepresentToNode nullRepresenter;
     /**
      * scalar style
      */
@@ -122,7 +123,7 @@ public abstract class BaseRepresenter {
         }
         // check for null first
         if (data == null) {
-            return nullRepresenter.representData(null);
+            return nullRepresenter.representData();
         }
         RepresentToNode representer = findRepresenterFor(data);
         if (representer == null) {
@@ -205,29 +206,23 @@ public abstract class BaseRepresenter {
      * @param flowStyle - the style of Node
      * @return Node for the source Map
      */
-    protected Node representMapping(Tag tag, Map<?, ?> mapping, FlowStyle flowStyle) {
-        List<NodeTuple> value = new ArrayList<>(mapping.size());
-        MappingNode node = new MappingNode(tag, value, flowStyle);
+    protected Node representMapping(Tag tag, Map<?, ?> mapping, @NonNull FlowStyle flowStyle) {
+        var value = new ArrayList<NodeTuple>(mapping.size());
+        var node = new MappingNode(tag, value, flowStyle);
         representedObjects.put(objectToRepresent, node);
-        FlowStyle bestStyle = FlowStyle.FLOW;
+        var bestStyle = FlowStyle.FLOW;
         for (Map.Entry<?, ?> entry : mapping.entrySet()) {
             NodeTuple tuple = representMappingEntry(entry);
-            if (!(tuple.getKeyNode() instanceof ScalarNode
-                && ((ScalarNode) tuple.getKeyNode()).isPlain())) {
+            if (!(tuple.keyNode() instanceof ScalarNode scalarNode && scalarNode.isPlain())) {
                 bestStyle = FlowStyle.BLOCK;
             }
-            if (!(tuple.getValueNode() instanceof ScalarNode
-                && ((ScalarNode) tuple.getValueNode()).isPlain())) {
+            if (!(tuple.valueNode() instanceof ScalarNode scalarNode && scalarNode.isPlain())) {
                 bestStyle = FlowStyle.BLOCK;
             }
             value.add(tuple);
         }
         if (flowStyle == FlowStyle.AUTO) {
-            if (defaultFlowStyle != FlowStyle.AUTO) {
-                node.setFlowStyle(defaultFlowStyle);
-            } else {
-                node.setFlowStyle(bestStyle);
-            }
+            node.setFlowStyle(defaultFlowStyle != FlowStyle.AUTO ? defaultFlowStyle : bestStyle);
         }
         return node;
     }

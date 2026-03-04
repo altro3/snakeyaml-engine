@@ -15,6 +15,7 @@ package org.snakeyaml.engine.v2.events;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -57,8 +58,8 @@ public final class CommentEvent extends Event {
     }
 
     @Override
-    public Event.ID getEventId() {
-        return ID.Comment;
+    public @NonNull Id getEventId() {
+        return Id.Comment;
     }
 
     @Override

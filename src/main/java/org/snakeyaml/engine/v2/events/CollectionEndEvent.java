@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -20,11 +21,10 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public abstract class CollectionEndEvent extends Event {
 
-    public CollectionEndEvent(Mark startMark, Mark endMark) {
+    public CollectionEndEvent(@Nullable Mark startMark, @Nullable Mark endMark) {
         super(startMark, endMark);
     }
 
     public CollectionEndEvent() {
-        super();
     }
 }

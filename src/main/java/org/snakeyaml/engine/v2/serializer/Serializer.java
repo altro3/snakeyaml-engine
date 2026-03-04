@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.serializer;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.comments.CommentLine;
 import org.snakeyaml.engine.v2.common.Anchor;
@@ -78,7 +79,7 @@ public class Serializer {
         this.recursive = Collections.newSetFromMap(new IdentityHashMap<>());
         this.mergeUtils = new MergeUtils() {
             @Override
-            public MappingNode asMappingNode(Node node) {
+            public @NonNull MappingNode asMappingNode(@NonNull Node node) {
                 if (node instanceof MappingNode mappingNode) {
                     return mappingNode;
                 }
@@ -146,8 +147,8 @@ public class Serializer {
                     var mappingNode = (MappingNode) realNode;
                     List<NodeTuple> nodeTuples = mappingNode.getValue();
                     for (var nodeTuple : nodeTuples) {
-                        anchorNode(nodeTuple.getKeyNode());
-                        anchorNode(nodeTuple.getValueNode());
+                        anchorNode(nodeTuple.keyNode());
+                        anchorNode(nodeTuple.valueNode());
                     }
                     break;
                 default: // no further action required for non-collections
@@ -182,8 +183,8 @@ public class Serializer {
                     serializeComments(node.getBlockComments());
                     Tag detectedTag = settings.schema().getScalarResolver().resolve(scalarNode.getValue(), true);
                     Tag defaultTag = settings.schema().getScalarResolver().resolve(scalarNode.getValue(), false);
-                    ImplicitTuple tuple = new ImplicitTuple(node.getTag().equals(detectedTag), node.getTag().equals(defaultTag));
-                    ScalarEvent event = new ScalarEvent(tAlias, node.getTag().getValue(), tuple, scalarNode.getValue(), scalarNode.getScalarStyle());
+                    var tuple = ImplicitTuple.byValues(node.getTag().equals(detectedTag), node.getTag().equals(defaultTag));
+                    var event = new ScalarEvent(tAlias, node.getTag().getValue(), tuple, scalarNode.getValue(), scalarNode.getScalarStyle());
                     this.emitable.emit(event);
                     serializeComments(node.getInLineComments());
                     serializeComments(node.getEndComments());
@@ -212,8 +213,8 @@ public class Serializer {
                         }
                         this.emitable.emit(new MappingStartEvent(tAlias, mappingNode.getTag().getValue(), implicitM, mappingNode.getFlowStyle(), null, null));
                         for (var nodeTuple : nodeTuples) {
-                            serializeNode(nodeTuple.getKeyNode());
-                            serializeNode(nodeTuple.getValueNode());
+                            serializeNode(nodeTuple.keyNode());
+                            serializeNode(nodeTuple.valueNode());
                         }
                         this.emitable.emit(new MappingEndEvent());
                         serializeComments(node.getInLineComments());

@@ -17,36 +17,43 @@ package org.snakeyaml.engine.v2.events;
  * The implicit flag of a scalar event is a pair of boolean values that indicate if the tag may be
  * omitted when the scalar is emitted in a plain and non-plain style correspondingly.
  */
-public class ImplicitTuple {
+public enum ImplicitTuple {
 
-    private final boolean plain;
-    private final boolean nonPlain;
+    TRUE_TRUE(true, true),
+    TRUE_FALSE(true, false),
+    FALSE_TRUE(false, true),
+    FALSE_FALSE(false, false),
+    ;
 
-    public ImplicitTuple(boolean plain, boolean nonplain) {
-        this.plain = plain;
-        this.nonPlain = nonplain;
+    private final boolean canOmitTagInPlainScalar;
+    private final boolean canOmitTagInNonPlainScalar;
+
+    ImplicitTuple(boolean canOmitTagInPlainScalar, boolean canOmitTagInNonPlainScalar) {
+        this.canOmitTagInPlainScalar = canOmitTagInPlainScalar;
+        this.canOmitTagInNonPlainScalar = canOmitTagInNonPlainScalar;
     }
 
-    /**
-     * @return true when tag may be omitted when the scalar is emitted in a plain style.
-     */
-    public boolean canOmitTagInPlainScalar() {
-        return plain;
+    public boolean isCanOmitTagInPlainScalar() {
+        return canOmitTagInPlainScalar;
     }
 
-    /**
-     * @return true when tag may be omitted when the scalar is emitted in a non-plain style.
-     */
-    public boolean canOmitTagInNonPlainScalar() {
-        return nonPlain;
+    public boolean isCanOmitTagInNonPlainScalar() {
+        return canOmitTagInNonPlainScalar;
     }
 
     public boolean bothFalse() {
-        return !plain && !nonPlain;
+        return !canOmitTagInPlainScalar && !canOmitTagInNonPlainScalar;
     }
 
-    @Override
-    public String toString() {
-        return "implicit=[" + plain + ", " + nonPlain + "]";
+    public static ImplicitTuple byValues(boolean canOmitTagInPlainScalar, boolean canOmitTagInNonPlainScalar) {
+        if (canOmitTagInPlainScalar && canOmitTagInNonPlainScalar) {
+            return TRUE_TRUE;
+        } else if (canOmitTagInPlainScalar) {
+            return TRUE_FALSE;
+        } else if (canOmitTagInNonPlainScalar) {
+            return FALSE_TRUE;
+        } else {
+            return FALSE_FALSE;
+        }
     }
 }

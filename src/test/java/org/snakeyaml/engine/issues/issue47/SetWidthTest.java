@@ -75,7 +75,7 @@ public class SetWidthTest {
         emitter.emit(new StreamStartEvent());
         emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, emptyMap()));
 
-        emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
+        emitter.emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_TRUE, stringToSerialize,
             ScalarStyle.PLAIN));
 
         emitter.emit(new DocumentEndEvent(false));
@@ -97,7 +97,7 @@ public class SetWidthTest {
         emitter.emit(new StreamStartEvent());
         emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, emptyMap()));
 
-        emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, true), stringToSerialize,
+        emitter.emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_TRUE, stringToSerialize,
             ScalarStyle.PLAIN));
 
         emitter.emit(new DocumentEndEvent(false));

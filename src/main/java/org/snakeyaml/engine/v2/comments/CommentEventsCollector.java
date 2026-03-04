@@ -33,7 +33,7 @@ public class CommentEventsCollector {
 
     private final Queue<Event> eventSource;
     private final CommentType[] expectedCommentTypes;
-    private List<CommentLine> commentLineList;
+    private List<CommentLine> commentLineList = new ArrayList<>();
 
     /**
      * Constructor used to collect comment events emitted by a Parser.
@@ -42,7 +42,7 @@ public class CommentEventsCollector {
      * @param expectedCommentTypes the comment types expected. Any comment types not included are not
      *     collected.
      */
-    public CommentEventsCollector(final Parser parser, CommentType... expectedCommentTypes) {
+    public CommentEventsCollector(@NonNull Parser parser, @NonNull CommentType... expectedCommentTypes) {
         this.eventSource = new AbstractQueue<>() {
 
             @Override
@@ -72,7 +72,6 @@ public class CommentEventsCollector {
 
         };
         this.expectedCommentTypes = expectedCommentTypes;
-        commentLineList = new ArrayList<>();
     }
 
     /**
@@ -82,10 +81,9 @@ public class CommentEventsCollector {
      * @param expectedCommentTypes the comment types expected. Any comment types not included are not
      *     collected.
      */
-    public CommentEventsCollector(Queue<Event> eventSource, CommentType... expectedCommentTypes) {
+    public CommentEventsCollector(@NonNull Queue<Event> eventSource, @NonNull CommentType... expectedCommentTypes) {
         this.eventSource = eventSource;
         this.expectedCommentTypes = expectedCommentTypes;
-        commentLineList = new ArrayList<>();
     }
 
     /**
@@ -95,7 +93,7 @@ public class CommentEventsCollector {
      * @return <code>true</code> if the events is a comment of the expected type; Otherwise, false.
      */
     private boolean isEventExpected(Event event) {
-        if (event == null || event.getEventId() != Event.ID.Comment) {
+        if (event == null || event.getEventId() != Event.Id.Comment) {
             return false;
         }
         var commentEvent = (CommentEvent) event;

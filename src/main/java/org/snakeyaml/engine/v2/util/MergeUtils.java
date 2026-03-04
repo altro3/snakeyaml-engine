@@ -13,6 +13,7 @@
  */
 package org.snakeyaml.engine.v2.util;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.nodes.MappingNode;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.nodes.NodeTuple;
@@ -41,7 +42,7 @@ public abstract class MergeUtils {
      * @param node The node to be transformed.
      * @return A {@link MappingNode} representation of the input {@code node}.
      */
-    abstract public MappingNode asMappingNode(Node node);
+    abstract public @NonNull MappingNode asMappingNode(@NonNull Node node);
 
     /**
      * Processes and resolves merge keys in a {@link MappingNode}, merging resolved key/values into
@@ -68,7 +69,7 @@ public abstract class MergeUtils {
             var keys = new HashSet<String>(toProcess.size());
             var merges = new ArrayList<NodeTuple>(2);
             for (var tuple : toProcess) {
-                Node keyNode = tuple.getKeyNode();
+                Node keyNode = tuple.keyNode();
                 if (keyNode.getTag().equals(MERGE)) {
                     merges.add(tuple);
                 } else {
@@ -79,7 +80,7 @@ public abstract class MergeUtils {
                 }
             }
             for (var tuple : merges) {
-                Node valueNode = tuple.getValueNode();
+                Node valueNode = tuple.valueNode();
                 if (valueNode instanceof SequenceNode seqNode) {
                     for (Node ref : seqNode.getValue()) {
                         MappingNode mergable = asMappingNode(ref);
@@ -126,7 +127,7 @@ public abstract class MergeUtils {
         var keys = new HashSet<String>(size);
         var result = new ArrayList<NodeTuple>(size);
         for (var tuple : mergables) {
-            Node key = tuple.getKeyNode();
+            Node key = tuple.keyNode();
             if (key instanceof ScalarNode sNode) {
                 String nodeValue = sNode.getValue();
                 if (!filter.contains(nodeValue)) {

@@ -18,7 +18,6 @@ import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Represents a map.
@@ -41,7 +40,7 @@ public class MappingNode extends CollectionNode<NodeTuple> {
      * @param startMark - start
      * @param endMark - end
      */
-    public MappingNode(Tag tag, boolean resolved, @NonNull List<NodeTuple> value, FlowStyle flowStyle, Mark startMark, Mark endMark) {
+    public MappingNode(Tag tag, boolean resolved, @NonNull List<NodeTuple> value, @NonNull FlowStyle flowStyle, Mark startMark, Mark endMark) {
         super(tag, flowStyle, startMark, endMark);
         this.value = value;
         this.resolved = resolved;
@@ -54,12 +53,12 @@ public class MappingNode extends CollectionNode<NodeTuple> {
      * @param value - the value
      * @param flowStyle - the flow style of the node
      */
-    public MappingNode(Tag tag, @NonNull List<NodeTuple> value, FlowStyle flowStyle) {
+    public MappingNode(Tag tag, @NonNull List<NodeTuple> value, @NonNull FlowStyle flowStyle) {
         this(tag, true, value, flowStyle, null, null);
     }
 
     @Override
-    public NodeType getNodeType() {
+    public @NonNull NodeType getNodeType() {
         return NodeType.MAPPING;
     }
 
@@ -103,11 +102,11 @@ public class MappingNode extends CollectionNode<NodeTuple> {
         var buf = new StringBuilder();
         for (NodeTuple node : getValue()) {
             buf.append("{ key=");
-            buf.append(node.getKeyNode());
+            buf.append(node.keyNode());
             buf.append("; value=");
-            if (node.getValueNode() instanceof CollectionNode) {
+            if (node.valueNode() instanceof CollectionNode) {
                 // to avoid overflow in case of recursive structures
-                buf.append(System.identityHashCode(node.getValueNode()));
+                buf.append(System.identityHashCode(node.valueNode()));
             } else {
                 buf.append(node);
             }

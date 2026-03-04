@@ -41,7 +41,7 @@ public class Load {
      *
      * @param settings - configuration
      */
-    public Load(LoadSettings settings) {
+    public Load(@NonNull LoadSettings settings) {
         this(settings, new StandardConstructor(settings));
     }
 

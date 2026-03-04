@@ -13,16 +13,8 @@
  */
 package org.snakeyaml.engine.v2.composer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.comments.CommentEventsCollector;
 import org.snakeyaml.engine.v2.comments.CommentLine;
@@ -48,6 +40,14 @@ import org.snakeyaml.engine.v2.nodes.Tag;
 import org.snakeyaml.engine.v2.parser.Parser;
 import org.snakeyaml.engine.v2.resolver.ScalarResolver;
 import org.snakeyaml.engine.v2.util.MergeUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Creates a node graph from parser events.
@@ -86,7 +86,7 @@ public class Composer implements Iterator<Node> {
         this.inlineCommentsCollector = new CommentEventsCollector(parser, CommentType.IN_LINE);
         this.mergeUtils = new MergeUtils() {
             @Override
-            public MappingNode asMappingNode(Node node) {
+            public @NonNull MappingNode asMappingNode(@NonNull Node node) {
                 return Composer.this.asMappingNode(node);
             }
         };
@@ -97,13 +97,14 @@ public class Composer implements Iterator<Node> {
      *
      * @return <code>true</code> if there is at least one more document.
      */
+    @Override
     public boolean hasNext() {
         // Drop the STREAM-START event.
-        if (parser.checkEvent(Event.ID.StreamStart)) {
+        if (parser.checkEvent(Event.Id.StreamStart)) {
             parser.next();
         }
         // If there are more documents available?
-        return !parser.checkEvent(Event.ID.StreamEnd);
+        return !parser.checkEvent(Event.Id.StreamEnd);
     }
 
     /**
@@ -119,7 +120,7 @@ public class Composer implements Iterator<Node> {
         parser.next();
         // Compose a document if the stream is not empty.
         Node document = null;
-        if (!parser.checkEvent(Event.ID.StreamEnd)) {
+        if (!parser.checkEvent(Event.Id.StreamEnd)) {
             document = next();
         }
         if (document != null) {
@@ -128,9 +129,9 @@ public class Composer implements Iterator<Node> {
             document.setBlockComments(blockCommentsCollector.collectEvents().consume());
         }
         // Ensure that the stream contains no more documents.
-        if (!parser.checkEvent(Event.ID.StreamEnd)) {
+        if (!parser.checkEvent(Event.Id.StreamEnd)) {
             Event event = parser.next();
-            Mark previousDocMark = document.getStartMark();
+            Mark previousDocMark = document != null ? document.getStartMark() : null;
             throw new ComposerException("Expected a single document in the stream", previousDocMark, "but found another document", event.getStartMark());
         }
         // Drop the STREAM-END event.
@@ -143,10 +144,11 @@ public class Composer implements Iterator<Node> {
      *
      * @return The root node of the document or <code>null</code> if no more documents are available.
      */
-    public Node next() {
+    @Override
+    public @NonNull Node next() {
         // Collect inter-document start comments
         blockCommentsCollector.collectEvents();
-        if (parser.checkEvent(Event.ID.StreamEnd)) {
+        if (parser.checkEvent(Event.Id.StreamEnd)) {
             List<CommentLine> commentLines = blockCommentsCollector.consume();
             Mark startMark = commentLines.get(0).startMark();
             Node node = new MappingNode(Tag.COMMENT, false, List.of(), FlowStyle.BLOCK, startMark, null);
@@ -169,14 +171,13 @@ public class Composer implements Iterator<Node> {
         return node;
     }
 
-
     private Node composeNode(Node parent) {
         blockCommentsCollector.collectEvents();
         if (parent != null) {
             recursiveNodes.add(parent);
         }
         final Node node;
-        if (parser.checkEvent(Event.ID.Alias)) {
+        if (parser.checkEvent(Event.Id.Alias)) {
             var event = (AliasEvent) parser.next();
             Anchor anchor = event.getAlias();
             if (!anchors.containsKey(anchor)) {
@@ -199,9 +200,9 @@ public class Composer implements Iterator<Node> {
             var event = (NodeEvent) parser.peekEvent();
             Anchor anchor = event.getAnchor();
             // the check for duplicate anchors has been removed (issue 174)
-            if (parser.checkEvent(Event.ID.Scalar)) {
+            if (parser.checkEvent(Event.Id.Scalar)) {
                 node = composeScalarNode(anchor, blockCommentsCollector.consume());
-            } else if (parser.checkEvent(Event.ID.SequenceStart)) {
+            } else if (parser.checkEvent(Event.Id.SequenceStart)) {
                 node = composeSequenceNode(anchor);
             } else {
                 node = composeMappingNode(anchor);
@@ -231,12 +232,12 @@ public class Composer implements Iterator<Node> {
         boolean resolved = false;
         Tag nodeTag;
         if (tag == null || tag.equals("!")) {
-            nodeTag = scalarResolver.resolve(ev.getValue(), ev.getImplicit().canOmitTagInPlainScalar());
+            nodeTag = scalarResolver.resolve(ev.getValue(), ev.getImplicit().isCanOmitTagInPlainScalar());
             resolved = true;
         } else {
             nodeTag = new Tag(tag);
         }
-        Node node = new ScalarNode(nodeTag, resolved, ev.getValue(), ev.getScalarStyle(), ev.getStartMark(), ev.getEndMark());
+        var node = new ScalarNode(nodeTag, resolved, ev.getValue(), ev.getScalarStyle(), ev.getStartMark(), ev.getEndMark());
         if (anchor != null) {
             registerAnchor(anchor, node);
         }
@@ -271,9 +272,9 @@ public class Composer implements Iterator<Node> {
         if (anchor != null) {
             registerAnchor(anchor, node);
         }
-        while (!parser.checkEvent(Event.ID.SequenceEnd)) {
+        while (!parser.checkEvent(Event.Id.SequenceEnd)) {
             blockCommentsCollector.collectEvents();
-            if (parser.checkEvent(Event.ID.SequenceEnd)) {
+            if (parser.checkEvent(Event.Id.SequenceEnd)) {
                 break;
             }
             children.add(composeNode(node));
@@ -309,17 +310,16 @@ public class Composer implements Iterator<Node> {
         }
 
         final var children = new ArrayList<NodeTuple>();
-        var node = new MappingNode(nodeTag, resolved, children, startEvent.getFlowStyle(),
-            startEvent.getStartMark(), null);
+        var node = new MappingNode(nodeTag, resolved, children, startEvent.getFlowStyle(), startEvent.getStartMark(), null);
         if (startEvent.isFlow()) {
             node.setBlockComments(blockCommentsCollector.consume());
         }
         if (anchor != null) {
             registerAnchor(anchor, node);
         }
-        while (!parser.checkEvent(Event.ID.MappingEnd)) {
+        while (!parser.checkEvent(Event.Id.MappingEnd)) {
             blockCommentsCollector.collectEvents();
-            if (parser.checkEvent(Event.ID.MappingEnd)) {
+            if (parser.checkEvent(Event.Id.MappingEnd)) {
                 break;
             }
             composeMappingChildren(children, node);
@@ -349,9 +349,8 @@ public class Composer implements Iterator<Node> {
      */
     protected void composeMappingChildren(List<NodeTuple> children, MappingNode node) {
         Node itemKey = composeKeyNode(node);
-        if (itemKey.getNodeType() != NodeType.SCALAR && !settings.getAllowNonScalarKeys()) {
-            throw new YamlEngineException(
-                "Non scalar key is detected but it is not configured to be allowed.");
+        if (itemKey.getNodeType() != NodeType.SCALAR && !settings.allowNonScalarKeys()) {
+            throw new YamlEngineException("Non scalar key is detected but it is not configured to be allowed.");
         }
         if (itemKey.getTag().equals(Tag.MERGE)) {
             node.setHasMergeTag(true);
@@ -360,21 +359,19 @@ public class Composer implements Iterator<Node> {
         children.add(new NodeTuple(itemKey, itemValue));
     }
 
-    protected MappingNode asMappingNode(Node node) {
-        if (node instanceof MappingNode) {
-            return (MappingNode) node;
-        } else {
-            Anchor anchor = node.getAnchor();
-            if (anchor != null) {
-                Node ref = anchors.get(anchor);
-                if (ref instanceof MappingNode) {
-                    return (MappingNode) ref;
-                }
+    protected @NonNull MappingNode asMappingNode(@NonNull Node node) {
+        if (node instanceof MappingNode mappingNode) {
+            return mappingNode;
+        }
+        Anchor anchor = node.getAnchor();
+        if (anchor != null) {
+            Node ref = anchors.get(anchor);
+            if (ref instanceof MappingNode mappingNode) {
+                return mappingNode;
             }
         }
         Event ev = parser.peekEvent();
-        throw new ComposerException("Expected mapping node or an anchor referencing mapping",
-            ev.getStartMark());
+        throw new ComposerException("Expected mapping node or an anchor referencing mapping", ev.getStartMark());
     }
 
     /**
@@ -383,7 +380,7 @@ public class Composer implements Iterator<Node> {
      * @param node - the source
      * @return node
      */
-    protected Node composeKeyNode(MappingNode node) {
+    protected @NonNull Node composeKeyNode(@Nullable MappingNode node) {
         return composeNode(node);
     }
 
@@ -393,7 +390,7 @@ public class Composer implements Iterator<Node> {
      * @param node - the source
      * @return node
      */
-    protected Node composeValueNode(MappingNode node) {
+    protected @NonNull Node composeValueNode(@Nullable MappingNode node) {
         return composeNode(node);
     }
 }

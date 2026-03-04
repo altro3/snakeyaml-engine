@@ -36,7 +36,7 @@ public class DumpCommentInFlowStyleTest {
         MappingNode mapping = (MappingNode) node;
         List<NodeTuple> value = mapping.getValue();
         NodeTuple first = value.get(0);
-        Node textNode = first.getValueNode();
+        Node textNode = first.valueNode();
         return textNode.getInLineComments().get(0).value();
     }
 

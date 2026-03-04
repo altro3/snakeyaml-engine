@@ -13,6 +13,8 @@
  */
 package org.snakeyaml.engine.v2.events;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 /**
@@ -22,7 +24,7 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class SequenceEndEvent extends CollectionEndEvent {
 
-    public SequenceEndEvent(Mark startMark, Mark endMark) {
+    public SequenceEndEvent(@Nullable Mark startMark, @Nullable Mark endMark) {
         super(startMark, endMark);
     }
 
@@ -31,8 +33,8 @@ public final class SequenceEndEvent extends CollectionEndEvent {
     }
 
     @Override
-    public ID getEventId() {
-        return ID.SequenceEnd;
+    public @NonNull Id getEventId() {
+        return Id.SequenceEnd;
     }
 
     @Override

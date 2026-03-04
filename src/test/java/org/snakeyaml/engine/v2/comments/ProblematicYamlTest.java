@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.events.CommentEvent;
 import org.snakeyaml.engine.v2.events.Event;
-import org.snakeyaml.engine.v2.events.Event.ID;
+import org.snakeyaml.engine.v2.events.Event.Id;
 import org.snakeyaml.engine.v2.parser.Parser;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
@@ -50,10 +50,10 @@ public class ProblematicYamlTest {
         }
     }
 
-    private void assertEventListEquals(List<Event.ID> expectedEventIdList,
+    private void assertEventListEquals(List<Id> expectedEventIdList,
                                        List<CommentType> expectedCommentTypeList, Parser parser) {
         Iterator<CommentType> commentTypeIterator = expectedCommentTypeList.iterator();
-        for (Event.ID expectedEventId : expectedEventIdList) {
+        for (Id expectedEventId : expectedEventIdList) {
             parser.checkEvent(expectedEventId);
             Event event = parser.next();
             println("Expected: " + expectedEventId);
@@ -61,10 +61,10 @@ public class ProblematicYamlTest {
                 fail("Missing event: " + expectedEventId);
             }
             println("Got: " + event
-                + (event.getEventId() == Event.ID.Comment ? " " + ((CommentEvent) event).getCommentType()
+                + (event.getEventId() == Id.Comment ? " " + ((CommentEvent) event).getCommentType()
                 : ""));
             println();
-            if (expectedCommentTypeList != null && event.getEventId() == Event.ID.Comment) {
+            if (expectedCommentTypeList != null && event.getEventId() == Id.Comment) {
                 assertEquals(commentTypeIterator.next(), ((CommentEvent) event).getCommentType());
             }
             assertEquals(expectedEventId, event.getEventId());
@@ -75,7 +75,7 @@ public class ProblematicYamlTest {
     private void printEventList(Parser parser) {
         for (Event event = parser.next(); event != null; event = parser.next()) {
             println("Got: " + event
-                + (event.getEventId() == Event.ID.Comment ? " " + ((CommentEvent) event).getCommentType()
+                + (event.getEventId() == Id.Comment ? " " + ((CommentEvent) event).getCommentType()
                 : ""));
             println();
         }
@@ -90,18 +90,18 @@ public class ProblematicYamlTest {
             "  # Comment 2\n" + //
             "";
 
-        List<ID> expectedEventIdList = Arrays.asList(//
-            ID.StreamStart, //
-            ID.DocumentStart, //
-            ID.MappingStart, //
-            ID.Scalar, //
-            ID.Scalar, //
-            ID.Comment, //
-            ID.Comment, //
-            ID.Comment, //
-            ID.MappingEnd, //
-            ID.DocumentEnd, //
-            ID.StreamEnd //
+        List<Id> expectedEventIdList = Arrays.asList(//
+            Id.StreamStart, //
+            Id.DocumentStart, //
+            Id.MappingStart, //
+            Id.Scalar, //
+            Id.Scalar, //
+            Id.Comment, //
+            Id.Comment, //
+            Id.Comment, //
+            Id.MappingEnd, //
+            Id.DocumentEnd, //
+            Id.StreamEnd //
         );
         List<CommentType> expectedCommentTypeList = Arrays.asList(//
             CommentType.BLOCK, CommentType.BLANK_LINE, CommentType.BLOCK);
@@ -119,19 +119,19 @@ public class ProblematicYamlTest {
             "\n" + //
             "  # Comment 2\n" + //
             "";
-        List<ID> expectedEventIdList = Arrays.asList(//
-            ID.StreamStart, //
-            ID.DocumentStart, //
-            ID.MappingStart, //
-            ID.Scalar, //
-            ID.Scalar, //
-            ID.Comment, //
-            ID.Comment, //
-            ID.Comment, //
-            ID.Comment, //
-            ID.MappingEnd, //
-            ID.DocumentEnd, //
-            ID.StreamEnd //
+        List<Id> expectedEventIdList = Arrays.asList(//
+            Id.StreamStart, //
+            Id.DocumentStart, //
+            Id.MappingStart, //
+            Id.Scalar, //
+            Id.Scalar, //
+            Id.Comment, //
+            Id.Comment, //
+            Id.Comment, //
+            Id.Comment, //
+            Id.MappingEnd, //
+            Id.DocumentEnd, //
+            Id.StreamEnd //
         );
         List<CommentType> expectedCommentTypeList = Arrays.asList(//
             CommentType.BLANK_LINE, CommentType.BLOCK, CommentType.BLANK_LINE, CommentType.BLOCK);
@@ -147,18 +147,18 @@ public class ProblematicYamlTest {
             "\n" + //
             "key: value\n" + //
             "";
-        List<ID> expectedEventIdList = Arrays.asList(//
-            ID.StreamStart, //
-            ID.DocumentStart, //
-            ID.MappingStart, //
-            ID.Scalar, //
-            ID.Scalar, //
-            ID.Comment, //
-            ID.Scalar, //
-            ID.Scalar, //
-            ID.MappingEnd, //
-            ID.DocumentEnd, //
-            ID.StreamEnd //
+        List<Id> expectedEventIdList = Arrays.asList(//
+            Id.StreamStart, //
+            Id.DocumentStart, //
+            Id.MappingStart, //
+            Id.Scalar, //
+            Id.Scalar, //
+            Id.Comment, //
+            Id.Scalar, //
+            Id.Scalar, //
+            Id.MappingEnd, //
+            Id.DocumentEnd, //
+            Id.StreamEnd //
         );
         List<CommentType> expectedCommentTypeList = Collections.singletonList(CommentType.BLANK_LINE);
         ParserImpl parser =
@@ -187,38 +187,38 @@ public class ProblematicYamlTest {
             "    bar: 'quoted scalars\n" + //
             "may not adhere indentation'\n" + //
             "";
-        List<ID> expectedEventIdList = Arrays.asList(//
-            ID.StreamStart, //
-            ID.DocumentStart, //
-            ID.MappingStart, //
-            ID.Scalar, //
-            ID.MappingStart, //
-            ID.Scalar, //
-            ID.MappingStart, //
-            ID.Scalar, //
-            ID.SequenceStart, //
-            ID.Scalar, //
-            ID.SequenceEnd, //
-            ID.MappingEnd, //
-            ID.MappingEnd, //
-            ID.MappingEnd, //
-            ID.DocumentEnd, //
-            ID.DocumentStart, //
-            ID.Scalar, //
-            ID.DocumentEnd, //
-            ID.DocumentStart, //
-            ID.Scalar, //
-            ID.DocumentEnd, //
-            ID.DocumentStart, //
-            ID.MappingStart, //
-            ID.Scalar, //
-            ID.MappingStart, //
-            ID.Scalar, //
-            ID.Scalar, //
-            ID.MappingEnd, //
-            ID.MappingEnd, //
-            ID.DocumentEnd, //
-            ID.StreamEnd//
+        List<Id> expectedEventIdList = Arrays.asList(//
+            Id.StreamStart, //
+            Id.DocumentStart, //
+            Id.MappingStart, //
+            Id.Scalar, //
+            Id.MappingStart, //
+            Id.Scalar, //
+            Id.MappingStart, //
+            Id.Scalar, //
+            Id.SequenceStart, //
+            Id.Scalar, //
+            Id.SequenceEnd, //
+            Id.MappingEnd, //
+            Id.MappingEnd, //
+            Id.MappingEnd, //
+            Id.DocumentEnd, //
+            Id.DocumentStart, //
+            Id.Scalar, //
+            Id.DocumentEnd, //
+            Id.DocumentStart, //
+            Id.Scalar, //
+            Id.DocumentEnd, //
+            Id.DocumentStart, //
+            Id.MappingStart, //
+            Id.Scalar, //
+            Id.MappingStart, //
+            Id.Scalar, //
+            Id.Scalar, //
+            Id.MappingEnd, //
+            Id.MappingEnd, //
+            Id.DocumentEnd, //
+            Id.StreamEnd//
         );
         LoadSettings settings = LoadSettings.builder().build();
         Parser parser =

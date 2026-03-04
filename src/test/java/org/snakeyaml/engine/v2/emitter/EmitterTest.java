@@ -145,7 +145,7 @@ public class EmitterTest {
         emitter.emit(new StreamStartEvent(null, null));
         emitter
             .emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
-        emitter.emit(new ScalarEvent(null, null, new ImplicitTuple(true, false), burger + halfBurger,
+        emitter.emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_FALSE, burger + halfBurger,
             ScalarStyle.DOUBLE_QUOTED, null, null));
         String expected = "! \"\\U0001f354\\ud83c\"";
         assertEquals(expected, output.toString());
@@ -153,10 +153,11 @@ public class EmitterTest {
 
     @Test
     public void testSplitLineExpectFirstFlowSequenceItem() {
-        DumpSettingsBuilder builder =
-            DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
-                .setDefaultFlowStyle(FlowStyle.FLOW).setWidth(8);
-        Map<String, Object> map = new TreeMap<String, Object>();
+        var builder = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
+            .setDefaultFlowStyle(FlowStyle.FLOW)
+            .setWidth(8);
+        var map = new TreeMap<String, Object>();
         map.put("12345", Collections.singletonList("1111111111"));
 
         // Split lines enabled (default)
@@ -182,9 +183,10 @@ public class EmitterTest {
 
     @Test
     public void testSplitLineExpectFlowSequenceItem() {
-        DumpSettingsBuilder builder =
-            DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
-                .setDefaultFlowStyle(FlowStyle.FLOW).setWidth(8);
+        var builder = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
+            .setDefaultFlowStyle(FlowStyle.FLOW)
+            .setWidth(8);
         // Split lines enabled (default)
         Dump yaml1 = new Dump(builder.build());
         String output = yaml1.dumpToString(Arrays.asList("1111111111", "2222222222"));
@@ -202,17 +204,17 @@ public class EmitterTest {
 
     @Test
     public void testSplitLineExpectFirstFlowMappingKey() {
-        DumpSettingsBuilder builder =
-            DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
-                .setDefaultFlowStyle(FlowStyle.FLOW).setWidth(16);
-        Map<String, String> nonSplitMap = new TreeMap<String, String>();
+        var builder = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
+            .setDefaultFlowStyle(FlowStyle.FLOW)
+            .setWidth(16);
+        var nonSplitMap = new TreeMap<String, String>();
         nonSplitMap.put("3", "4");
-        Map<String, Map<String, String>> nonSplitContainerMap =
-            new TreeMap<String, Map<String, String>>();
+        var nonSplitContainerMap = new TreeMap<String, Map<String, String>>();
         nonSplitContainerMap.put("1 2", nonSplitMap);
-        Map<String, String> splitMap = new TreeMap<String, String>();
+        var splitMap = new TreeMap<String, String>();
         splitMap.put("3333333333", "4444444444");
-        Map<String, Map<String, String>> splitContainerMap = new TreeMap<String, Map<String, String>>();
+        var splitContainerMap = new TreeMap<String, Map<String, String>>();
         splitContainerMap.put("1111111111 2222222222", splitMap);
 
         // Split lines enabled (default)
@@ -231,13 +233,14 @@ public class EmitterTest {
 
     @Test
     public void testSplitLineExpectFlowMappingKey() {
-        DumpSettingsBuilder builder =
-            DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
-                .setDefaultFlowStyle(FlowStyle.FLOW).setWidth(16);
-        Map<String, String> nonSplitMap = new TreeMap<String, String>();
+        var builder = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
+            .setDefaultFlowStyle(FlowStyle.FLOW)
+            .setWidth(16);
+        var nonSplitMap = new TreeMap<String, String>();
         nonSplitMap.put("1", "2");
         nonSplitMap.put("3", "4");
-        Map<String, String> splitMap = new TreeMap<String, String>();
+        var splitMap = new TreeMap<String, String>();
         splitMap.put("1111111111", "2222222222");
         splitMap.put("3333333333", "4444444444");
 
@@ -257,9 +260,10 @@ public class EmitterTest {
 
     @Test
     public void testAnchorInMaps() {
-        DumpSettingsBuilder builder = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.FLOW);
-        Map<Object, Object> map1 = new HashMap<Object, Object>();
-        Map<Object, Object> map2 = new HashMap<Object, Object>();
+        var builder = DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.FLOW);
+        var map1 = new HashMap<Object, Object>();
+        var map2 = new HashMap<Object, Object>();
         map1.put("2", map2);
         map2.put("1", map1);
         String output = dump(builder.build(), map1);
@@ -269,16 +273,16 @@ public class EmitterTest {
     @Test
     @DisplayName("Expected space to separate alias from colon")
     public void testAliasAsKey() {
-        DumpSettingsBuilder builder = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.FLOW);
+        var builder = DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.FLOW);
         // this is VERY BAD code
         // the map has itself as a key (no idea why it may be used except of a DoS attack)
-        HashMap f = new HashMap();
+        var f = new HashMap<>();
         f.put(f, "a");
 
         String output = dump(builder.build(), f);
         assertEquals("&id001 {*id001 : a}\n", output);
-        Load load = new Load(
-            LoadSettings.builder().setAllowRecursiveKeys(true).setAllowNonScalarKeys(true).build());
+        var load = new Load(LoadSettings.builder().setAllowRecursiveKeys(true).setAllowNonScalarKeys(true).build());
         Object obj = load.loadFromString(output);
         assertNotNull(obj);
     }

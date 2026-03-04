@@ -15,8 +15,8 @@ package org.snakeyaml.engine.v2.nodes;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
+import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
@@ -30,20 +30,18 @@ public class SequenceNode extends CollectionNode<Node> {
 
     private final List<Node> value;
 
-    public SequenceNode(Tag tag, boolean resolved, List<Node> value, FlowStyle flowStyle,
-                        Mark startMark, Mark endMark) {
+    public SequenceNode(Tag tag, boolean resolved, @NonNull List<Node> value, FlowStyle flowStyle, Mark startMark, Mark endMark) {
         super(tag, flowStyle, startMark, endMark);
-        Objects.requireNonNull(value, "value in a Node is required.");
         this.value = value;
         this.resolved = resolved;
     }
 
-    public SequenceNode(Tag tag, List<Node> value, FlowStyle flowStyle) {
+    public SequenceNode(Tag tag, @NonNull List<Node> value, FlowStyle flowStyle) {
         this(tag, true, value, flowStyle, null, null);
     }
 
     @Override
-    public NodeType getNodeType() {
+    public @NonNull NodeType getNodeType() {
         return NodeType.SEQUENCE;
     }
 
@@ -53,7 +51,7 @@ public class SequenceNode extends CollectionNode<Node> {
      * @return Nodes in the specified order.
      */
     @Override
-    public List<Node> getValue() {
+    public @NonNull List<Node> getValue() {
         return value;
     }
 
@@ -69,7 +67,7 @@ public class SequenceNode extends CollectionNode<Node> {
                 // to avoid overflow in case of recursive structures
                 buf.append(System.identityHashCode(node));
             } else {
-                buf.append(node.toString());
+                buf.append(node);
             }
             isFirst = false;
         }
