@@ -56,6 +56,10 @@ public record LoadSettings(
     Map<SettingKey, Object> customProperties
 ) {
 
+    public Object getCustomProperty(SettingKey key) {
+        return customProperties.get(key);
+    }
+
     /**
      * Create the builder
      *

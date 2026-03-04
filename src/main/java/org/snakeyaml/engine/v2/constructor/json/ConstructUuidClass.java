@@ -13,11 +13,10 @@
  */
 package org.snakeyaml.engine.v2.constructor.json;
 
-import java.util.UUID;
-
-import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.constructor.ConstructScalar;
 import org.snakeyaml.engine.v2.nodes.Node;
+
+import java.util.UUID;
 
 /**
  * Create instances of UUID class
@@ -25,7 +24,7 @@ import org.snakeyaml.engine.v2.nodes.Node;
 public class ConstructUuidClass extends ConstructScalar {
 
     @Override
-    public Object construct(@NonNull Node node) {
+    public Object construct(Node node) {
         String uuidValue = constructScalar(node);
         return UUID.fromString(uuidValue);
     }

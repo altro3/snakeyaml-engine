@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.api;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 import org.snakeyaml.engine.v2.nodes.Node;
 
@@ -32,7 +33,7 @@ public interface ConstructNode {
      * @param node composed Node
      * @return a complete Java instance or empty collection instance if it is recursive
      */
-    Object construct(@NonNull Node node);
+    Object construct(Node node);
 
     /**
      * Apply the second step when constructing recursive structures. Because the instance is already

@@ -33,7 +33,7 @@ public class ConstructOptionalClass extends ConstructScalar {
     }
 
     @Override
-    public Object construct(@NonNull Node node) {
+    public Object construct(Node node) {
         if (node.getNodeType() != NodeType.SCALAR) {
             throw new ConstructorException("while constructing Optional", null, "found non scalar node", null);
         }

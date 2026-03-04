@@ -75,8 +75,8 @@ public class BinaryRoundTripTest {
         assertEquals(ScalarStyle.LITERAL, data.getScalarStyle());
         assertEquals("wpY=", data.getValue());
         ImplicitTuple implicit = data.getImplicit();
-        assertFalse(implicit.canOmitTagInPlainScalar());
-        assertFalse(implicit.canOmitTagInNonPlainScalar());
+        assertFalse(implicit.isCanOmitTagInPlainScalar());
+        assertFalse(implicit.isCanOmitTagInNonPlainScalar());
     }
 
     @Test

@@ -45,25 +45,25 @@ class DumpSettingsTest {
     void defaults() {
         DumpSettings settings = DumpSettings.builder().build();
 
-        assertEquals("\n", settings.getBestLineBreak());
-        assertEquals(2, settings.getIndent());
-        assertEquals(FlowStyle.AUTO, settings.getDefaultFlowStyle());
-        assertEquals(ScalarStyle.PLAIN, settings.getDefaultScalarStyle());
-        assertNull(settings.getExplicitRootTag());
-        assertFalse(settings.getIndentWithIndicator());
-        assertFalse(settings.isExplicitEnd());
-        assertFalse(settings.isExplicitStart());
-        assertFalse(settings.isCanonical());
-        assertTrue(settings.isSplitLines());
-        assertFalse(settings.isMultiLineFlow());
-        assertTrue(settings.isUseUnicodeEncoding());
-        assertEquals(0, settings.getIndicatorIndent());
-        assertEquals(128, settings.getMaxSimpleKeyLength());
-        assertEquals(NonPrintableStyle.ESCAPE, settings.getNonPrintableStyle());
-        assertEquals(80, settings.getWidth());
-        assertNull(settings.getYamlDirective());
-        assertEquals(new HashMap<>(), settings.getTagDirective());
-        assertNotNull(settings.getAnchorGenerator());
+        assertEquals("\n", settings.bestLineBreak());
+        assertEquals(2, settings.indent());
+        assertEquals(FlowStyle.AUTO, settings.defaultFlowStyle());
+        assertEquals(ScalarStyle.PLAIN, settings.defaultScalarStyle());
+        assertNull(settings.explicitRootTag());
+        assertFalse(settings.indentWithIndicator());
+        assertFalse(settings.explicitEnd());
+        assertFalse(settings.explicitStart());
+        assertFalse(settings.canonical());
+        assertTrue(settings.splitLines());
+        assertFalse(settings.multiLineFlow());
+        assertTrue(settings.useUnicodeEncoding());
+        assertEquals(0, settings.indicatorIndent());
+        assertEquals(128, settings.maxSimpleKeyLength());
+        assertEquals(NonPrintableStyle.ESCAPE, settings.nonPrintableStyle());
+        assertEquals(80, settings.width());
+        assertNull(settings.yamlDirective());
+        assertEquals(new HashMap<>(), settings.tagDirective());
+        assertNotNull(settings.anchorGenerator());
     }
 
     @Test
@@ -76,7 +76,13 @@ class DumpSettingsTest {
             data.add(i);
         }
         String str = dump.dumpToString(data);
-        assertEquals("---\n" + "!!seq [\n" + "  !!int \"0\",\n" + "  !!int \"1\",\n" + "]\n", str);
+        assertEquals("""
+            ---
+            !!seq [
+              !!int "0",
+              !!int "1",
+            ]
+            """, str);
     }
 
     @Test
@@ -101,7 +107,13 @@ class DumpSettingsTest {
             data.add(i);
         }
         String str = dump.dumpToString(data);
-        assertEquals("[\n" + "  0,\n" + "  1,\n" + "  2\n" + "]\n", str);
+        assertEquals("""
+            [
+              0,
+              1,
+              2
+            ]
+            """, str);
     }
 
     @Test
@@ -113,42 +125,44 @@ class DumpSettingsTest {
         var settings = DumpSettings.builder().setTagDirective(tagDirectives).build();
         var dump = new Dump(settings);
         String str = dump.dumpToString("data");
-        assertEquals("%TAG !python! !python\n" + "%TAG !yaml! tag:yaml.org,2002:\n" + "--- data\n",
-            str);
+        assertEquals("""
+            %TAG !python! !python
+            %TAG !yaml! tag:yaml.org,2002:
+            --- data
+            """, str);
     }
 
     @Test
     @DisplayName("Check corner cases for indent")
     void setIndent() {
-        var exception1 =
-            assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndent(0));
+        var exception1 = assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndent(0));
         assertEquals("Indent must be at least 1", exception1.getMessage());
 
-        var exception2 =
-            assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndent(12));
+        var exception2 = assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndent(12));
         assertEquals("Indent must be at most 10", exception2.getMessage());
     }
 
     @Test
     @DisplayName("Check corner cases for Indicator Indent")
     void setIndicatorIndent() {
-        var exception1 =
-            assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndicatorIndent(-1));
+        var exception1 = assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndicatorIndent(-1));
         assertEquals("Indicator indent must be non-negative", exception1.getMessage());
 
-        var exception2 =
-            assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndicatorIndent(10));
-        assertEquals("Indicator indent must be at most Emitter.MAX_INDENT-1: 9",
-            exception2.getMessage());
+        var exception2 = assertThrows(EmitterException.class, () -> DumpSettings.builder().setIndicatorIndent(10));
+        assertEquals("Indicator indent must be at most Emitter.MAX_INDENT-1: 9", exception2.getMessage());
     }
 
     @Test
     @DisplayName("Dump explicit version")
     void dumpVersion() {
-        var settings = DumpSettings.builder().setYamlDirective(new SpecVersion(1, 2)).build();
-        var dump = new Dump(settings);
+        var dump = new Dump(DumpSettings.builder()
+            .setYamlDirective(SpecVersion.V_1_2)
+            .build());
         String str = dump.dumpToString("a");
-        assertEquals("%YAML 1.2\n" + "--- a\n", str);
+        assertEquals("""
+            %YAML 1.2
+            --- a
+            """, str);
     }
 
     @Test

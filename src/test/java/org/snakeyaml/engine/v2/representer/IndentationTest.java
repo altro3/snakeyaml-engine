@@ -13,17 +13,17 @@
  */
 package org.snakeyaml.engine.v2.representer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.common.FlowStyle;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for issue
@@ -60,13 +60,11 @@ class IndentationTest {
     }
 
     private Dump createDump(int indicatorIndent) {
-        DumpSettingsBuilder builder = DumpSettings.builder();
-        builder.setDefaultFlowStyle(FlowStyle.BLOCK);
-        builder.setIndicatorIndent(indicatorIndent);
-        builder.setIndent(indicatorIndent + 2);
-        DumpSettings settings = builder.build();
-        Dump dump = new Dump(settings);
-        return dump;
+        return new Dump(DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setIndicatorIndent(indicatorIndent)
+            .setIndent(indicatorIndent + 2)
+            .build());
     }
 
     @Test

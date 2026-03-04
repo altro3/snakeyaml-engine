@@ -13,12 +13,12 @@
  */
 package org.snakeyaml.engine.v2.constructor.core;
 
-import java.math.BigInteger;
-
 import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.constructor.ConstructScalar;
 import org.snakeyaml.engine.v2.exceptions.ConstructorException;
 import org.snakeyaml.engine.v2.nodes.Node;
+
+import java.math.BigInteger;
 
 /**
  * Create instances for numbers (Integer, Long, BigInteger)
@@ -51,7 +51,7 @@ public class ConstructYamlCoreInt extends ConstructScalar {
     }
 
     @Override
-    public Object construct(@NonNull Node node) {
+    public Object construct(Node node) {
         String value = constructScalar(node);
         if (value.isEmpty()) {
             throw new ConstructorException("While constructing an int", node.getStartMark(), "found empty value", node.getStartMark());

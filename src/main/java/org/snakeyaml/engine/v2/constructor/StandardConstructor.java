@@ -60,7 +60,6 @@ public class StandardConstructor extends BaseConstructor {
 
         // the explicit config overrides all
         this.tagConstructors.putAll(settings.tagConstructors());
-        nullConstructor = settings.nullConstructor();
     }
 
     protected void flattenMapping(MappingNode node) {
@@ -126,7 +125,7 @@ public class StandardConstructor extends BaseConstructor {
     public class ConstructYamlSet implements ConstructNode {
 
         @Override
-        public Object construct(@NonNull Node node) {
+        public Object construct(Node node) {
             if (node.isRecursive()) {
                 return constructedObjects.containsKey(node) ? constructedObjects.get(node) : createEmptySetForNode((MappingNode) node);
             }
@@ -149,7 +148,7 @@ public class StandardConstructor extends BaseConstructor {
     public static class ConstructYamlStr extends ConstructScalar {
 
         @Override
-        public Object construct(@NonNull Node node) {
+        public Object construct(Node node) {
             return constructScalar(node);
         }
     }
@@ -160,8 +159,8 @@ public class StandardConstructor extends BaseConstructor {
     public class ConstructYamlSeq implements ConstructNode {
 
         @Override
-        public Object construct(@NonNull Node node) {
-            SequenceNode seqNode = (SequenceNode) node;
+        public Object construct(Node node) {
+            var seqNode = (SequenceNode) node;
             if (node.isRecursive()) {
                 return createEmptyListForNode(seqNode);
             } else {
@@ -185,7 +184,7 @@ public class StandardConstructor extends BaseConstructor {
     public class ConstructYamlMap implements ConstructNode {
 
         @Override
-        public Object construct(@NonNull Node node) {
+        public Object construct(Node node) {
             var mappingNode = (MappingNode) node;
             if (node.isRecursive()) {
                 return createEmptyMapFor(mappingNode);
@@ -207,15 +206,13 @@ public class StandardConstructor extends BaseConstructor {
     /**
      * Construct scalar for format ${VARIABLE} replacing the template with the value from environment.
      *
-     * @see <a href="https://bitbucket.org/snakeyaml/snakeyaml/wiki/Variable%20substitution">Variable
-     *     substitution</a>
-     * @see <a href="https://docs.docker.com/compose/compose-file/#variable-substitution">Variable
-     *     substitution</a>
+     * @see <a href="https://bitbucket.org/snakeyaml/snakeyaml/wiki/Variable%20substitution">Variable substitution</a>
+     * @see <a href="https://docs.docker.com/compose/compose-file/#variable-substitution">Variable substitution</a>
      */
     public class ConstructEnv extends ConstructScalar {
 
         @Override
-        public Object construct(@NonNull Node node) {
+        public Object construct(Node node) {
             String val = constructScalar(node);
             EnvConfig config = settings.envConfig();
             if (config == null) {

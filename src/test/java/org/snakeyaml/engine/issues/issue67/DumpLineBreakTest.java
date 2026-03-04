@@ -41,7 +41,7 @@ public class DumpLineBreakTest {
     @DisplayName("Dump default scalar style")
     void dumpDefaultScalaStyle() {
         DumpSettings dumpSettings = DumpSettings.builder().build();
-        assertEquals(ScalarStyle.PLAIN, dumpSettings.getDefaultScalarStyle());
+        assertEquals(ScalarStyle.PLAIN, dumpSettings.defaultScalarStyle());
     }
 
     @Test

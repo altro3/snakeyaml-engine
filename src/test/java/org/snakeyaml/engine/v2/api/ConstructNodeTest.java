@@ -47,18 +47,10 @@ class ConstructNodeTest {
 
     @Test
     void failToConstructNonRecursive() {
-        ConstructNode constructNode = new ConstructNode() {
-
-            @Override
-            public Object construct(@NonNull Node node) {
-                return null;
-            }
-        };
-        var node = new SequenceNode(Tag.SEQ, List.of(new ScalarNode(Tag.STR, "b", ScalarStyle.PLAIN)),
-            FlowStyle.FLOW);
+        ConstructNode constructNode = node -> null;
+        var node = new SequenceNode(Tag.SEQ, List.of(new ScalarNode(Tag.STR, "b", ScalarStyle.PLAIN)), FlowStyle.FLOW);
         node.setRecursive(false);
-        YamlEngineException exception = assertThrows(YamlEngineException.class,
-            () -> constructNode.constructRecursive(node, new ArrayList<>()));
+        var exception = assertThrows(YamlEngineException.class, () -> constructNode.constructRecursive(node, new ArrayList<>()));
         assertTrue(exception.getMessage().startsWith("Unexpected recursive structure for Node"));
     }
 }

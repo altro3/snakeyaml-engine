@@ -13,19 +13,17 @@
  */
 package org.snakeyaml.engine.issues.issue1;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.nodes.Tag;
+
+import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @org.junit.jupiter.api.Tag("fast")
 class NullConstructorTest {
@@ -56,7 +54,7 @@ class NullConstructorTest {
     private static class MyConstructNull implements ConstructNode {
 
         @Override
-        public Object construct(@NonNull Node node) {
+        public Object construct(Node node) {
             if (node == null) {
                 return "absent";
             } else {

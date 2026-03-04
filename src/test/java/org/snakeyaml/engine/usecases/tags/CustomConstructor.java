@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.tags;
 
-import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.nodes.ScalarNode;
@@ -24,8 +23,8 @@ import org.snakeyaml.engine.v2.nodes.ScalarNode;
 public class CustomConstructor implements ConstructNode {
 
     @Override
-    public Object construct(@NonNull Node node) {
-        ScalarNode scalar = (ScalarNode) node;
+    public Object construct(Node node) {
+        var scalar = (ScalarNode) node;
         return new ImportValueImpl(scalar.getValue());
     }
 }

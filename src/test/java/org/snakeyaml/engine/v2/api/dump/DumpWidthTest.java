@@ -26,13 +26,11 @@ import org.snakeyaml.engine.v2.common.ScalarStyle;
 @Tag("fast")
 class DumpWidthTest {
 
-    private final DumpSettingsBuilder split = DumpSettings.builder().setSplitLines(true);
-    private final DumpSettingsBuilder noSplit = DumpSettings.builder().setSplitLines(false);
+    private final DumpSettings.Builder split = DumpSettings.builder().setSplitLines(true);
+    private final DumpSettings.Builder noSplit = DumpSettings.builder().setSplitLines(false);
 
-    private final String data1 =
-        "1111111111 2222222222 3333333333 4444444444 5555555555 6666666666 7777777777 8888888888 9999999999 0000000000";
-    private final String data2 =
-        "1111111111  2222222222  3333333333  4444444444  5555555555  6666666666  7777777777  8888888888  9999999999  0000000000";
+    private final String data1 = "1111111111 2222222222 3333333333 4444444444 5555555555 6666666666 7777777777 8888888888 9999999999 0000000000";
+    private final String data2 = "1111111111  2222222222  3333333333  4444444444  5555555555  6666666666  7777777777  8888888888  9999999999  0000000000";
 
     @Test
     void testSplitLinesDoubleQuoted() {
@@ -53,9 +51,7 @@ class DumpWidthTest {
         Dump dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED).build());
 
         output = dump2.dumpToString(data1);
-        assertEquals(
-            "\"1111111111 2222222222 3333333333 4444444444 5555555555 6666666666 7777777777 8888888888 9999999999 0000000000\"\n",
-            output);
+        assertEquals("\"1111111111 2222222222 3333333333 4444444444 5555555555 6666666666 7777777777 8888888888 9999999999 0000000000\"\n", output);
 
         // setWidth
         Dump dump3 = new Dump(split.setWidth(15).build());

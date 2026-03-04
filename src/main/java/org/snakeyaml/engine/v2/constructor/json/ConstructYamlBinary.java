@@ -13,11 +13,10 @@
  */
 package org.snakeyaml.engine.v2.constructor.json;
 
-import java.util.Base64;
-
-import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.constructor.ConstructScalar;
 import org.snakeyaml.engine.v2.nodes.Node;
+
+import java.util.Base64;
 
 /**
  * Create instances bytes for binary
@@ -25,7 +24,7 @@ import org.snakeyaml.engine.v2.nodes.Node;
 public class ConstructYamlBinary extends ConstructScalar {
 
     @Override
-    public Object construct(@NonNull Node node) {
+    public Object construct(Node node) {
         // Ignore white spaces for base64 encoded scalar
         String noWhiteSpaces = constructScalar(node).replaceAll("\\s", "");
         return Base64.getDecoder().decode(noWhiteSpaces);

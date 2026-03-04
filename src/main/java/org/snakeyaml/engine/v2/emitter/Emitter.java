@@ -948,7 +948,7 @@ public final class Emitter implements Emitable {
             // check when no tag is required
             if ((!canonical || tag.isEmpty()) && ((scalarStyle == ScalarStyle.PLAIN
                 && ev.getImplicit().isCanOmitTagInPlainScalar())
-                || (scalarStyle != ScalarStyle.PLAIN && ev.getImplicit().canOmitTagInNonPlainScalar()))) {
+                || (scalarStyle != ScalarStyle.PLAIN && ev.getImplicit().isCanOmitTagInNonPlainScalar()))) {
                 preparedTag = null;
                 return; // no tag required
             }

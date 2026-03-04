@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.constructor;
 
-import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.nodes.Node;
 
 /**
@@ -22,7 +21,7 @@ import org.snakeyaml.engine.v2.nodes.Node;
 public class ConstructYamlNull extends ConstructScalar {
 
     @Override
-    public Object construct(@NonNull Node node) {
+    public Object construct(Node node) {
         return null;
     }
 }
