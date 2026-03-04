@@ -243,30 +243,26 @@ public class StandardConstructor extends BaseConstructor {
                 return environment;
             }
             // variable is either unset or empty
-            if (separator != null) {
-                // there is a default value or error
-                if (separator.equals("?")) {
-                    if (environment == null) {
-                        throw new MissingEnvironmentVariableException("Missing mandatory variable " + name + ": " + value);
-                    }
+            if (separator == null) {
+                return "";
+            }
+            // there is a default value or error
+            if (separator.equals("?")) {
+                if (environment == null) {
+                    throw new MissingEnvironmentVariableException("Missing mandatory variable " + name + ": " + value);
                 }
-                if (separator.equals(":?")) {
-                    if (environment == null) {
-                        throw new MissingEnvironmentVariableException("Missing mandatory variable " + name + ": " + value);
-                    }
-                    if (environment.isEmpty()) {
-                        throw new MissingEnvironmentVariableException("Empty mandatory variable " + name + ": " + value);
-                    }
+            }
+            if (separator.equals(":?")) {
+                if (environment == null) {
+                    throw new MissingEnvironmentVariableException("Missing mandatory variable " + name + ": " + value);
                 }
-                if (separator.startsWith(":")) {
-                    if (environment == null || environment.isEmpty()) {
-                        return value;
-                    }
-                } else {
-                    if (environment == null) {
-                        return value;
-                    }
-                }
+                throw new MissingEnvironmentVariableException("Empty mandatory variable " + name + ": " + value);
+            }
+            if (separator.startsWith(":")) {
+                return value;
+            }
+            if (environment == null) {
+                return value;
             }
             return "";
         }

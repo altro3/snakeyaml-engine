@@ -2,11 +2,6 @@ plugins {
     id("java-library")
 }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 group = "org.snakeyaml"
 
 dependencies {

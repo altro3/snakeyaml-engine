@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.constructor;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.exceptions.ConstructorException;
@@ -165,7 +166,7 @@ public abstract class BaseConstructor {
      * @param node {@link Node} to construct an instance from
      * @return {@link ConstructNode} implementation for the specified node
      */
-    protected ConstructNode findConstructorFor(Node node) {
+    protected @Nullable ConstructNode findConstructorFor(Node node) {
         Tag tag = node.getTag();
         if (settings.tagConstructors().containsKey(tag)) {
             return settings.tagConstructors().get(tag);
@@ -333,8 +334,7 @@ public abstract class BaseConstructor {
                 try {
                     key.hashCode();// check circular dependencies
                 } catch (Exception e) {
-                    throw new ConstructorException("while constructing a Set", node.getStartMark(),
-                        "found unacceptable key " + key, tuple.keyNode().getStartMark(), e);
+                    throw new ConstructorException("While constructing a Set", node.getStartMark(), "found unacceptable key " + key, tuple.keyNode().getStartMark(), e);
                 }
             }
             if (keyNode.isRecursive()) {
