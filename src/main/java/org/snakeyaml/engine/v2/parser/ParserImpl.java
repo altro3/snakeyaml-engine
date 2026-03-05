@@ -264,7 +264,7 @@ public class ParserImpl implements Parser {
         }
         directiveTags = tagHandles;
         // data for the event (no default tags added)
-        return new VersionTagsTuple(yamlSpecVersion != null ? yamlSpecVersion : SpecVersion.V_1_2, detectedTagHandles);
+        return new VersionTagsTuple(yamlSpecVersion != null ? yamlSpecVersion : SpecVersion.EMPTY, detectedTagHandles);
     }
 
     private Event parseFlowNode() {
@@ -460,7 +460,7 @@ public class ParserImpl implements Parser {
             // Parse an implicit document.
             Token token = scanner.peekToken();
             Mark startMark = token.getStartMark();
-            Event event = new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap(), startMark, startMark);
+            var event = new DocumentStartEvent(false, SpecVersion.EMPTY, Collections.emptyMap(), startMark, startMark);
             // Prepare the next state.
             states.push(new ParseDocumentEnd());
             state = new ParseBlockNode();

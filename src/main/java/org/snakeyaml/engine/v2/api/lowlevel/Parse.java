@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
-import java.util.Objects;
 
 /**
  * Read the input stream and parse the content into events (opposite for Present or Emit)
@@ -38,8 +37,7 @@ public class Parse {
      *
      * @param settings - configuration
      */
-    public Parse(LoadSettings settings) {
-        Objects.requireNonNull(settings, "LoadSettings cannot be null");
+    public Parse(@NonNull LoadSettings settings) {
         this.settings = settings;
     }
 
@@ -75,7 +73,6 @@ public class Parse {
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
     public Iterable<Event> parseString(@NonNull String yaml) {
-        Objects.requireNonNull(yaml, "String cannot be null");
         // do not use lambda to keep Iterable and Iterator visible
         return new Iterable<>() {
             @Override

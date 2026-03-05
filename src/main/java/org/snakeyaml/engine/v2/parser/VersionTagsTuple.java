@@ -22,10 +22,8 @@ import java.util.Map;
  * Store the internal state for directives
  */
 record VersionTagsTuple(
-    @NonNull
-    SpecVersion specVersion,
-    @NonNull
-    Map<String, String> tags
+    @NonNull SpecVersion specVersion,
+    @NonNull Map<String, String> tags
 ) {
 
     @Override

@@ -13,45 +13,42 @@
  */
 package org.snakeyaml.engine.v2.api.lowlevel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.v2.api.StreamDataWriter;
+import org.snakeyaml.engine.v2.emitter.Emitter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.api.StreamDataWriter;
-import org.snakeyaml.engine.v2.emitter.Emitter;
-import org.snakeyaml.engine.v2.events.Event;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
 
 /**
- * Test from https://github.com/yaml/yaml-runtimes
+ * Test from <a href="https://github.com/yaml/yaml-runtimes">link</a>
  *
- * @see <a
- *     href"https://github.com/yaml/yaml-runtimes/blob/master/docker/java/utils/java/src/main/java/org/yaml/editor/Snake2Yaml.java">Snake2Yaml.java</a>
+ * @see <a href="https://github.com/yaml/yaml-runtimes/blob/master/docker/java/utils/java/src/main/java/org/yaml/editor/Snake2Yaml.java">Snake2Yaml.java</a>
  */
 @Tag("fast")
 class ParseEmitTest {
 
     @Test
-    void parseAndEmitList() throws IOException {
-        ByteArrayOutputStream uu = new ByteArrayOutputStream();
-        final PrintStream sw = new PrintStream(uu);
+    void parseAndEmitList() {
+        var uu = new ByteArrayOutputStream();
+        var sw = new PrintStream(uu);
         String input = "- 1\n- 2\n- 3";
         yamlToYaml(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)), sw);
         assertEquals("- 1\n- 2\n- 3\n", uu.toString());
     }
 
     @Test
-    void parseAndEmitMap() throws IOException {
-        ByteArrayOutputStream uu = new ByteArrayOutputStream();
-        final PrintStream sw = new PrintStream(uu);
+    void parseAndEmitMap() {
+        var uu = new ByteArrayOutputStream();
+        var sw = new PrintStream(uu);
         String input = "---\nfoo: bar\n";
         yamlToYaml(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)), sw);
         assertEquals("---\nfoo: bar\n", uu.toString());
@@ -63,24 +60,20 @@ class ParseEmitTest {
      * @param in Stream to read YAML from
      * @param out Stream to write YAML to
      */
-    void yamlToYaml(final InputStream in, final PrintStream out) throws IOException {
-        Parse parser = new Parse(LoadSettings.builder().build());
-        Emitter emitter = new Emitter(DumpSettings.builder().build(), new MyDumperWriter(out));
-        for (Event event : parser.parseInputStream(in)) {
+    private void yamlToYaml(final InputStream in, final PrintStream out) {
+        var parser = new Parse(DEFAULT_LOAD_SETTINGS);
+        var emitter = new Emitter(DEFAULT_DUMP_SETTINGS, new MyDumperWriter(out));
+        for (var event : parser.parseInputStream(in)) {
             emitter.emit(event);
         }
     }
 
-    class MyDumperWriter implements StreamDataWriter {
+    static class MyDumperWriter implements StreamDataWriter {
 
         private final PrintStream out;
 
         public MyDumperWriter(PrintStream out) {
             this.out = out;
-        }
-
-        @Override
-        public void flush() {
         }
 
         @Override
