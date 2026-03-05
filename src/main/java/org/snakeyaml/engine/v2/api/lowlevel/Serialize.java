@@ -16,7 +16,6 @@ package org.snakeyaml.engine.v2.api.lowlevel;
 import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.emitter.Emitable;
-import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.events.Event;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.serializer.Serializer;
@@ -26,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Implementation of the step which translates Nodes to Events
+ * Implementation of the step which translates Nodes to Events.
  */
 public class Serialize {
 
@@ -35,7 +34,7 @@ public class Serialize {
     /**
      * Create instance with provided {@link DumpSettings}
      *
-     * @param settings - configuration
+     * @param settings configuration
      */
     public Serialize(@NonNull DumpSettings settings) {
         this.settings = settings;
@@ -44,7 +43,7 @@ public class Serialize {
     /**
      * Serialize a {@link Node} and produce events.
      *
-     * @param node - {@link Node} to serialize
+     * @param node {@link Node} to serialize
      * @return serialized events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
@@ -55,7 +54,7 @@ public class Serialize {
     /**
      * Serialize {@link Node}s and produce events.
      *
-     * @param nodes - {@link Node}s to serialize
+     * @param nodes {@link Node}s to serialize
      * @return serialized events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */

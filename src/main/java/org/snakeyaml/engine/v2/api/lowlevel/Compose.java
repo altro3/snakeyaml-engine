@@ -27,7 +27,7 @@ import java.io.StringReader;
 import java.util.Iterator;
 
 /**
- * Helper to compose input stream to Node
+ * Helper to compose input stream to Node.
  */
 public class Compose {
 
@@ -45,8 +45,7 @@ public class Compose {
     /**
      * Parse a YAML stream and produce {@link Node}
      *
-     * @param yaml - YAML document(s). Since the encoding is already known the BOM must not be present
-     *     (it will be parsed as content)
+     * @param yaml YAML document(s). Since the encoding is already known the BOM must not be present (it will be parsed as content)
      * @return parsed {@link Node} if available
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
@@ -58,8 +57,7 @@ public class Compose {
     /**
      * Parse a YAML stream and produce {@link Node}
      *
-     * @param yaml - YAML document(s). Default encoding is UTF-8. The BOM must be present if the
-     *     encoding is UTF-16 or UTF-32
+     * @param yaml YAML document(s). Default encoding is UTF-8. The BOM must be present if the encoding is UTF-16 or UTF-32
      * @return parsed {@link Node} if available
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
@@ -71,7 +69,7 @@ public class Compose {
     /**
      * Parse a YAML stream and produce {@link Node}
      *
-     * @param yaml - YAML document(s).
+     * @param yaml YAML document(s).
      * @return parsed {@link Node} if available
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
@@ -96,8 +94,7 @@ public class Compose {
     /**
      * Parse all YAML documents in a stream and produce corresponding representation trees.
      *
-     * @param yaml - YAML document(s). Default encoding is UTF-8. The BOM must be present if the
-     *     encoding is UTF-16 or UTF-32
+     * @param yaml YAML document(s). Default encoding is UTF-8. The BOM must be present if the encoding is UTF-16 or UTF-32
      * @return parsed root Nodes for all the specified YAML documents
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
@@ -108,7 +105,7 @@ public class Compose {
     /**
      * Parse all YAML documents in a stream and produce corresponding representation trees.
      *
-     * @param yaml - YAML document(s).
+     * @param yaml YAML document(s).
      * @return parsed root Nodes for all the specified YAML documents
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */

@@ -15,7 +15,6 @@ package org.snakeyaml.engine.v2.api;
 
 import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.common.SpecVersion;
-import org.snakeyaml.engine.v2.constructor.ConstructYamlNull;
 import org.snakeyaml.engine.v2.env.EnvConfig;
 import org.snakeyaml.engine.v2.exceptions.YamlVersionException;
 import org.snakeyaml.engine.v2.nodes.Tag;
@@ -33,7 +32,7 @@ import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
 
 /**
- * Immutable configuration for loading. Description for all the fields can be found in the builder
+ * Immutable configuration for loading. Description for all the fields can be found in the builder.
  */
 public record LoadSettings(
     String label,
@@ -61,7 +60,7 @@ public record LoadSettings(
     }
 
     /**
-     * Create the builder
+     * Create the builder.
      *
      * @return the builder to fill the configuration options
      */
@@ -70,7 +69,7 @@ public record LoadSettings(
     }
 
     /**
-     * Builder pattern implementation for LoadSettings
+     * Builder pattern implementation for LoadSettings.
      */
     public static final class Builder {
 
@@ -100,7 +99,7 @@ public record LoadSettings(
         /**
          * Label for the input data. Can be used to improve the error message.
          *
-         * @param label - meaningful label to indicate the input source
+         * @param label meaningful label to indicate the input source
          * @return the builder with the provided value
          */
         public Builder setLabel(@NonNull String label) {
@@ -111,7 +110,7 @@ public record LoadSettings(
         /**
          * Provide constructors for the specified tags.
          *
-         * @param tagConstructors - the map from a Tag to its constructor
+         * @param tagConstructors the map from a Tag to its constructor
          * @return the builder with the provided value
          */
         public Builder setTagConstructors(@NonNull Map<Tag, ConstructNode> tagConstructors) {
@@ -122,7 +121,7 @@ public record LoadSettings(
         /**
          * Provide default List implementation. {@link ArrayList} is used if nothing provided.
          *
-         * @param defaultList - specified List implementation (as a function from init size)
+         * @param defaultList specified List implementation (as a function from init size)
          * @return the builder with the provided value
          */
         public Builder setDefaultList(@NonNull IntFunction<List<Object>> defaultList) {
@@ -133,7 +132,7 @@ public record LoadSettings(
         /**
          * Provide default Set implementation. {@link LinkedHashSet} is used if nothing provided.
          *
-         * @param defaultSet - specified Set implementation (as a function from init size)
+         * @param defaultSet specified Set implementation (as a function from init size)
          * @return the builder with the provided value
          */
         public Builder setDefaultSet(@NonNull IntFunction<Set<Object>> defaultSet) {
@@ -144,7 +143,7 @@ public record LoadSettings(
         /**
          * Provide default Map implementation. {@link LinkedHashMap} is used if nothing provided.
          *
-         * @param defaultMap - specified Map implementation (as a function from init size)
+         * @param defaultMap specified Map implementation (as a function from init size)
          * @return the builder with the provided value
          */
         public Builder setDefaultMap(@NonNull IntFunction<Map<Object, Object>> defaultMap) {
@@ -156,7 +155,7 @@ public record LoadSettings(
          * Buffer size for incoming data stream. If the incoming stream is already buffered, then changing
          * the buffer does not improve the performance
          *
-         * @param bufferSize - buffer size (in bytes) for input data
+         * @param bufferSize buffer size (in bytes) for input data
          * @return the builder with the provided value
          */
         public Builder setBufferSize(@NonNull Integer bufferSize) {
@@ -168,8 +167,7 @@ public record LoadSettings(
          * YAML 1.2 does require unique keys. To support the backwards compatibility it is possible to
          * select what should happen when non-unique keys are detected.
          *
-         * @param allowDuplicateKeys - if true, then the non-unique keys in a mapping are allowed (last
-         *     key wins). False by default.
+         * @param allowDuplicateKeys if true, then the non-unique keys in a mapping are allowed (last key wins). False by default.
          * @return the builder with the provided value
          */
         public Builder setAllowDuplicateKeys(boolean allowDuplicateKeys) {
@@ -182,7 +180,7 @@ public record LoadSettings(
          * YAML allows to use anything as a key, it may cause unexpected issues when loading recursive
          * structures.
          *
-         * @param allowRecursiveKeys - true to allow recursive structures as keys
+         * @param allowRecursiveKeys true to allow recursive structures as keys
          * @return the builder with the provided value
          */
         public Builder setAllowRecursiveKeys(boolean allowRecursiveKeys) {
@@ -196,8 +194,7 @@ public record LoadSettings(
          * are allocated for the parser. Aliases for scalar nodes do not count because they do not grow
          * exponentially.
          *
-         * @param maxAliasesForCollections - max number of aliases. More than 50 might be very dangerous.
-         *     Default is 50
+         * @param maxAliasesForCollections max number of aliases. More than 50 might be very dangerous. Default is 50
          * @return the builder with the provided value
          */
         public Builder setMaxAliasesForCollections(int maxAliasesForCollections) {
@@ -208,8 +205,7 @@ public record LoadSettings(
         /**
          * Marks are only used for error messages. But they require a lot of memory. True by default.
          *
-         * @param useMarks - use false to save resources but use less informative error messages (no line
-         *     and context)
+         * @param useMarks use false to save resources but use less informative error messages (no line and context)
          * @return the builder with the provided value
          */
         public Builder setUseMarks(boolean useMarks) {
@@ -219,15 +215,14 @@ public record LoadSettings(
 
         /**
          * Manage YAML directive value which defines the version of the YAML specification. This parser
-         * supports YAML 1.2 but it can parse most of YAML 1.1 and YAML 1.0
+         * supports YAML 1.2, but it can parse most of YAML 1.1 and YAML 1.0
          * <p>
          * This function allows to control the version management. For instance if the document contains
          * old version the parser can be adapted to compensate the problem. Or it can fail to indicate
          * that the incoming version is not supported.
          *
-         * @param versionFunction - define the way to manage the YAML version. By default, 1.* versions
-         *     are accepted and treated as YAML 1.2. Other versions fail to parse (YamlVersionException
-         *     is thown)
+         * @param versionFunction define the way to manage the YAML version. By default, 1.* versions
+         *     are accepted and treated as YAML 1.2. Other versions fail to parse (YamlVersionException is thrown)
          * @return the builder with the provided value
          */
         public Builder setVersionFunction(@NonNull UnaryOperator<SpecVersion> versionFunction) {
@@ -236,14 +231,11 @@ public record LoadSettings(
         }
 
         /**
-         * Define EnvConfig to parse ENV format. If not set explicitly the variable substitution is not
-         * applied.
+         * Define EnvConfig to parse ENV format. If not set explicitly the variable substitution is not applied.
          *
-         * @param envConfig - non-empty configuration to substitute variables
+         * @param envConfig non-empty configuration to substitute variables
          * @return the builder with the provided value
-         * @see <a href=
-         *     "https://bitbucket.org/snakeyaml/snakeyaml-engine/wiki/Documentation#markdown-header-env-variable-substitution">Variable
-         *     substitution</a>
+         * @see <a href="https://bitbucket.org/snakeyaml/snakeyaml-engine/wiki/Documentation#markdown-header-env-variable-substitution">Variable substitution</a>
          */
         public Builder setEnvConfig(EnvConfig envConfig) {
             this.envConfig = envConfig;
@@ -251,10 +243,10 @@ public record LoadSettings(
         }
 
         /**
-         * Provide a custom property to be used later
+         * Provide a custom property to be used later.
          *
-         * @param key - the key
-         * @param value - the value behind the key
+         * @param key the key
+         * @param value the value behind the key
          * @return the builder with the provided value
          */
         public Builder setCustomProperty(@NonNull SettingKey key, Object value) {
@@ -263,9 +255,9 @@ public record LoadSettings(
         }
 
         /**
-         * Parse comments to the presentation tree (Node). False by default
+         * Parse comments to the presentation tree (Node). False by default.
          *
-         * @param parseComments - use true to parse comments to the presentation tree (Node)
+         * @param parseComments use true to parse comments to the presentation tree (Node)
          * @return the builder with the provided value
          */
         public Builder setParseComments(boolean parseComments) {
@@ -276,9 +268,9 @@ public record LoadSettings(
         /**
          * The max number of code points for every input YAML document in the stream. Please be aware that
          * the byte limit depends on the encoding. The presence of the document indicators '---' or/and
-         * '...' will affect the doc size (even though they do not belong to the document content)
+         * '...' will affect the doc size (even though they do not belong to the document content).
          *
-         * @param codePointLimit - the max allowed size of a single YAML document in a stream
+         * @param codePointLimit the max allowed size of a single YAML document in a stream
          * @return the builder with the provided value
          */
         public Builder setCodePointLimit(int codePointLimit) {
@@ -287,9 +279,8 @@ public record LoadSettings(
         }
 
         /**
-         * Provide either recommended or custom
-         * <a href="https://yaml.org/spec/1.2.2/#chapter-10-recommended-schemas">schema</a> instead of
-         * default * {@link org.snakeyaml.engine.v2.schema.CoreSchema} These 3 are available
+         * Provide either recommended or custom <a href="https://yaml.org/spec/1.2.2/#chapter-10-recommended-schemas">schema</a>
+         * instead of default * {@link org.snakeyaml.engine.v2.schema.CoreSchema} These 3 are available
          * {@link org.snakeyaml.engine.v2.schema.FailsafeSchema},
          * {@link org.snakeyaml.engine.v2.schema.JsonSchema},
          * {@link org.snakeyaml.engine.v2.schema.CoreSchema}.
@@ -307,7 +298,7 @@ public record LoadSettings(
          * collection as a key in mapping is a relatively rare use case (and it is not supported in JSON),
          * this possibility is switched off by default (even though it is a standard feature of YAML)
          *
-         * @param allowNonScalarKeys - true when any collection may be a key in a mapping
+         * @param allowNonScalarKeys true when any collection may be a key in a mapping
          * @return the builder with the provided value
          */
         public Builder setAllowNonScalarKeys(boolean allowNonScalarKeys) {
@@ -316,7 +307,7 @@ public record LoadSettings(
         }
 
         /**
-         * Build immutable LoadSettings
+         * Build immutable LoadSettings.
          *
          * @return immutable LoadSettings
          */

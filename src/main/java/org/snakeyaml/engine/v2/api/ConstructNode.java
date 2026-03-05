@@ -20,8 +20,7 @@ import org.snakeyaml.engine.v2.nodes.Node;
 
 /**
  * Provide a way to construct a Java instance from the composed Node. Support recursive objects if
- * it is required. (create Native Data Structure out of Node Graph) (this is the opposite for
- * Represent)
+ * it is required. (create Native Data Structure out of Node Graph) (this is the opposite for Represent)
  *
  * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
  */
@@ -42,8 +41,7 @@ public interface ConstructNode {
      * structure
      *
      * @param node composed Node
-     * @param object the instance constructed earlier by <code>construct(Node node)</code> for the
-     *     provided Node
+     * @param object the instance constructed earlier by <code>construct(Node node)</code> for the provided Node
      */
     default void constructRecursive(@NonNull Node node, Object object) {
         if (node.isRecursive()) {

@@ -31,8 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Immutable configuration for serialization. Description for all the fields can be found in the
- * builder
+ * Immutable configuration for serialization. Description for all the fields can be found in the builder.
  */
 public record DumpSettings(
 
@@ -72,7 +71,7 @@ public record DumpSettings(
     }
 
     /**
-     * Builder pattern implementation for DumpSettings
+     * Builder pattern implementation for DumpSettings.
      */
     public static final class Builder {
 
@@ -102,9 +101,9 @@ public record DumpSettings(
         Map<SettingKey, Object> customProperties = new HashMap<>();
 
         /**
-         * Define flow style
+         * Define flow style.
          *
-         * @param defaultFlowStyle - specify the style
+         * @param defaultFlowStyle specify the style
          * @return the builder with the provided value
          */
         public Builder setDefaultFlowStyle(FlowStyle defaultFlowStyle) {
@@ -113,9 +112,9 @@ public record DumpSettings(
         }
 
         /**
-         * Define default scalar style
+         * Define default scalar style.
          *
-         * @param defaultScalarStyle - specify the scalar style
+         * @param defaultScalarStyle specify the scalar style
          * @return the builder with the provided value
          */
         public Builder setDefaultScalarStyle(ScalarStyle defaultScalarStyle) {
@@ -124,9 +123,9 @@ public record DumpSettings(
         }
 
         /**
-         * Add '---' in the beginning of the document
+         * Add '---' in the beginning of the document.
          *
-         * @param explicitStart - true if the document start must be explicitly indicated
+         * @param explicitStart true if the document start must be explicitly indicated
          * @return the builder with the provided value
          */
         public Builder setExplicitStart(boolean explicitStart) {
@@ -135,9 +134,9 @@ public record DumpSettings(
         }
 
         /**
-         * Define anchor name generator (by default 'id' + number)
+         * Define anchor name generator (by default 'id' + number).
          *
-         * @param anchorGenerator - specified function to create anchor names
+         * @param anchorGenerator specified function to create anchor names
          * @return the builder with the provided value
          */
         public Builder setAnchorGenerator(@NonNull AnchorGenerator anchorGenerator) {
@@ -157,9 +156,9 @@ public record DumpSettings(
         }
 
         /**
-         * Add '...' in the end of the document
+         * Add '...' in the end of the document.
          *
-         * @param explicitEnd - true if the document end must be explicitly indicated
+         * @param explicitEnd true if the document end must be explicitly indicated
          * @return the builder with the provided value
          */
         public Builder setExplicitEnd(boolean explicitEnd) {
@@ -179,9 +178,9 @@ public record DumpSettings(
         }
 
         /**
-         * Add TAG <a href="http://yaml.org/spec/1.2/spec.html#id2782090">directive</a>
+         * Add TAG <a href="http://yaml.org/spec/1.2/spec.html#id2782090">directive</a>.
          *
-         * @param tagDirective - the data to create TAG directive
+         * @param tagDirective the data to create TAG directive
          * @return the builder with the provided value
          */
         public Builder setTagDirective(@NonNull Map<String, String> tagDirective) {
@@ -190,9 +189,9 @@ public record DumpSettings(
         }
 
         /**
-         * Enforce canonical representation
+         * Enforce canonical representation.
          *
-         * @param canonical - specify if the canonical representation must be used
+         * @param canonical specify if the canonical representation must be used
          * @return the builder with the provided value
          */
         public Builder setCanonical(boolean canonical) {
@@ -203,7 +202,7 @@ public record DumpSettings(
         /**
          * Use pretty flow style when every value in the flow context gets a separate line.
          *
-         * @param multiLineFlow - set false to output all values in a single line.
+         * @param multiLineFlow set false to output all values in a single line.
          * @return the builder with the provided value
          */
         public Builder setMultiLineFlow(boolean multiLineFlow) {
@@ -214,10 +213,10 @@ public record DumpSettings(
         /**
          * Specify whether to emit non-ASCII printable Unicode characters (emit Unicode char or escape
          * sequence starting with '\\u') The default value is true. When set to false then printable
-         * non-ASCII characters (Cyrillic, Chinese etc) will be not printed but escaped (to support ASCII
+         * non-ASCII characters (Cyrillic, Chinese etc.) will be not printed but escaped (to support ASCII
          * terminals)
          *
-         * @param useUnicodeEncoding - true to use Unicode for "Я", false to use "\u0427" for the same
+         * @param useUnicodeEncoding true to use Unicode for "Я", false to use "\u0427" for the same
          *     char (if useUnicodeEncoding is false then all non-ASCII characters are escaped)
          * @return the builder with the provided value
          */
@@ -250,8 +249,7 @@ public record DumpSettings(
          * visual results it should be by 2 less than the indent (which is 2 by default) It is 2 chars
          * less because the first char is '-' and the second char is the space after it.
          *
-         * @param indicatorIndent - must be non-negative and less than
-         *     org.snakeyaml.engine.v2.emitter.Emitter.MAX_INDENT - 1
+         * @param indicatorIndent - must be non-negative and less than org.snakeyaml.engine.v2.emitter.Emitter.MAX_INDENT - 1
          * @return the builder with the provided value
          */
         public Builder setIndicatorIndent(int indicatorIndent) {
@@ -266,10 +264,10 @@ public record DumpSettings(
         }
 
         /**
-         * Set max width for literal scalars. When the scalar representation takes more then the preferred
+         * Set max width for literal scalars. When the scalar representation takes more than the preferred
          * with the scalar will be split into a few lines. The default is 80.
          *
-         * @param width - the width
+         * @param width the width
          * @return the builder with the provided value
          */
         public Builder setWidth(int width) {
@@ -282,7 +280,7 @@ public record DumpSettings(
          * Linux) than this setting is used to define the line ending. The platform line end is used by
          * default.
          *
-         * @param bestLineBreak - "\r\n" or "\n"
+         * @param bestLineBreak "\r\n" or "\n"
          * @return the builder with the provided value
          */
         public Builder setBestLineBreak(@NonNull String bestLineBreak) {
@@ -291,9 +289,9 @@ public record DumpSettings(
         }
 
         /**
-         * Define whether to split long lines
+         * Define whether to split long lines.
          *
-         * @param splitLines - true to split long lines
+         * @param splitLines true to split long lines
          * @return the builder with the provided value
          */
         public Builder setSplitLines(boolean splitLines) {
@@ -302,10 +300,9 @@ public record DumpSettings(
         }
 
         /**
-         * Define max key length to use simple key (without '?').
-         * <a href="https://yaml.org/spec/1.2/spec.html#id2798057">More info</a>
+         * Define max key length to use simple key (without '?'). <a href="https://yaml.org/spec/1.2/spec.html#id2798057">More info</a>
          *
-         * @param maxSimpleKeyLength - the limit after which the key gets explicit key indicator '?'
+         * @param maxSimpleKeyLength the limit after which the key gets explicit key indicator '?'
          * @return the builder with the provided value
          */
         public Builder setMaxSimpleKeyLength(int maxSimpleKeyLength) {
@@ -321,8 +318,7 @@ public record DumpSettings(
          * notation. Sometimes it is better to transform this data to binary (with the !!binary tag).
          * String objects with printable data are non affected by this setting.
          *
-         * @param nonPrintableStyle - set this to BINARY to force non-printable String to represent as
-         *     binary (byte array)
+         * @param nonPrintableStyle set this to BINARY to force non-printable String to represent as binary (byte array)
          * @return the builder with the provided value
          */
         public Builder setNonPrintableStyle(NonPrintableStyle nonPrintableStyle) {
@@ -331,10 +327,10 @@ public record DumpSettings(
         }
 
         /**
-         * Custom property is the way to give some runtime parameters to be used during dumping
+         * Custom property is the way to give some runtime parameters to be used during dumping.
          *
-         * @param key - the key
-         * @param value - the value behind the key
+         * @param key the key
+         * @param value the value behind the key
          * @return the builder with the provided value
          */
         public Builder setCustomProperty(SettingKey key, Object value) {
@@ -345,7 +341,7 @@ public record DumpSettings(
         /**
          * Set to true to add the indent for sequences to the general indent
          *
-         * @param indentWithIndicator - true when indent for sequences is added to general
+         * @param indentWithIndicator true when indent for sequences is added to general
          * @return the builder with the provided value
          */
         public Builder setIndentWithIndicator(boolean indentWithIndicator) {
@@ -356,7 +352,7 @@ public record DumpSettings(
         /**
          * Set to true to add comments from Nodes to
          *
-         * @param dumpComments - true when comments should be dumped (serialised)
+         * @param dumpComments true when comments should be dumped (serialised)
          * @return the builder with the provided value
          */
         public Builder setDumpComments(boolean dumpComments) {
@@ -372,7 +368,7 @@ public record DumpSettings(
          * {@link org.snakeyaml.engine.v2.schema.JsonSchema},
          * {@link org.snakeyaml.engine.v2.schema.CoreSchema}.
          *
-         * @param schema - the tag schema
+         * @param schema the tag schema
          * @return the builder with the provided value
          */
         public Builder setSchema(Schema schema) {
@@ -381,13 +377,12 @@ public record DumpSettings(
         }
 
         /**
-         * Disable usage of anchors and aliases while serialising an instance. Recursive objects will not
+         * Disable usage of anchors and aliases while serializing an instance. Recursive objects will not
          * work when they are disabled. (Forces Serializer to skip emitting anchors names, emit Node
          * content instead of Alias, fail with SerializationException if serialized structure is
          * recursive.)
          *
-         * @param dereferenceAliases - true to use copies of objects instead of references to the same
-         *     instance
+         * @param dereferenceAliases true to use copies of objects instead of references to the same instance
          * @return the builder with the provided value
          */
         public Builder setDereferenceAliases(Boolean dereferenceAliases) {
@@ -396,7 +391,7 @@ public record DumpSettings(
         }
 
         /**
-         * Create immutable DumpSettings
+         * Create immutable DumpSettings.
          *
          * @return DumpSettings with the provided values
          */

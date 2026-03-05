@@ -31,29 +31,29 @@ import java.util.Iterator;
 public class Dump {
 
     /**
-     * Configuration options
+     * Configuration options.
      */
     protected DumpSettings settings;
 
     /**
-     * The component to translate Java instances to Nodes
+     * The component to translate Java instances to Nodes.
      */
     protected BaseRepresenter representer;
 
     /**
-     * Create instance
+     * Create instance.
      *
-     * @param settings - configuration
+     * @param settings configuration
      */
     public Dump(@NonNull DumpSettings settings) {
         this(settings, new StandardRepresenter(settings));
     }
 
     /**
-     * Create instance
+     * Create instance.
      *
-     * @param settings - configuration
-     * @param representer - custom representer
+     * @param settings configuration
+     * @param representer custom representer
      */
     public Dump(@NonNull DumpSettings settings, @NonNull BaseRepresenter representer) {
         this.settings = settings;
@@ -62,10 +62,10 @@ public class Dump {
 
     /**
      * Dump all the instances from the iterator into a stream with every instance in a separate YAML
-     * document
+     * document.
      *
-     * @param instancesIterator - instances to serialize
-     * @param streamDataWriter - destination I/O writer
+     * @param instancesIterator instances to serialize
+     * @param streamDataWriter destination I/O writer
      */
     public void dumpAll(@NonNull Iterator<?> instancesIterator, @NonNull StreamDataWriter streamDataWriter) {
         var serializer = new Serializer(settings, new Emitter(settings, streamDataWriter));
@@ -79,10 +79,10 @@ public class Dump {
     }
 
     /**
-     * Dump a single instance into a YAML document
+     * Dump a single instance into a YAML document.
      *
-     * @param yaml - instance to serialize
-     * @param streamDataWriter - destination I/O writer
+     * @param yaml instance to serialize
+     * @param streamDataWriter destination I/O writer
      */
     public void dump(@NonNull Object yaml, @NonNull StreamDataWriter streamDataWriter) {
         Iterator<?> iter = Collections.singleton(yaml).iterator();
@@ -91,9 +91,9 @@ public class Dump {
 
     /**
      * Dump all the instances from the iterator into a stream with every instance in a separate YAML
-     * document
+     * document.
      *
-     * @param instancesIterator - instances to serialize
+     * @param instancesIterator instances to serialize
      * @return String representation of the YAML stream
      */
     public String dumpAllToString(@NonNull Iterator<?> instancesIterator) {
@@ -104,9 +104,9 @@ public class Dump {
 
     /**
      * Dump all the instances from the iterator into a stream with every instance in a separate YAML
-     * document
+     * document.
      *
-     * @param yaml - instance to serialize
+     * @param yaml instance to serialize
      * @return String representation of the YAML stream
      */
     public String dumpToString(@NonNull Object yaml) {
@@ -118,8 +118,8 @@ public class Dump {
     /**
      * Dump the provided Node into a YAML stream.
      *
-     * @param node - YAML node to be serialized to YAML document
-     * @param streamDataWriter - stream to write to
+     * @param node YAML node to be serialized to YAML document
+     * @param streamDataWriter stream to write to
      */
     public void dumpNode(@NonNull Node node, @NonNull StreamDataWriter streamDataWriter) {
         var serializer = new Serializer(settings, new Emitter(settings, streamDataWriter));

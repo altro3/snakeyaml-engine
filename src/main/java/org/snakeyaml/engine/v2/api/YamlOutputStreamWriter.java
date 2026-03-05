@@ -28,7 +28,7 @@ import java.nio.charset.Charset;
 public class YamlOutputStreamWriter extends OutputStreamWriter implements StreamDataWriter {
 
     /**
-     * Create
+     * Constructor.
      *
      * @param out - the output
      * @param cs - encoding to use to translate String to bytes
@@ -38,10 +38,9 @@ public class YamlOutputStreamWriter extends OutputStreamWriter implements Stream
     }
 
     /**
-     * Default implementation wraps the given {@code IOException} into an
-     * {@link UncheckedIOException}.
+     * Default implementation wraps the given {@code IOException} into an {@link UncheckedIOException}.
      *
-     * @param e - the reason
+     * @param e the reason
      */
     public void processIOException(IOException e) {
         throw new UncheckedIOException(e);

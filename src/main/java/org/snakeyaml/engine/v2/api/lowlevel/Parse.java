@@ -26,7 +26,7 @@ import java.io.StringReader;
 import java.util.Iterator;
 
 /**
- * Read the input stream and parse the content into events (opposite for Present or Emit)
+ * Read the input stream and parse the content into events (opposite for Present or Emit).
  */
 public class Parse {
 
@@ -44,8 +44,7 @@ public class Parse {
     /**
      * Parse a YAML stream and produce parsing events.
      *
-     * @param yaml - YAML document(s). Default encoding is UTF-8. The BOM must be present if the
-     *     encoding is UTF-16 or UTF-32
+     * @param yaml YAML document(s). Default encoding is UTF-8. The BOM must be present if the encoding is UTF-16 or UTF-32
      * @return parsed events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */

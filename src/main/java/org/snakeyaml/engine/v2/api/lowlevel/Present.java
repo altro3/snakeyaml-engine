@@ -22,7 +22,7 @@ import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 import java.util.Iterator;
 
 /**
- * Emit the events into a data stream (opposite for Parse)
+ * Emit the events into a data stream (opposite for Parse).
  */
 public class Present {
 

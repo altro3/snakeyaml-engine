@@ -37,19 +37,19 @@ public class Load {
     private final BaseConstructor constructor;
 
     /**
-     * Create instance to parse the incoming YAML data and create Java instances
+     * Create instance to parse the incoming YAML data and create Java instances.
      *
-     * @param settings - configuration
+     * @param settings configuration
      */
     public Load(@NonNull LoadSettings settings) {
         this(settings, new StandardConstructor(settings));
     }
 
     /**
-     * Create instance to parse the incoming YAML data and create Java instances
+     * Create instance to parse the incoming YAML data and create Java instances.
      *
-     * @param settings - configuration
-     * @param constructor - custom YAML constructor
+     * @param settings configuration
+     * @param constructor custom YAML constructor
      */
     public Load(@NonNull LoadSettings settings, @NonNull BaseConstructor constructor) {
         this.settings = settings;
@@ -57,9 +57,9 @@ public class Load {
     }
 
     /**
-     * Create Composer
+     * Create Composer.
      *
-     * @param streamReader - the input
+     * @param streamReader the input
      * @return configured Composer
      */
     private Composer createComposer(StreamReader streamReader) {
@@ -67,9 +67,9 @@ public class Load {
     }
 
     /**
-     * Create Composer
+     * Create Composer.
      *
-     * @param yamlStream - the input
+     * @param yamlStream the input
      * @return configured Composer
      */
     protected Composer createComposer(InputStream yamlStream) {
@@ -77,9 +77,9 @@ public class Load {
     }
 
     /**
-     * Create Composer
+     * Create Composer.
      *
-     * @param yaml - the input
+     * @param yaml the input
      * @return configured Composer
      */
     protected Composer createComposer(String yaml) {
@@ -87,9 +87,9 @@ public class Load {
     }
 
     /**
-     * Create Composer
+     * Create Composer.
      *
-     * @param yamlReader - the input
+     * @param yamlReader the input
      * @return configured Composer
      */
     protected Composer createComposer(Reader yamlReader) {
@@ -99,9 +99,9 @@ public class Load {
     // Load a single document
 
     /**
-     * Load with provided Composer
+     * Load with provided Composer.
      *
-     * @param composer - the component to create the Node
+     * @param composer the component to create the Node
      * @return deserialized YAML document
      */
     protected Object loadOne(Composer composer) {
@@ -112,8 +112,7 @@ public class Load {
     /**
      * Parse the only YAML document in a stream and produce the corresponding Java object.
      *
-     * @param yamlStream - data to load from (BOM is respected to detect encoding and removed from the
-     *     data)
+     * @param yamlStream data to load from (BOM is respected to detect encoding and removed from the data)
      * @return parsed Java instance
      */
     public Object loadFromInputStream(@NonNull InputStream yamlStream) {
@@ -121,9 +120,9 @@ public class Load {
     }
 
     /**
-     * Parse a YAML document and create a Java instance
+     * Parse a YAML document and create a Java instance.
      *
-     * @param yamlReader - data to load from (BOM must not be present)
+     * @param yamlReader data to load from (BOM must not be present)
      * @return parsed Java instance
      */
     public Object loadFromReader(@NonNull Reader yamlReader) {
@@ -131,9 +130,9 @@ public class Load {
     }
 
     /**
-     * Parse a YAML document and create a Java instance
+     * Parse a YAML document and create a Java instance.
      *
-     * @param yaml - YAML data to load from (BOM must not be present)
+     * @param yaml YAML data to load from (BOM must not be present)
      * @return parsed Java instance
      * @throws org.snakeyaml.engine.v2.exceptions.YamlEngineException if the YAML is not valid
      */
@@ -152,8 +151,7 @@ public class Load {
      * Parse all YAML documents in a stream and produce corresponding Java objects. The documents are
      * parsed only when the iterator is invoked.
      *
-     * @param yamlStream - YAML data to load from (BOM is respected to detect encoding and removed
-     *     from the data)
+     * @param yamlStream YAML data to load from (BOM is respected to detect encoding and removed from the data)
      * @return an Iterable over the parsed Java objects in this stream in proper sequence
      */
     public Iterable<Object> loadAllFromInputStream(@NonNull InputStream yamlStream) {
@@ -165,7 +163,7 @@ public class Load {
      * Parse all YAML documents in a String and produce corresponding Java objects. The documents are
      * parsed only when the iterator is invoked.
      *
-     * @param yamlReader - YAML data to load from (BOM must not be present)
+     * @param yamlReader YAML data to load from (BOM must not be present)
      * @return an Iterable over the parsed Java objects in this stream in proper sequence
      */
     public Iterable<Object> loadAllFromReader(@NonNull Reader yamlReader) {
@@ -178,7 +176,7 @@ public class Load {
      * encoding in known BOM is not respected.) The documents are parsed only when the iterator is
      * invoked.
      *
-     * @param yaml - YAML data to load from (BOM must not be present)
+     * @param yaml YAML data to load from (BOM must not be present)
      * @return an Iterable over the parsed Java objects in this stream in proper sequence
      */
     public Iterable<Object> loadAllFromString(@NonNull String yaml) {
