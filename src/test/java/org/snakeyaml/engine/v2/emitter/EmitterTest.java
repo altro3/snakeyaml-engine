@@ -29,8 +29,6 @@ import org.snakeyaml.engine.v2.events.ScalarEvent;
 import org.snakeyaml.engine.v2.events.StreamStartEvent;
 import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,17 +39,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Tag("fast")
-public class EmitterTest {
-
-    private String dump(DumpSettings settings, Object map) {
-        Dump yaml = new Dump(settings);
-        return yaml.dumpToString(map);
-    }
+class EmitterTest {
 
     @Test
-    public void testWriteFolded() {
-        DumpSettings settings =
-            DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.FOLDED).build();
+    void testWriteFolded() {
+        var settings = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.FOLDED)
+            .build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
         Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
@@ -63,9 +57,10 @@ public class EmitterTest {
     }
 
     @Test
-    public void testWriteLiteral() {
-        DumpSettings settings =
-            DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.LITERAL).build();
+    void testWriteLiteral() {
+        var settings = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.LITERAL)
+            .build();
         String folded = "0123456789 0123456789 0123456789 0123456789";
         Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
@@ -77,8 +72,10 @@ public class EmitterTest {
     }
 
     @Test
-    public void testWritePlain() {
-        DumpSettings settings = DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.PLAIN).build();
+    void testWritePlain() {
+        var settings = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.PLAIN)
+            .build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
         Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
@@ -90,9 +87,11 @@ public class EmitterTest {
     }
 
     @Test
-    public void testWritePlainPretty() {
-        DumpSettings settings = DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.PLAIN)
-            .setMultiLineFlow(true).build();
+    void testWritePlainPretty() {
+        var settings = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.PLAIN)
+            .setMultiLineFlow(true)
+            .build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
         Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
@@ -104,9 +103,10 @@ public class EmitterTest {
     }
 
     @Test
-    public void testWriteSingleQuoted() {
-        DumpSettings settings =
-            DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED).build();
+    void testWriteSingleQuoted() {
+        var settings = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED)
+            .build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
         Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
@@ -118,90 +118,94 @@ public class EmitterTest {
     }
 
     @Test
-    public void testWriteDoubleQuoted() {
-        DumpSettings settings =
-            DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED).build();
-        String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<>();
+    void testWriteDoubleQuoted() {
+        var settings = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
+            .build();
+        var folded = "0123456789 0123456789\n0123456789 0123456789";
+        var map = new LinkedHashMap<String, String>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
-        String expected =
-            "\"aaa\": \"0123456789 0123456789\\n0123456789 0123456789\"\n\"bbb\": \"\\nbla-bla\"\n";
+        String expected = "\"aaa\": \"0123456789 0123456789\\n0123456789 0123456789\"\n\"bbb\": \"\\nbla-bla\"\n";
         assertEquals(expected, output);
     }
 
     // Issue #158
     @Test
-    public void testWriteSupplementaryUnicode() {
-        DumpSettings settings = DumpSettings.builder().setUseUnicodeEncoding(false).build();
-        String burger = new String(Character.toChars(0x1f354));
+    void testWriteSupplementaryUnicode() {
+        var settings = DumpSettings.builder()
+            .setUseUnicodeEncoding(false)
+            .build();
+        var burger = new String(Character.toChars(0x1f354));
         String halfBurger = "\uD83C";
         var output = new StreamToStringWriter();
-        Emitter emitter = new Emitter(settings, output);
-
-        emitter.emit(new StreamStartEvent(null, null));
-        emitter
-            .emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>(), null, null));
-        emitter.emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_FALSE, burger + halfBurger,
-            ScalarStyle.DOUBLE_QUOTED, null, null));
+        new Emitter(settings, output)
+            .emit(new StreamStartEvent(null, null))
+            .emit(new DocumentStartEvent(false, SpecVersion.EMPTY, new HashMap<>(), null, null))
+            .emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_FALSE, burger + halfBurger, ScalarStyle.DOUBLE_QUOTED, null, null));
         String expected = "! \"\\U0001f354\\ud83c\"";
         assertEquals(expected, output.toString());
     }
 
     @Test
-    public void testSplitLineExpectFirstFlowSequenceItem() {
+    void testSplitLineExpectFirstFlowSequenceItem() {
         var builder = DumpSettings.builder()
             .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
             .setDefaultFlowStyle(FlowStyle.FLOW)
             .setWidth(8);
-        var map = new TreeMap<String, Object>();
-        map.put("12345", Collections.singletonList("1111111111"));
+        var map = Map.of("12345", List.of("1111111111"));
 
         // Split lines enabled (default)
         String output = dump(builder.build(), map);
         assertEquals("{\"12345\": [\n    \"1111111111\"]}\n", output);
 
         // Split lines disabled
-        output = dump(builder.setSplitLines(false).build(), map);
+        output = dump(builder
+            .setSplitLines(false)
+            .build(), map);
         assertEquals("{\"12345\": [\"1111111111\"]}\n", output);
     }
 
     @Test
-    public void testWriteIndicatorIndent() {
-        DumpSettings settings = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK).setIndent(5)
-            .setIndicatorIndent(2).build();
-        List<?> topLevel =
-            Arrays.asList(Collections.singletonMap("k1", "v1"), Collections.singletonMap("k2", "v2"));
-        Map<String, ?> map = Collections.singletonMap("aaa", topLevel);
+    void testWriteIndicatorIndent() {
+        var settings = DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setIndent(5)
+            .setIndicatorIndent(2)
+            .build();
+        var topLevel = List.of(Map.of("k1", "v1"), Map.of("k2", "v2"));
+        var map = Map.of("aaa", topLevel);
         String output = dump(settings, map);
         String expected = "aaa:\n  -  k1: v1\n  -  k2: v2\n";
         assertEquals(expected, output);
     }
 
     @Test
-    public void testSplitLineExpectFlowSequenceItem() {
+    void testSplitLineExpectFlowSequenceItem() {
         var builder = DumpSettings.builder()
             .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
             .setDefaultFlowStyle(FlowStyle.FLOW)
             .setWidth(8);
         // Split lines enabled (default)
-        Dump yaml1 = new Dump(builder.build());
-        String output = yaml1.dumpToString(Arrays.asList("1111111111", "2222222222"));
+        var yaml1 = new Dump(builder.build());
+        String output = yaml1.dumpToString(List.of("1111111111", "2222222222"));
         assertEquals("[\"1111111111\",\n  \"2222222222\"]\n", output);
-        output = yaml1.dumpToString(Arrays.asList("1", "2"));
+        output = yaml1.dumpToString(List.of("1", "2"));
         assertEquals("[\"1\", \"2\"]\n", output);
 
         // Split lines disabled
-        Dump yaml2 = new Dump(builder.setSplitLines(false).build());
-        output = yaml2.dumpToString(Arrays.asList("1111111111", "2222222222"));
+        var yaml2 = new Dump(builder
+            .setSplitLines(false)
+            .build());
+        output = yaml2.dumpToString(List.of("1111111111", "2222222222"));
         assertEquals("[\"1111111111\", \"2222222222\"]\n", output);
-        output = yaml2.dumpToString(Arrays.asList("1", "2"));
+        output = yaml2.dumpToString(List.of("1", "2"));
         assertEquals("[\"1\", \"2\"]\n", output);
     }
 
     @Test
-    public void testSplitLineExpectFirstFlowMappingKey() {
+    void testSplitLineExpectFirstFlowMappingKey() {
         var builder = DumpSettings.builder()
             .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
             .setDefaultFlowStyle(FlowStyle.FLOW)
@@ -222,7 +226,8 @@ public class EmitterTest {
         assertEquals("{\"1 2\": {\"3\": \"4\"}}\n", output);
 
         // Split lines disabled
-        DumpSettings noSplit = builder.setSplitLines(false).build();
+        DumpSettings noSplit = builder.setSplitLines(false)
+            .build();
         output = dump(noSplit, splitContainerMap);
         assertEquals("{\"1111111111 2222222222\": {\"3333333333\": \"4444444444\"}}\n", output);
         output = dump(noSplit, nonSplitContainerMap);
@@ -230,7 +235,7 @@ public class EmitterTest {
     }
 
     @Test
-    public void testSplitLineExpectFlowMappingKey() {
+    void testSplitLineExpectFlowMappingKey() {
         var builder = DumpSettings.builder()
             .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
             .setDefaultFlowStyle(FlowStyle.FLOW)
@@ -249,7 +254,8 @@ public class EmitterTest {
         assertEquals("{\"1\": \"2\", \"3\": \"4\"}\n", output);
 
         // Split lines disabled
-        DumpSettings noSplit = builder.setSplitLines(false).build();
+        DumpSettings noSplit = builder.setSplitLines(false)
+            .build();
         output = dump(noSplit, splitMap);
         assertEquals("{\"1111111111\": \"2222222222\", \"3333333333\": \"4444444444\"}\n", output);
         output = dump(noSplit, nonSplitMap);
@@ -257,7 +263,7 @@ public class EmitterTest {
     }
 
     @Test
-    public void testAnchorInMaps() {
+    void testAnchorInMaps() {
         var builder = DumpSettings.builder()
             .setDefaultFlowStyle(FlowStyle.FLOW);
         var map1 = new HashMap<>();
@@ -270,7 +276,7 @@ public class EmitterTest {
 
     @Test
     @DisplayName("Expected space to separate alias from colon")
-    public void testAliasAsKey() {
+    void testAliasAsKey() {
         var builder = DumpSettings.builder()
             .setDefaultFlowStyle(FlowStyle.FLOW);
         // this is VERY BAD code
@@ -280,8 +286,16 @@ public class EmitterTest {
 
         String output = dump(builder.build(), f);
         assertEquals("&id001 {*id001 : a}\n", output);
-        var load = new Load(LoadSettings.builder().setAllowRecursiveKeys(true).setAllowNonScalarKeys(true).build());
+        var load = new Load(LoadSettings.builder()
+            .setAllowRecursiveKeys(true)
+            .setAllowNonScalarKeys(true)
+            .build());
         Object obj = load.loadFromString(output);
         assertNotNull(obj);
+    }
+
+    private String dump(DumpSettings settings, Object map) {
+        return new Dump(settings)
+            .dumpToString(map);
     }
 }

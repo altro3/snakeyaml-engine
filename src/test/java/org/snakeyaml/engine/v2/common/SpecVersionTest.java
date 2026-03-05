@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Compose;
-import org.snakeyaml.engine.v2.exceptions.YamlVersionException;
 import org.snakeyaml.engine.v2.nodes.ScalarNode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,9 +60,20 @@ class SpecVersionTest {
     @Test
     @DisplayName("Version 2.0 is rejected")
     void version20() {
-        var settings = LoadSettings.builder().setLabel("spec 2.0").build();
-        var exception = assertThrows(YamlVersionException.class,
-            () -> new Compose(settings).composeString("%YAML 2.0\n---\nfoo"));
-        assertEquals("Version{major=2, minor=0}", exception.getMessage());
+        var settings = LoadSettings.builder()
+            .setLabel("spec 2.0")
+            .build();
+        var exception = assertThrows(IllegalArgumentException.class, () -> new Compose(settings).composeString("%YAML 2.0\n---\nfoo"));
+        assertEquals("Unknown YAML specification version: 2.0", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Version 1.10 is rejected")
+    void version110() {
+        var settings = LoadSettings.builder()
+            .setLabel("spec 1.10")
+            .build();
+        var exception = assertThrows(IllegalArgumentException.class, () -> new Compose(settings).composeString("%YAML 1.10\n---\nfoo"));
+        assertEquals("Unknown YAML specification version: 1.10", exception.getMessage());
     }
 }

@@ -13,32 +13,33 @@
  */
 package org.snakeyaml.engine.v2.emitter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
+
 @Tag("fast")
-public class UseUnicodeEncodingTest {
+class UseUnicodeEncodingTest {
 
     @Test
-    public void testEmitUnicode() {
-        DumpSettings settings = DumpSettings.builder().build();
-        Dump dump = new Dump(settings);
+    void testEmitUnicode() {
         String russianUnicode = "Пушкин - это наше всё! 😊";
-        assertEquals(russianUnicode + "\n", dump.dumpToString(russianUnicode));
+        assertEquals(russianUnicode + "\n", DEFAULT_DUMP.dumpToString(russianUnicode));
     }
 
     @Test
-    public void testEscapeUnicode() {
-        DumpSettings settings = DumpSettings.builder().setUseUnicodeEncoding(false).build();
-        Dump dump = new Dump(settings);
+    void testEscapeUnicode() {
+        var dump = new Dump(DumpSettings.builder()
+            .setUseUnicodeEncoding(false)
+            .build());
         String russianUnicode = "Пушкин - это наше всё! 😊";
-        assertEquals(
-            "\"\\u041f\\u0443\\u0448\\u043a\\u0438\\u043d - \\u044d\\u0442\\u043e \\u043d\\u0430\\u0448\\u0435\\\n"
-                + "  \\ \\u0432\\u0441\\u0451! \\U0001f60a\"\n",
+        assertEquals("""
+                "\\u041f\\u0443\\u0448\\u043a\\u0438\\u043d - \\u044d\\u0442\\u043e \\u043d\\u0430\\u0448\\u0435\\
+                  \\ \\u0432\\u0441\\u0451! \\U0001f60a"
+                """,
             dump.dumpToString(russianUnicode));
     }
 }

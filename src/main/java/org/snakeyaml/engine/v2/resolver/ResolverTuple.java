@@ -26,4 +26,8 @@ public record ResolverTuple(
     @NonNull Pattern regexp
 ) {
 
+    @Override
+    public @NonNull String toString() {
+        return "Tuple tag=" + tag + " regexp=" + regexp;
+    }
 }

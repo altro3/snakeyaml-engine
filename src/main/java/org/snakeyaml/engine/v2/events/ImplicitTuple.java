@@ -56,4 +56,9 @@ public enum ImplicitTuple {
             return FALSE_FALSE;
         }
     }
+
+    @Override
+    public String toString() {
+        return "implicit=[" + canOmitTagInPlainScalar + ", " + canOmitTagInNonPlainScalar + "]";
+    }
 }

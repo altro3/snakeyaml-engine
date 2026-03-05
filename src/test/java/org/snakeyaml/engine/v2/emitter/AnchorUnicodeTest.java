@@ -13,14 +13,6 @@
  */
 package org.snakeyaml.engine.v2.emitter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
@@ -29,75 +21,57 @@ import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.serializer.AnchorGenerator;
 
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @Tag("fast")
-public class AnchorUnicodeTest {
+class AnchorUnicodeTest {
 
-    private static final Set<Character> INVALID_ANCHOR = new HashSet();
-
-    static {
-        INVALID_ANCHOR.add('[');
-        INVALID_ANCHOR.add(']');
-        INVALID_ANCHOR.add('{');
-        INVALID_ANCHOR.add('}');
-        INVALID_ANCHOR.add(',');
-        INVALID_ANCHOR.add('*');
-        INVALID_ANCHOR.add('&');
-    }
+    private static final Set<Character> INVALID_ANCHOR = Set.of(
+        '[',
+        ']',
+        '{',
+        '}',
+        ',',
+        '*',
+        '&'
+    );
 
     @Test
-    public void testUnicodeAnchor() {
-        DumpSettings settings = DumpSettings.builder().setAnchorGenerator(new AnchorGenerator() {
-            int id = 0;
+    void testUnicodeAnchor() {
+        var settings = DumpSettings.builder()
+            .setAnchorGenerator(new AnchorGenerator() {
+                int id = 0;
 
-            @Override
-            public Anchor nextAnchor(Node node) {
-                return new Anchor("タスク" + id++);
-            }
-        }).build();
-        Dump dump = new Dump(settings);
-        List<String> list = new ArrayList<>();
-        list.add("abc");
-
-        List<List<String>> toExport = new ArrayList<>();
-        toExport.add(list);
-        toExport.add(list);
-
+                @Override
+                public Anchor nextAnchor(Node node) {
+                    return new Anchor("タスク" + id++);
+                }
+            })
+            .build();
+        var dump = new Dump(settings);
+        var list = List.of("abc");
+        var toExport = List.of(list, list);
         String output = dump.dumpToString(toExport);
         assertEquals("- &タスク0 [abc]\n- *タスク0\n", output);
     }
 
     @Test
-    public void testInvalidAnchor() {
+    void testInvalidAnchor() {
         for (Character ch : INVALID_ANCHOR) {
-            Dump dump = new Dump(createSettings(ch));
-            List<String> list = new ArrayList<>();
-            list.add("abc");
-
-            List<List<String>> toExport = new ArrayList<>();
-            toExport.add(list);
-            toExport.add(list);
-            try {
-                dump.dumpToString(toExport);
-                fail();
-            } catch (Exception e) {
-                String message = "Invalid character '" + ch + "' in the anchor: anchor" + ch;
-                assertEquals(message, e.getMessage());
-            }
+            var dump = new Dump(createSettings(ch));
+            var list = List.of("abc");
+            var toExport = List.of(list, list);
+            var e = assertThrows(Exception.class, () -> dump.dumpToString(toExport));
+            assertEquals("Invalid character '" + ch + "' in the anchor: anchor" + ch, e.getMessage());
         }
     }
 
-
-    private DumpSettings createSettings(final Character invalid) {
-        return DumpSettings.builder().setAnchorGenerator(new AnchorGenerator() {
-            @Override
-            public Anchor nextAnchor(Node node) {
-                return new Anchor("anchor" + invalid);
-            }
-        }).build();
-    }
-
     @Test
-    public void testAnchors() {
+    void testAnchors() {
         assertEquals("a", new Anchor("a").toString());
         assertEquals("Anchor may not contain spaces: a ", checkAnchor("a "));
         assertEquals("Anchor may not contain spaces: a \t", checkAnchor("a \t"));
@@ -108,6 +82,12 @@ public class AnchorUnicodeTest {
         assertEquals("Invalid character ',' in the anchor: a,b", checkAnchor("a,b"));
         assertEquals("Invalid character '*' in the anchor: a*b", checkAnchor("a*b"));
         assertEquals("Invalid character '&' in the anchor: a&b", checkAnchor("a&b"));
+    }
+
+    private DumpSettings createSettings(final Character invalid) {
+        return DumpSettings.builder()
+            .setAnchorGenerator(node -> new Anchor("anchor" + invalid))
+            .build();
     }
 
     private String checkAnchor(String a) {
