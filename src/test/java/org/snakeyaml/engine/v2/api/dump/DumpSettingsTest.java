@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
 
 @Tag("fast")
 class DumpSettingsTest {
@@ -43,7 +44,7 @@ class DumpSettingsTest {
     @Test
     @DisplayName("Check default values")
     void defaults() {
-        DumpSettings settings = DumpSettings.builder().build();
+        var settings = DEFAULT_DUMP_SETTINGS;
 
         assertEquals("\n", settings.bestLineBreak());
         assertEquals(2, settings.indent());
@@ -61,7 +62,7 @@ class DumpSettingsTest {
         assertEquals(128, settings.maxSimpleKeyLength());
         assertEquals(NonPrintableStyle.ESCAPE, settings.nonPrintableStyle());
         assertEquals(80, settings.width());
-        assertNull(settings.yamlDirective());
+        assertEquals(SpecVersion.EMPTY, settings.yamlDirective());
         assertEquals(new HashMap<>(), settings.tagDirective());
         assertNotNull(settings.anchorGenerator());
     }
@@ -69,8 +70,9 @@ class DumpSettingsTest {
     @Test
     @DisplayName("Canonical output")
     void setCanonical() {
-        var settings = DumpSettings.builder().setCanonical(true).build();
-        var dump = new Dump(settings);
+        var dump = new Dump(DumpSettings.builder()
+            .setCanonical(true)
+            .build());
         var data = new ArrayList<Integer>();
         for (int i = 0; i < 2; i++) {
             data.add(i);
@@ -88,8 +90,9 @@ class DumpSettingsTest {
     @Test
     @DisplayName("Use Windows line break")
     void setBestLineBreak() {
-        var settings = DumpSettings.builder().setBestLineBreak("\r\n").build();
-        var dump = new Dump(settings);
+        var dump = new Dump(DumpSettings.builder()
+            .setBestLineBreak("\r\n")
+            .build());
         var data = new ArrayList<Integer>();
         for (int i = 0; i < 2; i++) {
             data.add(i);
@@ -100,8 +103,9 @@ class DumpSettingsTest {
 
     @Test
     void setMultiLineFlow() {
-        var settings = DumpSettings.builder().setMultiLineFlow(true).build();
-        var dump = new Dump(settings);
+        var dump = new Dump(DumpSettings.builder()
+            .setMultiLineFlow(true)
+            .build());
         var data = new ArrayList<Integer>();
         for (int i = 0; i < 3; i++) {
             data.add(i);
@@ -122,8 +126,9 @@ class DumpSettingsTest {
         var tagDirectives = new TreeMap<String, String>();
         tagDirectives.put("!yaml!", "tag:yaml.org,2002:");
         tagDirectives.put("!python!", "!python");
-        var settings = DumpSettings.builder().setTagDirective(tagDirectives).build();
-        var dump = new Dump(settings);
+        var dump = new Dump(DumpSettings.builder()
+            .setTagDirective(tagDirectives)
+            .build());
         String str = dump.dumpToString("data");
         assertEquals("""
             %TAG !python! !python
@@ -167,7 +172,9 @@ class DumpSettingsTest {
 
     @Test
     void dumpCustomProperty() {
-        var settings = DumpSettings.builder().setCustomProperty(new KeyName("key"), "value").build();
+        var settings = DumpSettings.builder()
+            .setCustomProperty(new KeyName("key"), "value")
+            .build();
         assertEquals("value", settings.getCustomProperty(new KeyName("key")));
         assertNull(settings.getCustomProperty(new KeyName("None")));
     }

@@ -22,13 +22,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @Tag("fast")
 class DumpTest {
@@ -45,58 +49,53 @@ class DumpTest {
     @Test
     @DisplayName("Dump int")
     void dumpInteger() {
-        DumpSettings settings = DumpSettings.builder().build();
-        Dump dump = new Dump(settings);
-        String str = dump.dumpToString(Integer.valueOf(1));
+        String str = DEFAULT_DUMP.dumpToString(1);
         assertEquals("1\n", str);
     }
 
     @Test
     @DisplayName("Dump boolean")
     void dumpBoolean() {
-        var settings = DumpSettings.builder().build();
-        var dump = new Dump(settings);
-        String str = dump.dumpToString(Boolean.TRUE);
+        String str = DEFAULT_DUMP.dumpToString(Boolean.TRUE);
         assertEquals("true\n", str);
     }
 
     @Test
     @DisplayName("Dump seq")
     void dumpSequence() {
-        var settings = DumpSettings.builder().build();
-        var dump = new Dump(settings);
-        String str = dump.dumpToString(List.of(2, "a", Boolean.TRUE));
+        String str = DEFAULT_DUMP.dumpToString(List.of(2, "a", Boolean.TRUE));
         assertEquals("[2, a, true]\n", str);
     }
 
     @Test
     @DisplayName("Dump map")
     void dumpMapping() {
-        var settings = DumpSettings.builder().build();
-        var dump = new Dump(settings);
-        String output = dump.dumpToString(Map.of("x", 1, "y", 2, "z", 3));
+        var map = new LinkedHashMap<String, Object>() {{
+            put("x", 1);
+            put("y", 2);
+            put("z", 3);
+        }};
+        String output = DEFAULT_DUMP.dumpToString(map);
         assertEquals("{x: 1, y: 2, z: 3}\n", output);
     }
 
     @Test
     @DisplayName("Dump all instances")
     void dumpAll() {
-        var settings = DumpSettings.builder().build();
-        var dump = new Dump(settings);
+        var list = new ArrayList<>() {{
+            add("a");
+            add(null);
+            add(Boolean.TRUE);
+        }};
         var streamToStringWriter = new StreamToStringWriter();
-        var list = new ArrayList<>() {
-            {
-                add("a");
-                add(null);
-                add(Boolean.TRUE);
-            }
-        };
-        dump.dumpAll(list.iterator(), streamToStringWriter);
-        assertEquals("a\n" + "--- null\n" + "--- true\n", streamToStringWriter.toString());
+        DEFAULT_DUMP.dumpAll(list.iterator(), streamToStringWriter);
+        assertEquals("""
+            a
+            --- null
+            --- true
+            """, streamToStringWriter.toString());
         // load back
-        var loadSettings = LoadSettings.builder().build();
-        var load = new Load(loadSettings);
-        for (Object obj : load.loadAllFromString(streamToStringWriter.toString())) {
+        for (Object obj : DEFAULT_LOAD.loadAllFromString(streamToStringWriter.toString())) {
             assertEquals(list.remove(0), obj);
         }
     }
@@ -104,21 +103,19 @@ class DumpTest {
     @Test
     @DisplayName("Dump all instances")
     void dumpAllToString() {
-        var settings = DumpSettings.builder().build();
-        var dump = new Dump(settings);
-        var list = new ArrayList<>() {
-            {
-                add("a");
-                add(null);
-                add(Boolean.TRUE);
-            }
-        };
-        String output = dump.dumpAllToString(list.iterator());
-        assertEquals("a\n" + "--- null\n" + "--- true\n", output);
+        var list = new ArrayList<>() {{
+            add("a");
+            add(null);
+            add(Boolean.TRUE);
+        }};
+        String output = DEFAULT_DUMP.dumpAllToString(list.iterator());
+        assertEquals("""
+            a
+            --- null
+            --- true
+            """, output);
         // load back
-        var loadSettings = LoadSettings.builder().build();
-        var load = new Load(loadSettings);
-        for (Object obj : load.loadAllFromString(output)) {
+        for (Object obj : DEFAULT_LOAD.loadAllFromString(output)) {
             assertEquals(list.remove(0), obj);
         }
     }
@@ -126,20 +123,20 @@ class DumpTest {
     @Test
     @DisplayName("Dump to File")
     void dumpToFile() throws IOException {
-        var settings = DumpSettings.builder().build();
-        var dump = new Dump(settings);
-        var file = new File("target/temp.yaml");
-        file.delete();
-        assertFalse(file.exists());
-        file.createNewFile();
+        File file = null;
+        try {
+            file = Files.createTempFile("snakeyaml-test", "dump-to-file").toFile().getCanonicalFile();
+        } catch (IOException e) {
+            fail("Unable to create temporary file for output");
+        }
+        file.deleteOnExit();
         var writer = new YamlOutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8) {
             @Override
             public void processIOException(IOException e) {
                 throw new RuntimeException(e);
             }
         };
-        dump.dump(Map.of("x", 1, "y", 2, "z", 3), writer);
+        DEFAULT_DUMP.dump(Map.of("x", 1, "y", 2, "z", 3), writer);
         assertTrue(file.exists());
-        file.delete();// on Windows the file is not deleted
     }
 }
