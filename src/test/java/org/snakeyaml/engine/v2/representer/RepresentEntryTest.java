@@ -27,39 +27,43 @@ import org.snakeyaml.engine.v2.nodes.NodeTuple;
 import org.snakeyaml.engine.v2.serializer.Serializer;
 import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("fast")
-public class RepresentEntryTest {
+class RepresentEntryTest {
 
-    private final DumpSettings settings =
-        DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.PLAIN)
-            .setDefaultFlowStyle(FlowStyle.BLOCK).setDumpComments(true).build();
-    private final CommentedEntryRepresenter commentedEntryRepresenter =
-        new CommentedEntryRepresenter(settings);
-
-    private Map<String, String> createMap() {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("a", "val1");
-        return map;
-    }
+    private final DumpSettings settings = DumpSettings.builder()
+        .setDefaultScalarStyle(ScalarStyle.PLAIN)
+        .setDefaultFlowStyle(FlowStyle.BLOCK)
+        .setDumpComments(true)
+        .build();
+    private final CommentedEntryRepresenter commentedEntryRepresenter = new CommentedEntryRepresenter(settings);
 
     @Test
     @DisplayName("Represent and dump mapping nodes using the new method")
     void representMapping() {
         var stringOutputStream = new StreamToStringWriter();
 
-        Serializer serializer = new Serializer(settings, new Emitter(settings, stringOutputStream));
+        var serializer = new Serializer(settings, new Emitter(settings, stringOutputStream));
         serializer.emitStreamStart();
         serializer.serializeDocument(commentedEntryRepresenter.represent(createMap()));
         serializer.emitStreamEnd();
 
-        assertEquals("#Key node block comment\n" + "a: val1 #Value node inline comment\n",
+        assertEquals("""
+                #Key node block comment
+                a: val1 #Value node inline comment
+                """,
             stringOutputStream.toString());
+    }
+
+    private Map<String, String> createMap() {
+        var map = new LinkedHashMap<String, String>();
+        map.put("a", "val1");
+        return map;
     }
 
     private static class CommentedEntryRepresenter extends StandardRepresenter {
@@ -71,12 +75,10 @@ public class RepresentEntryTest {
         @Override
         protected @NonNull NodeTuple representMappingEntry(Map.Entry<?, ?> entry) {
             NodeTuple tuple = super.representMappingEntry(entry);
-            var keyBlockComments = new ArrayList<CommentLine>();
-            keyBlockComments.add(new CommentLine(null, null, "Key node block comment", CommentType.BLOCK));
+            var keyBlockComments = List.of(new CommentLine(null, null, "Key node block comment", CommentType.BLOCK));
             tuple.keyNode().setBlockComments(keyBlockComments);
 
-            var valueEndComments = new ArrayList<CommentLine>();
-            valueEndComments.add(new CommentLine(null, null, "Value node inline comment", CommentType.IN_LINE));
+            var valueEndComments = List.of(new CommentLine(null, null, "Value node inline comment", CommentType.IN_LINE));
             tuple.valueNode().setEndComments(valueEndComments);
 
             return tuple;

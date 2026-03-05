@@ -20,59 +20,31 @@ import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Test for issue
- * https://bitbucket.org/snakeyaml/snakeyaml-engine/issues/9/indentation-before-sequence
+ * Test for <a href="https://bitbucket.org/snakeyaml/snakeyaml-engine/issues/9/indentation-before-sequence">issue</a>
  */
 @Tag("fast")
 class IndentationTest {
-
-    private ArrayList createList(String v1, String v2) {
-        ArrayList<Object> sequence = new ArrayList();
-        sequence.add(v1);
-        sequence.add(v2);
-        return sequence;
-    }
-
-    private LinkedHashMap<Object, Object> createMap() {
-        LinkedHashMap<Object, Object> mapping = new LinkedHashMap();
-        mapping.put("key1", createList("value1", "value2"));
-        mapping.put("key2", createList("value3", "value4"));
-        return mapping;
-    }
-
-    private ArrayList<Object> createSequence() {
-        ArrayList<Object> sequence = new ArrayList();
-        LinkedHashMap<Object, Object> mapping1 = new LinkedHashMap();
-        mapping1.put("key1", "value1");
-        mapping1.put("key2", "value2");
-        sequence.add(mapping1);
-        LinkedHashMap<Object, Object> mapping2 = new LinkedHashMap();
-        mapping2.put("key3", "value3");
-        mapping2.put("key4", "value4");
-        sequence.add(mapping2);
-        return sequence;
-    }
-
-    private Dump createDump(int indicatorIndent) {
-        return new Dump(DumpSettings.builder()
-            .setDefaultFlowStyle(FlowStyle.BLOCK)
-            .setIndicatorIndent(indicatorIndent)
-            .setIndent(indicatorIndent + 2)
-            .build());
-    }
 
     @Test
     @DisplayName("Dump block map seq with default indent settings")
     void dumpBlockMappingSequenceWithDefaultSettings() {
         Dump dump = createDump(0);
         String output = dump.dumpToString(createMap());
-        assertEquals("key1:\n" + "- value1\n" + "- value2\n" + "key2:\n" + "- value3\n" + "- value4\n",
+        assertEquals("""
+                key1:
+                - value1
+                - value2
+                key2:
+                - value3
+                - value4
+                """,
             output);
     }
 
@@ -81,7 +53,12 @@ class IndentationTest {
     void dumpBlockSequenceMappingWithDefaultSettings() {
         Dump dump = createDump(0);
         String output = dump.dumpToString(createSequence());
-        assertEquals("- key1: value1\n" + "  key2: value2\n" + "- key3: value3\n" + "  key4: value4\n",
+        assertEquals("""
+                - key1: value1
+                  key2: value2
+                - key3: value3
+                  key4: value4
+                """,
             output);
     }
 
@@ -91,7 +68,14 @@ class IndentationTest {
         Dump dump = createDump(2);
         String output = dump.dumpToString(createMap());
         assertEquals(
-            "key1:\n" + "  - value1\n" + "  - value2\n" + "key2:\n" + "  - value3\n" + "  - value4\n",
+            """
+                key1:
+                  - value1
+                  - value2
+                key2:
+                  - value3
+                  - value4
+                """,
             output);
     }
 
@@ -101,7 +85,37 @@ class IndentationTest {
         Dump dump = createDump(2);
         String output = dump.dumpToString(createSequence());
         assertEquals(
-            "  - key1: value1\n" + "    key2: value2\n" + "  - key3: value3\n" + "    key4: value4\n",
+            """
+                  - key1: value1
+                    key2: value2
+                  - key3: value3
+                    key4: value4
+                """,
             output);
+    }
+
+    private Map<Object, Object> createMap() {
+        var mapping = new LinkedHashMap<>();
+        mapping.put("key1", List.of("value1", "value2"));
+        mapping.put("key2", List.of("value3", "value4"));
+        return mapping;
+    }
+
+    private List<Object> createSequence() {
+        var mapping1 = new LinkedHashMap<>();
+        mapping1.put("key1", "value1");
+        mapping1.put("key2", "value2");
+        var mapping2 = new LinkedHashMap<>();
+        mapping2.put("key3", "value3");
+        mapping2.put("key4", "value4");
+        return List.of(mapping1, mapping2);
+    }
+
+    private Dump createDump(int indicatorIndent) {
+        return new Dump(DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setIndicatorIndent(indicatorIndent)
+            .setIndent(indicatorIndent + 2)
+            .build());
     }
 }

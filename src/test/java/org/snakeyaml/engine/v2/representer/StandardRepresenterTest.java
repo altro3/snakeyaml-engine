@@ -13,47 +13,42 @@
  */
 package org.snakeyaml.engine.v2.representer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.google.common.collect.TreeRangeSet;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
+import org.snakeyaml.engine.v2.nodes.MappingNode;
+import org.snakeyaml.engine.v2.nodes.Node;
+import org.snakeyaml.engine.v2.nodes.SequenceNode;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Dump;
-import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
-import org.snakeyaml.engine.v2.nodes.MappingNode;
-import org.snakeyaml.engine.v2.nodes.Node;
-import org.snakeyaml.engine.v2.nodes.SequenceNode;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
 
 @Tag("fast")
 class StandardRepresenterTest {
 
-    private final StandardRepresenter standardRepresenter =
-        new StandardRepresenter(DumpSettings.builder().build());
+    private final StandardRepresenter standardRepresenter = new StandardRepresenter(DEFAULT_DUMP_SETTINGS);
 
     @Test
     @DisplayName("Represent unknown class")
     void representUnknownClass() {
-        YamlEngineException exception = assertThrows(YamlEngineException.class,
-            () -> standardRepresenter.represent(TreeRangeSet.create()));
-        assertEquals("Representer is not defined for class com.google.common.collect.TreeRangeSet",
-            exception.getMessage());
+        var e = assertThrows(YamlEngineException.class, () -> standardRepresenter.represent(TreeRangeSet.create()));
+        assertEquals("Representer is not defined for class com.google.common.collect.TreeRangeSet", e.getMessage());
     }
 
     @Test
     @DisplayName("Represent Enum as node with global tag")
     void representEnum() {
         Node node = standardRepresenter.represent(FormatEnum.JSON);
-        assertEquals("tag:yaml.org,2002:org.snakeyaml.engine.v2.representer.FormatEnum",
-            node.getTag().getValue());
+        assertEquals("tag:yaml.org,2002:org.snakeyaml.engine.v2.representer.FormatEnum", node.getTag().getValue());
     }
 
     @Test
@@ -67,8 +62,7 @@ class StandardRepresenterTest {
         assertEquals(2, seq.getValue().size());
         seq.getValue().forEach(n -> assertEquals("tag:yaml.org,2002:str", n.getTag().getValue()));
         // dump
-        var dumper = new Dump(DumpSettings.builder().build());
-        assertEquals("[hello, world]\n", dumper.dumpToString(listOfStrings.iterator()));
+        assertEquals("[hello, world]\n", DEFAULT_DUMP.dumpToString(listOfStrings.iterator()));
     }
 
     @Test
@@ -80,7 +74,6 @@ class StandardRepresenterTest {
         var seq = (MappingNode) node;
         assertEquals(2, seq.getValue().size());
         // dump
-        var dumper = new Dump(DumpSettings.builder().build());
-        assertEquals("[aaa, bbb]\n", dumper.dumpToString(setOfStrings.iterator()));
+        assertEquals("[aaa, bbb]\n", DEFAULT_DUMP.dumpToString(setOfStrings.iterator()));
     }
 }

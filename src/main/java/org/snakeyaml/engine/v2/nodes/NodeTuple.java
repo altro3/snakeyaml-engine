@@ -23,4 +23,9 @@ public record NodeTuple(
     @NonNull Node valueNode
 ) {
 
+
+    @Override
+    public @NonNull String toString() {
+        return "<NodeTuple keyNode=" + keyNode + "; valueNode=" + valueNode + ">";
+    }
 }

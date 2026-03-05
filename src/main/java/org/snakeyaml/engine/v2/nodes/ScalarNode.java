@@ -71,6 +71,6 @@ public class ScalarNode extends Node {
 
     @Override
     public String toString() {
-        return "<ScalarNode (tag=" + getTag() + ", value=" + getValue() + ")>";
+        return "<" + this.getClass().getName() +" (tag=" + getTag() + ", value=" + getValue() + ")>";
     }
 }

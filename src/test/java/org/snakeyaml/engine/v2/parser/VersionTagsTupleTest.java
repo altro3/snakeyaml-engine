@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.v2.common.SpecVersion;
 
 import java.util.Map;
 
@@ -25,7 +26,7 @@ class VersionTagsTupleTest {
 
     @Test
     void testToString() {
-        var tuple = new VersionTagsTuple(null, Map.of());
-        assertEquals("VersionTagsTuple<Optional.empty, {}>", tuple.toString());
+        var tuple = new VersionTagsTuple(SpecVersion.EMPTY, Map.of());
+        assertEquals("VersionTagsTuple<Version{major=0, minor=0}, {}>", tuple.toString());
     }
 }

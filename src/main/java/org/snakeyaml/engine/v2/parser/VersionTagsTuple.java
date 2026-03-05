@@ -28,4 +28,8 @@ record VersionTagsTuple(
     Map<String, String> tags
 ) {
 
+    @Override
+    public @NonNull String toString() {
+        return "VersionTagsTuple<" + specVersion + ", " + tags + ">";
+    }
 }

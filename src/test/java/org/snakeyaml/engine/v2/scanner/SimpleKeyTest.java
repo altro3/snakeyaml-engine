@@ -24,9 +24,8 @@ class SimpleKeyTest {
     @Test
     @DisplayName("Resolve implicit integer")
     void testToString() {
-        SimpleKey simpleKey = new SimpleKey(0, true, 0, 0, 0, null);
-        assertEquals("SimpleKey - tokenNumber=0 required=true index=0 line=0 column=0",
-            simpleKey.toString());
+        var simpleKey = new SimpleKey(0, true, 0, 0, 0, null);
+        assertEquals("SimpleKey[tokenNumber=0, required=true, index=0, line=0, column=0, mark=null]", simpleKey.toString());
     }
 }
 

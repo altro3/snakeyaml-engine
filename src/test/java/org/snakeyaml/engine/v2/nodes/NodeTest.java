@@ -25,21 +25,21 @@ class NodeTest {
 
     @Test
     void notEqualToTheSameNode() {
-        Node node1 = new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN);
-        Node node2 = new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN);
-        assertNotEquals(node1, node2, "Nodes with the same contant are not equal");
-        assertNotEquals(node2, node1, "Nodes with the same contant are not equal");
+        var node1 = new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN);
+        var node2 = new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN);
+        assertNotEquals(node1, node2, "Nodes with the same value are not equal");
+        assertNotEquals(node2, node1, "Nodes with the same value are not equal");
     }
 
     @Test
     void equalsToItself() {
-        Node node = new ScalarNode(org.snakeyaml.engine.v2.nodes.Tag.STR, "a", ScalarStyle.PLAIN);
+        var node = new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN);
         assertEquals(node, node);
     }
 
     @Test
     void properties() {
-        Node node = new ScalarNode(org.snakeyaml.engine.v2.nodes.Tag.STR, "a", ScalarStyle.PLAIN);
+        var node = new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN);
         assertNull(node.getProperty("p"));
         assertNull(node.setProperty("p", "value"));
         assertEquals("value", node.getProperty("p"));
