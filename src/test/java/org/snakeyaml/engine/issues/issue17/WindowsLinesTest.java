@@ -15,6 +15,7 @@ package org.snakeyaml.engine.issues.issue17;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 import java.util.Map;
 
@@ -27,10 +28,8 @@ public class WindowsLinesTest {
 
     @Test
     void parseWindowsNewLine() {
-        Load loader = new Load(LoadSettings.builder().build());
-        String source = "parent:\r\n  key: value";
-        // System.out.println(source);
-        Map<String, String> list = (Map<String, String>) loader.loadFromString(source);
+        @SuppressWarnings("unchecked")
+        var list = (Map<String, String>) DEFAULT_LOAD.loadFromString("parent:\r\n  key: value");
         assertEquals(1, list.size());
         assertNotNull(list.get("parent"));
     }

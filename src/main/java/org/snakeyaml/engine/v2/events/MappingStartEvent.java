@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.events;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -34,12 +35,12 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class MappingStartEvent extends CollectionStartEvent {
 
-    public MappingStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle,
+    public MappingStartEvent(Anchor anchor, @Nullable String tag, boolean implicit, FlowStyle flowStyle,
                              Mark startMark, Mark endMark) {
         super(anchor, tag, implicit, flowStyle, startMark, endMark);
     }
 
-    public MappingStartEvent(Anchor anchor, String tag, boolean implicit, FlowStyle flowStyle) {
+    public MappingStartEvent(Anchor anchor, @Nullable String tag, boolean implicit, FlowStyle flowStyle) {
         this(anchor, tag, implicit, flowStyle, null, null);
     }
 

@@ -13,15 +13,9 @@
  */
 package org.snakeyaml.engine.issues.issue23;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.StringWriter;
-import java.util.HashMap;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.emitter.Emitter;
@@ -29,20 +23,28 @@ import org.snakeyaml.engine.v2.events.DocumentStartEvent;
 import org.snakeyaml.engine.v2.events.ImplicitTuple;
 import org.snakeyaml.engine.v2.events.ScalarEvent;
 import org.snakeyaml.engine.v2.events.StreamStartEvent;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
+
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
 
 @org.junit.jupiter.api.Tag("fast")
 public class EmptyStringOutputTest {
 
     @Test
     void outputEmptyString() {
-        Dump dumper = new Dump(DumpSettings.builder().build());
-        String output = dumper.dumpToString("");
+        String output = DEFAULT_DUMP.dumpToString("");
         assertEquals("''\n", output, "The output must NOT contain ---");
     }
 
     @Test
     void outputEmptyStringWithExplicitStart() {
-        Dump dumper = new Dump(DumpSettings.builder().setExplicitStart(true).build());
+        var dumper = new Dump(DumpSettings.builder()
+            .setExplicitStart(true)
+            .build());
         String output = dumper.dumpToString("");
         assertEquals("--- ''\n", output, "The output must contain ---");
     }
@@ -58,18 +60,11 @@ public class EmptyStringOutputTest {
     }
 
     private String dump(String value) {
-        DumpSettings settings = DumpSettings.builder().build();
-        MyWriter writer = new MyWriter();
-        Emitter emitter = new Emitter(settings, writer);
-        emitter.emit(new StreamStartEvent());
-        emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
-        emitter.emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_FALSE, value,
-            ScalarStyle.PLAIN, null, null));
+        var writer = new StreamToStringWriter();
+        new Emitter(DEFAULT_DUMP_SETTINGS, writer)
+            .emit(new StreamStartEvent())
+            .emit(new DocumentStartEvent(false, SpecVersion.EMPTY, Map.of()))
+            .emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_FALSE, value, ScalarStyle.PLAIN, null, null));
         return writer.toString();
     }
-}
-
-
-class MyWriter extends StringWriter implements StreamDataWriter {
-
 }

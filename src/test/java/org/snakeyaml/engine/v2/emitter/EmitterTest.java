@@ -20,7 +20,6 @@ import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.common.SpecVersion;
@@ -28,9 +27,8 @@ import org.snakeyaml.engine.v2.events.DocumentStartEvent;
 import org.snakeyaml.engine.v2.events.ImplicitTuple;
 import org.snakeyaml.engine.v2.events.ScalarEvent;
 import org.snakeyaml.engine.v2.events.StreamStartEvent;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,7 +53,7 @@ public class EmitterTest {
         DumpSettings settings =
             DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.FOLDED).build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla\n");
         String output = dump(settings, map);
@@ -69,7 +67,7 @@ public class EmitterTest {
         DumpSettings settings =
             DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.LITERAL).build();
         String folded = "0123456789 0123456789 0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla\n");
         String output = dump(settings, map);
@@ -82,7 +80,7 @@ public class EmitterTest {
     public void testWritePlain() {
         DumpSettings settings = DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.PLAIN).build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
@@ -96,7 +94,7 @@ public class EmitterTest {
         DumpSettings settings = DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.PLAIN)
             .setMultiLineFlow(true).build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
@@ -110,7 +108,7 @@ public class EmitterTest {
         DumpSettings settings =
             DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED).build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
@@ -124,7 +122,7 @@ public class EmitterTest {
         DumpSettings settings =
             DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED).build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
@@ -135,11 +133,11 @@ public class EmitterTest {
 
     // Issue #158
     @Test
-    public void testWriteSupplementaryUnicode() throws IOException {
+    public void testWriteSupplementaryUnicode() {
         DumpSettings settings = DumpSettings.builder().setUseUnicodeEncoding(false).build();
         String burger = new String(Character.toChars(0x1f354));
         String halfBurger = "\uD83C";
-        StreamDataWriter output = new MyDumperWriter();
+        var output = new StreamToStringWriter();
         Emitter emitter = new Emitter(settings, output);
 
         emitter.emit(new StreamStartEvent(null, null));
@@ -262,8 +260,8 @@ public class EmitterTest {
     public void testAnchorInMaps() {
         var builder = DumpSettings.builder()
             .setDefaultFlowStyle(FlowStyle.FLOW);
-        var map1 = new HashMap<Object, Object>();
-        var map2 = new HashMap<Object, Object>();
+        var map1 = new HashMap<>();
+        var map2 = new HashMap<>();
         map1.put("2", map2);
         map2.put("1", map1);
         String output = dump(builder.build(), map1);
@@ -285,9 +283,5 @@ public class EmitterTest {
         var load = new Load(LoadSettings.builder().setAllowRecursiveKeys(true).setAllowNonScalarKeys(true).build());
         Object obj = load.loadFromString(output);
         assertNotNull(obj);
-    }
-
-    public static class MyDumperWriter extends StringWriter implements StreamDataWriter {
-
     }
 }

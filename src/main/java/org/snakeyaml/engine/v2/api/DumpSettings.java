@@ -81,7 +81,7 @@ public record DumpSettings(
         private NonPrintableStyle nonPrintableStyle = NonPrintableStyle.ESCAPE;
         private Tag explicitRootTag;
         private AnchorGenerator anchorGenerator = new NumberAnchorGenerator(0);
-        private SpecVersion yamlDirective;
+        private SpecVersion yamlDirective = SpecVersion.EMPTY;
         private Map<String, String> tagDirective = new HashMap<>();
         private FlowStyle defaultFlowStyle = FlowStyle.AUTO;
         private ScalarStyle defaultScalarStyle = ScalarStyle.PLAIN;

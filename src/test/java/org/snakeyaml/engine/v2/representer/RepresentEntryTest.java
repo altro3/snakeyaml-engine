@@ -13,19 +13,11 @@
  */
 package org.snakeyaml.engine.v2.representer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.comments.CommentLine;
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.common.FlowStyle;
@@ -33,6 +25,13 @@ import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.nodes.NodeTuple;
 import org.snakeyaml.engine.v2.serializer.Serializer;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("fast")
 public class RepresentEntryTest {
@@ -52,7 +51,7 @@ public class RepresentEntryTest {
     @Test
     @DisplayName("Represent and dump mapping nodes using the new method")
     void representMapping() {
-        StringOutputStream stringOutputStream = new StringOutputStream();
+        var stringOutputStream = new StreamToStringWriter();
 
         Serializer serializer = new Serializer(settings, new Emitter(settings, stringOutputStream));
         serializer.emitStreamStart();
@@ -63,7 +62,7 @@ public class RepresentEntryTest {
             stringOutputStream.toString());
     }
 
-    private class CommentedEntryRepresenter extends StandardRepresenter {
+    private static class CommentedEntryRepresenter extends StandardRepresenter {
 
         public CommentedEntryRepresenter(DumpSettings settings) {
             super(settings);
@@ -82,9 +81,5 @@ public class RepresentEntryTest {
 
             return tuple;
         }
-    }
-
-    private class StringOutputStream extends StringWriter implements StreamDataWriter {
-
     }
 }

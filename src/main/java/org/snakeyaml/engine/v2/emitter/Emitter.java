@@ -232,13 +232,14 @@ public final class Emitter implements Emitable {
     }
 
     @Override
-    public void emit(Event event) {
+    public Emitable emit(Event event) {
         this.events.add(event);
         while (!needMoreEvents()) {
             this.event = this.events.poll();
             this.state.expect();
             this.event = null;
         }
+        return this;
     }
 
     // In some cases, we wait for a few next events before emitting.
@@ -371,18 +372,18 @@ public final class Emitter implements Emitable {
         }
 
         private void handleDocumentStartEvent(DocumentStartEvent ev) {
-            if ((ev.getSpecVersion() != null || !ev.getTags().isEmpty()) && openEnded) {
+            if ((!ev.getSpecVersion().isEmpty() || !ev.getTags().isEmpty()) && openEnded) {
                 writeIndicator("...", true, false, false);
                 writeIndent();
             }
-            if (ev.getSpecVersion() != null) {
+            if (!ev.getSpecVersion().isEmpty()) {
                 writeVersionDirective(prepareVersion(ev.getSpecVersion()));
             }
             tagPrefixes = new LinkedHashMap<>(DEFAULT_TAG_PREFIXES);
             if (!ev.getTags().isEmpty()) {
                 handleTagDirectives(ev.getTags());
             }
-            boolean implicit = first && !ev.isExplicit() && !canonical && ev.getSpecVersion() == null && (ev.getTags().isEmpty()) && !checkEmptyDocument();
+            boolean implicit = first && !ev.isExplicit() && !canonical && ev.getSpecVersion().isEmpty() && (ev.getTags().isEmpty()) && !checkEmptyDocument();
             if (!implicit) {
                 writeIndent();
                 writeIndicator("---", true, false, false);
@@ -410,7 +411,7 @@ public final class Emitter implements Emitable {
             Event nextEvent = events.peek();
             if (nextEvent.getEventId() == Event.Id.Scalar) {
                 var e = (ScalarEvent) nextEvent;
-                return e.getAnchor() == null && e.getTag().isEmpty() && e.getImplicit() != null && e.getValue().isEmpty();
+                return e.getAnchor() == null && (e.getTag() == null || e.getTag().isEmpty()) && e.getValue().isEmpty();
             }
             return false;
         }
@@ -742,8 +743,7 @@ public final class Emitter implements Emitable {
                 if (!blockCommentsCollector.isEmpty()) {
                     increaseIndent(false, false);
                     writeBlockComment();
-                    if (event instanceof ScalarEvent) {
-                        ScalarEvent scalarEvent = (ScalarEvent) event;
+                    if (event instanceof ScalarEvent scalarEvent) {
                         if (analysis == null) {
                             analysis = analyzeScalar(scalarEvent.getValue());
                         }
@@ -875,8 +875,8 @@ public final class Emitter implements Emitable {
 
     private boolean checkSimpleKey() {
         int length = 0;
-        if (event instanceof NodeEvent) {
-            Anchor anchor = ((NodeEvent) event).getAnchor();
+        if (event instanceof NodeEvent nodeEvent) {
+            Anchor anchor = nodeEvent.getAnchor();
             if (anchor != null) {
                 if (preparedAnchor == null) {
                     preparedAnchor = anchor;
@@ -946,25 +946,25 @@ public final class Emitter implements Emitable {
                 scalarStyle = chooseScalarStyle(ev);
             }
             // check when no tag is required
-            if ((!canonical || tag.isEmpty()) && ((scalarStyle == ScalarStyle.PLAIN
+            if ((!canonical || tag == null || tag.isEmpty()) && ((scalarStyle == ScalarStyle.PLAIN
                 && ev.getImplicit().isCanOmitTagInPlainScalar())
                 || (scalarStyle != ScalarStyle.PLAIN && ev.getImplicit().isCanOmitTagInNonPlainScalar()))) {
                 preparedTag = null;
                 return; // no tag required
             }
-            if (ev.getImplicit().isCanOmitTagInPlainScalar() && tag.isEmpty()) {
+            if (ev.getImplicit().isCanOmitTagInPlainScalar() && (tag == null || tag.isEmpty())) {
                 tag = "!";
                 preparedTag = null;
             }
         } else {
-            CollectionStartEvent ev = (CollectionStartEvent) event;
+            var ev = (CollectionStartEvent) event;
             tag = ev.getTag();
-            if ((!canonical || tag.isEmpty()) && ev.isImplicit()) {
+            if ((!canonical || tag == null || tag.isEmpty()) && ev.isImplicit()) {
                 preparedTag = null;
                 return; // no tag required
             }
         }
-        if (tag.isEmpty()) {
+        if (tag == null || tag.isEmpty()) {
             throw new EmitterException("tag is not specified");
         }
         if (preparedTag == null) {

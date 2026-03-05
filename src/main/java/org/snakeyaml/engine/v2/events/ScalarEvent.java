@@ -36,7 +36,7 @@ public final class ScalarEvent extends NodeEvent {
     // and non-plain style correspondingly.
     private final ImplicitTuple implicit;
 
-    public ScalarEvent(@NonNull Anchor anchor, @NonNull String tag, @NonNull ImplicitTuple implicit, @NonNull String value,
+    public ScalarEvent(@Nullable Anchor anchor, @Nullable String tag, @NonNull ImplicitTuple implicit, @NonNull String value,
                        @NonNull ScalarStyle style, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(anchor, startMark, endMark);
         this.tag = tag;
@@ -45,7 +45,7 @@ public final class ScalarEvent extends NodeEvent {
         this.style = style;
     }
 
-    public ScalarEvent(@NonNull Anchor anchor, @NonNull String tag, @NonNull ImplicitTuple implicit, @NonNull String value, @NonNull ScalarStyle style) {
+    public ScalarEvent(@Nullable Anchor anchor, @Nullable String tag, @NonNull ImplicitTuple implicit, @NonNull String value, @NonNull ScalarStyle style) {
         this(anchor, tag, implicit, value, style, null, null);
     }
 
@@ -54,8 +54,8 @@ public final class ScalarEvent extends NodeEvent {
      *
      * @return The tag of this scalar, or <code>null</code> if no explicit tag is available.
      */
-    public @NonNull String getTag() {
-        return this.tag;
+    public @Nullable String getTag() {
+        return tag;
     }
 
     /**
@@ -76,7 +76,7 @@ public final class ScalarEvent extends NodeEvent {
      * @return Style of the scalar.
      */
     public @NonNull ScalarStyle getScalarStyle() {
-        return this.style;
+        return style;
     }
 
     /**
@@ -88,11 +88,11 @@ public final class ScalarEvent extends NodeEvent {
      * @return Value as Unicode string.
      */
     public @NonNull String getValue() {
-        return this.value;
+        return value;
     }
 
     public @NonNull ImplicitTuple getImplicit() {
-        return this.implicit;
+        return implicit;
     }
 
     @Override

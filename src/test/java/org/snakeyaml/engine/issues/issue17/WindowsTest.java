@@ -13,31 +13,28 @@
  */
 package org.snakeyaml.engine.issues.issue17;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.exceptions.ParserException;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
+
 /**
- * https://yaml.org/spec/1.2/spec.html#id2774608
+ * <a href="https://yaml.org/spec/1.2/spec.html#id2774608">link</a>
  */
 @org.junit.jupiter.api.Tag("fast")
 public class WindowsTest {
 
-    Load loader = new Load(LoadSettings.builder().build());
-
     @Test
     @DisplayName("Check that Windows style line endings handled the same as Unix style ones")
     void testGetLineNumberOnWindows() {
-        LoadSettings settings = LoadSettings.builder().build();
-        StreamReader reader1 = new StreamReader(settings, "foo\r\nbar");
-        StreamReader reader2 = new StreamReader(settings, "foo\nbar");
+        var reader1 = new StreamReader(DEFAULT_LOAD_SETTINGS, "foo\r\nbar");
+        var reader2 = new StreamReader(DEFAULT_LOAD_SETTINGS, "foo\nbar");
         reader1.forward(100);
         reader2.forward(100);
         assertEquals(reader1.getLine(), reader2.getLine());
@@ -45,31 +42,19 @@ public class WindowsTest {
 
     @Test
     void countLinesCRLF() {
-        try {
-            loader.loadFromString("\r\n[");
-            fail();
-        } catch (ParserException e) {
-            assertTrue(e.getMessage().contains("line 2,"), e.getMessage());
-        }
+        var e = assertThrows(ParserException.class, () -> DEFAULT_LOAD.loadFromString("\r\n["));
+        assertTrue(e.getMessage().contains("line 2,"), e.getMessage());
     }
 
     @Test
     void countLinesCRCR() {
-        try {
-            loader.loadFromString("\r\r[");
-            fail();
-        } catch (ParserException e) {
-            assertTrue(e.getMessage().contains("line 3,"));
-        }
+        var e = assertThrows(ParserException.class, () -> DEFAULT_LOAD.loadFromString("\r\r["));
+        assertTrue(e.getMessage().contains("line 3,"));
     }
 
     @Test
     void countLinesLFLF() {
-        try {
-            loader.loadFromString("\n\n[");
-            fail();
-        } catch (ParserException e) {
-            assertTrue(e.getMessage().contains("line 3,"));
-        }
+        var e = assertThrows(ParserException.class, () -> DEFAULT_LOAD.loadFromString("\n\n["));
+        assertTrue(e.getMessage().contains("line 3,"));
     }
 }

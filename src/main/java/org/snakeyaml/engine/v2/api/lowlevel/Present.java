@@ -15,11 +15,10 @@ package org.snakeyaml.engine.v2.api.lowlevel;
 
 import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.events.Event;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 
-import java.io.StringWriter;
 import java.util.Iterator;
 
 /**
@@ -39,23 +38,16 @@ public class Present {
     }
 
     /**
-     * Serialise the provided Events
+     * Serialize the provided Events
      *
-     * @param events - the data to serialise
+     * @param events - the data to serialize
      * @return - the YAML document
      */
     public String emitToString(@NonNull Iterator<Event> events) {
         var writer = new StreamToStringWriter();
-        final Emitter emitter = new Emitter(settings, writer);
+        final var emitter = new Emitter(settings, writer);
         events.forEachRemaining(emitter::emit);
         return writer.toString();
-    }
-
-    /**
-     * Internal helper class to support emitting to String
-     */
-    static class StreamToStringWriter extends StringWriter implements StreamDataWriter {
-
     }
 }
 

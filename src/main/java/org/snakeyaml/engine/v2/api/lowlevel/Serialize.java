@@ -16,6 +16,7 @@ package org.snakeyaml.engine.v2.api.lowlevel;
 import org.jspecify.annotations.NonNull;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.emitter.Emitable;
+import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.events.Event;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.serializer.Serializer;
@@ -74,8 +75,9 @@ public class Serialize {
         private final List<Event> events = new ArrayList<>();
 
         @Override
-        public void emit(Event event) {
+        public Emitable emit(Event event) {
             events.add(event);
+            return this;
         }
 
         public List<Event> getEvents() {

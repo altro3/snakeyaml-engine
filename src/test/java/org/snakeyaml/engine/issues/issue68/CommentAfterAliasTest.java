@@ -42,8 +42,7 @@ class CommentAfterAliasTest {
     @DisplayName("Issue 68: block comment and flat after")
     void testCommentAfterAlias1() {
         var compose = new Compose(loadSettings);
-        String input =
-            "field_with_alias: &alias_name\n# separate line comment following the alias\n    555";
+        String input = "field_with_alias: &alias_name\n# separate line comment following the alias\n    555";
         Node node = compose.composeString(input);
         assertNotNull(node);
     }
@@ -51,9 +50,8 @@ class CommentAfterAliasTest {
     @Test
     @DisplayName("Issue 68: block comment and nested after")
     void testCommentAfterAlias() {
-        Compose compose = new Compose(loadSettings);
-        String input =
-            "field_with_alias: &alias_name\n# separate line comment following the alias\n    nested_field: nested_value";
+        var compose = new Compose(loadSettings);
+        String input = "field_with_alias: &alias_name\n# separate line comment following the alias\n    nested_field: nested_value";
         Node node = compose.composeString(input);
         assertNotNull(node);
     }
@@ -61,7 +59,7 @@ class CommentAfterAliasTest {
     @Test
     @DisplayName("Issue 68: tag with inline comment")
     void testCommentAfterTag() {
-        Compose compose = new Compose(loadSettings);
+        var compose = new Compose(loadSettings);
         String input = "key: !!str # comment\n  value";
         Node node = compose.composeString(input);
         assertNotNull(node);
@@ -70,7 +68,7 @@ class CommentAfterAliasTest {
     @Test
     @DisplayName("Issue 68: anchor and tag with comment")
     void testCommentAfterAnchorAndTag() {
-        Compose compose = new Compose(loadSettings);
+        var compose = new Compose(loadSettings);
         String input = "key: &anchor !!str # comment\n  value";
         Node node = compose.composeString(input);
         assertNotNull(node);

@@ -18,14 +18,13 @@ import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.api.lowlevel.Compose;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.nodes.Node;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 import org.snakeyaml.engine.v2.util.TestUtils;
 
 import java.io.StringReader;
-import java.io.StringWriter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -38,16 +37,14 @@ public class DumpAnchorTest {
         var compose = new Compose(LoadSettings.builder().build());
         Node node = compose.composeReader(new StringReader(str));
 
-        var setting = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK)
-            .setAnchorGenerator(Node::getAnchor).build();
+        var setting = DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setAnchorGenerator(Node::getAnchor)
+            .build();
         var yaml = new Dump(setting);
 
-        var writer = new MyDumperWriter();
+        var writer = new StreamToStringWriter();
         yaml.dumpNode(node, writer);
         assertEquals(str, writer.toString());
-    }
-
-    static class MyDumperWriter extends StringWriter implements StreamDataWriter {
-
     }
 }

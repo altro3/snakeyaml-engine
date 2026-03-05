@@ -13,10 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.inherited;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 import org.snakeyaml.engine.v2.nodes.Tag;
@@ -39,6 +35,10 @@ import org.snakeyaml.engine.v2.tokens.TagToken;
 import org.snakeyaml.engine.v2.tokens.TagTuple;
 import org.snakeyaml.engine.v2.tokens.Token;
 import org.snakeyaml.engine.v2.tokens.ValueToken;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Map.entry;
 
@@ -249,9 +249,7 @@ public class CanonicalScanner implements Scanner {
         char chunk2 = data.charAt(index + DIRECTIVE.length());
         if (DIRECTIVE.equals(chunk1) && "\n\0".indexOf(chunk2) != -1) {
             index += DIRECTIVE.length();
-            var implicit = new ArrayList<Integer>(2);
-            implicit.add(1);
-            implicit.add(1);
+            var implicit = List.of(1, 2);
             return new DirectiveToken<>(DirectiveToken.YAML_DIRECTIVE, implicit, mark, mark);
         } else {
             throw new CanonicalException("invalid directive: " + chunk1 + " " + chunk2 + " in " + label);

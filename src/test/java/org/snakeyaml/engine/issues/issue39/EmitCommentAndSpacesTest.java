@@ -13,13 +13,6 @@
  */
 package org.snakeyaml.engine.issues.issue39;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -31,7 +24,14 @@ import org.snakeyaml.engine.v2.events.ScalarEvent;
 import org.snakeyaml.engine.v2.parser.Parser;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 import org.snakeyaml.engine.v2.util.TestUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @org.junit.jupiter.api.Tag("fast")
 public class EmitCommentAndSpacesTest {
@@ -59,7 +59,7 @@ public class EmitCommentAndSpacesTest {
         String input = "first:\n  second: abc\n  \n  \n\n";
         Parser parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
         DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
-        StreamDataWriter writer = new StreamToStringWriter();
+        var writer = new StreamToStringWriter();
         Emitter emitter = new Emitter(settings, writer);
         List<Event> events = new ArrayList<Event>();
         while (parser.hasNext()) {
@@ -71,9 +71,4 @@ public class EmitCommentAndSpacesTest {
         assertEquals("abc", ((ScalarEvent) events.get(6)).getValue());
         // assertEquals(input, writer.toString());
     }
-}
-
-
-class StreamToStringWriter extends StringWriter implements StreamDataWriter {
-
 }

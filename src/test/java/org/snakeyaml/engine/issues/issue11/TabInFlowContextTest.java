@@ -13,16 +13,17 @@
  */
 package org.snakeyaml.engine.issues.issue11;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
+
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @org.junit.jupiter.api.Tag("fast")
 public class TabInFlowContextTest {
@@ -30,31 +31,28 @@ public class TabInFlowContextTest {
     @Test
     @DisplayName("Do not fail to parse if TAB is used (issue 11)")
     void parseTabInFlowContext() {
-        LoadSettings settings = LoadSettings.builder().build();
-        String input = "{\n\t\"x\": \"y\"\n}";
-        Object obj = new Load(settings).loadFromString(input);
-        Map<String, Object> map = (Map<String, Object>) obj;
+        var obj = DEFAULT_LOAD.loadFromString("{\n\t\"x\": \"y\"\n}");
+        @SuppressWarnings("unchecked")
+        var map = (Map<String, Object>) obj;
         assertEquals("y", map.get("x"));
     }
 
     @Test
     @DisplayName("TAB cannot start a token.")
     public void testWrongTab() {
-        LoadSettings settings = LoadSettings.builder().build();
-        try {
-            Object obj = new Load(settings).loadFromString("\t  data: 1");
-            fail("TAB cannot start a token. Found: " + obj);
-        } catch (Exception e) {
-            assertEquals("while scanning for the next token\n"
-                + "found character '\\t(TAB)' that cannot start any token. (Do not use \\t(TAB) for indentation)\n"
-                + " in reader, line 1, column 1:\n" + "    \t  data: 1\n" + "    ^\n", e.getMessage());
-        }
+        var e = assertThrows(Exception.class, () -> DEFAULT_LOAD.loadFromString("\t  data: 1"));
+        assertEquals("""
+            while scanning for the next token
+            found character '\\t(TAB)' that cannot start any token. (Do not use \\t(TAB) for indentation)
+             in reader, line 1, column 1:
+                \t  data: 1
+                ^
+            """, e.getMessage());
     }
 
     @Test
     public void testIssue55() {
-        LoadSettings settings = LoadSettings.builder().build();
-        Object obj = new Load(settings).loadFromString("{ \"foo\":\t\"bar\" }");
+        var obj = DEFAULT_LOAD.loadFromString("{ \"foo\":\t\"bar\" }");
         assertNotNull(obj);
     }
 }

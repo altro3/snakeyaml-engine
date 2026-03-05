@@ -22,6 +22,7 @@ import java.io.Serializable;
  */
 public enum SpecVersion implements Serializable {
 
+    EMPTY(0, 0),
     V_1_0(1, 0),
     V_1_1(1, 1),
     V_1_2(1, 2),
@@ -77,6 +78,10 @@ public enum SpecVersion implements Serializable {
      */
     public String getRepresentation() {
         return representation;
+    }
+
+    public boolean isEmpty() {
+        return this == EMPTY;
     }
 
     public static @NonNull SpecVersion findVersion(@NonNull Integer major, @NonNull Integer minor) {

@@ -1207,7 +1207,10 @@ public final class ScannerImpl implements Scanner {
             value = null;
         }
         CommentToken commentToken = scanDirectiveIgnoredLine(startMark);
-        DirectiveToken token = new DirectiveToken(name, value, startMark, endMark);
+        if (value == null) {
+            throw new IllegalArgumentException("Value can't be null in directive token");
+        }
+        var token = new DirectiveToken(name, value, startMark, endMark);
         return makeTokenList(token, commentToken);
     }
 

@@ -26,8 +26,7 @@ import java.util.regex.Pattern;
  * @param value - the anchor value
  */
 public record Anchor(
-    @NonNull
-    String value
+    @NonNull String value
 ) {
 
     private static final Set<Character> INVALID_ANCHOR = Set.of('[', ']', '{', '}', ',', '*', '&');
@@ -47,5 +46,10 @@ public record Anchor(
         if (matcher.find()) {
             throw new EmitterException("Anchor may not contain spaces: " + value);
         }
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return value;
     }
 }

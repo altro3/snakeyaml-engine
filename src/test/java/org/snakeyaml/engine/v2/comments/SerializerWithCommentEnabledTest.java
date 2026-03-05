@@ -403,8 +403,9 @@ public class SerializerWithCommentEnabledTest {
         private final List<Event> eventList = new ArrayList<>();
 
         @Override
-        public void emit(Event event) {
+        public Emitable emit(Event event) {
             eventList.add(event);
+            return this;
         }
 
         public List<Event> getEventList() {

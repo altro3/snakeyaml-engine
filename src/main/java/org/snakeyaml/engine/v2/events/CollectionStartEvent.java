@@ -31,7 +31,7 @@ public abstract class CollectionStartEvent extends NodeEvent {
     // flag indicates if a collection is block or flow
     protected final FlowStyle flowStyle;
 
-    public CollectionStartEvent(@NonNull Anchor anchor, @NonNull String tag, boolean implicit, @NonNull FlowStyle flowStyle, @Nullable Mark startMark, @Nullable Mark endMark) {
+    public CollectionStartEvent(@Nullable Anchor anchor, @Nullable String tag, boolean implicit, @NonNull FlowStyle flowStyle, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(anchor, startMark, endMark);
         this.tag = tag;
         this.implicit = implicit;
@@ -43,7 +43,7 @@ public abstract class CollectionStartEvent extends NodeEvent {
      *
      * @return The tag of this collection, or <code>empty</code> if no explicit tag is available.
      */
-    public @NonNull String getTag() {
+    public @Nullable String getTag() {
         return this.tag;
     }
 

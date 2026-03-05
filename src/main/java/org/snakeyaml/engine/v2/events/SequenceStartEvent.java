@@ -29,11 +29,11 @@ import org.snakeyaml.engine.v2.exceptions.Mark;
  */
 public final class SequenceStartEvent extends CollectionStartEvent {
 
-    public SequenceStartEvent(@NonNull Anchor anchor, @NonNull String tag, boolean implicit, @NonNull FlowStyle flowStyle, @Nullable Mark startMark, @Nullable Mark endMark) {
+    public SequenceStartEvent(@NonNull Anchor anchor, @Nullable String tag, boolean implicit, @NonNull FlowStyle flowStyle, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(anchor, tag, implicit, flowStyle, startMark, endMark);
     }
 
-    public SequenceStartEvent(@NonNull Anchor anchor, @NonNull String tag, boolean implicit, @NonNull FlowStyle flowStyle) {
+    public SequenceStartEvent(@NonNull Anchor anchor, @Nullable String tag, boolean implicit, @NonNull FlowStyle flowStyle) {
         this(anchor, tag, implicit, flowStyle, null, null);
     }
 

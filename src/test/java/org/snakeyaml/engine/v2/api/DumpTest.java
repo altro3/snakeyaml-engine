@@ -16,7 +16,7 @@ package org.snakeyaml.engine.v2.api;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Dump.StreamToStringWriter;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -19,8 +19,8 @@ import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.representer.BaseRepresenter;
 import org.snakeyaml.engine.v2.representer.StandardRepresenter;
 import org.snakeyaml.engine.v2.serializer.Serializer;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 
-import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -126,13 +126,6 @@ public class Dump {
         serializer.emitStreamStart();
         serializer.serializeDocument(node);
         serializer.emitStreamEnd();
-    }
-
-    /**
-     * Internal helper class to support dumping to String
-     */
-    static class StreamToStringWriter extends StringWriter implements StreamDataWriter {
-
     }
 }
 

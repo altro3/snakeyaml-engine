@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -25,7 +24,7 @@ public abstract class NodeEvent extends Event {
 
     protected final Anchor anchor;
 
-    public NodeEvent(@NonNull Anchor anchor, @Nullable Mark startMark, @Nullable Mark endMark) {
+    public NodeEvent(@Nullable Anchor anchor, @Nullable Mark startMark, @Nullable Mark endMark) {
         super(startMark, endMark);
         this.anchor = anchor;
     }
@@ -38,7 +37,7 @@ public abstract class NodeEvent extends Event {
      *
      * @return Anchor of this node or <code>null</code> if no anchor is defined.
      */
-    public @NonNull Anchor getAnchor() {
-        return this.anchor;
+    public @Nullable Anchor getAnchor() {
+        return anchor;
     }
 }

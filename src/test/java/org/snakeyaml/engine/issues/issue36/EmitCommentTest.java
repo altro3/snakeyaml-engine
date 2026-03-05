@@ -13,15 +13,9 @@
  */
 package org.snakeyaml.engine.issues.issue36;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.StringWriter;
-import java.util.HashMap;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.common.SpecVersion;
@@ -33,6 +27,12 @@ import org.snakeyaml.engine.v2.events.ImplicitTuple;
 import org.snakeyaml.engine.v2.events.ScalarEvent;
 import org.snakeyaml.engine.v2.events.StreamEndEvent;
 import org.snakeyaml.engine.v2.events.StreamStartEvent;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @org.junit.jupiter.api.Tag("fast")
 public class EmitCommentTest {
@@ -40,37 +40,34 @@ public class EmitCommentTest {
     @Test
     @DisplayName("Issue 36: comment with scalar should not be ignored")
     void emitCommentWithEvent() {
-        DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
-        StreamDataWriter writer = new StreamToStringWriter();
-        Emitter emitter = new Emitter(settings, writer);
-        emitter.emit(new StreamStartEvent());
-        emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
-        emitter.emit(new CommentEvent(CommentType.BLOCK, "Hello world!", null, null));
-        emitter.emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_TRUE, "This is the scalar",
-            ScalarStyle.DOUBLE_QUOTED));
-        emitter.emit(new DocumentEndEvent(false));
-        emitter.emit(new StreamEndEvent());
+        var settings = DumpSettings.builder().setDumpComments(true).build();
+        var writer = new StreamToStringWriter();
+        new Emitter(settings, writer)
+            .emit(new StreamStartEvent())
+            .emit(new DocumentStartEvent(false, SpecVersion.EMPTY, Map.of()))
+            .emit(new CommentEvent(CommentType.BLOCK, "Hello world!", null, null))
+            .emit(new ScalarEvent(null, null, ImplicitTuple.TRUE_TRUE, "This is the scalar", ScalarStyle.DOUBLE_QUOTED))
+            .emit(new DocumentEndEvent(false))
+            .emit(new StreamEndEvent());
 
-        assertEquals("#Hello world!\n" + "\"This is the scalar\"\n", writer.toString());
+        assertEquals("""
+            #Hello world!
+            "This is the scalar"
+            """, writer.toString());
     }
 
     @Test
     @DisplayName("Issue 36: only comment should not be ignored")
     void emitComment() {
-        DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
-        StreamDataWriter writer = new StreamToStringWriter();
-        Emitter emitter = new Emitter(settings, writer);
-        emitter.emit(new StreamStartEvent());
-        emitter.emit(new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()));
-        emitter.emit(new CommentEvent(CommentType.BLOCK, "Hello world!", null, null));
-        emitter.emit(new DocumentEndEvent(false));
-        emitter.emit(new StreamEndEvent());
+        var settings = DumpSettings.builder().setDumpComments(true).build();
+        var writer = new StreamToStringWriter();
+        new Emitter(settings, writer)
+            .emit(new StreamStartEvent())
+            .emit(new DocumentStartEvent(false, SpecVersion.EMPTY, new HashMap<>()))
+            .emit(new CommentEvent(CommentType.BLOCK, "Hello world!", null, null))
+            .emit(new DocumentEndEvent(false))
+            .emit(new StreamEndEvent());
 
         assertEquals("#Hello world!\n", writer.toString());
     }
-}
-
-
-class StreamToStringWriter extends StringWriter implements StreamDataWriter {
-
 }

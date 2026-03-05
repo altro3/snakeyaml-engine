@@ -13,13 +13,12 @@
  */
 package org.snakeyaml.engine.v2.events;
 
-import java.util.Map;
-import java.util.Objects;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.exceptions.Mark;
+
+import java.util.Map;
 
 /**
  * Marks the beginning of a document.
@@ -71,7 +70,7 @@ public final class DocumentStartEvent extends Event {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("+DOC");
+        var builder = new StringBuilder("+DOC");
         if (isExplicit()) {
             builder.append(" ---");
         }

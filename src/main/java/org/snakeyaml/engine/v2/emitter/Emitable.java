@@ -25,5 +25,5 @@ public interface Emitable {
      *
      * @param event - the source
      */
-    void emit(Event event);
+    Emitable emit(Event event);
 }

@@ -14,6 +14,7 @@
 package org.snakeyaml.engine.v2.parser;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.comments.CommentType;
 import org.snakeyaml.engine.v2.common.Anchor;
@@ -139,7 +140,7 @@ public class ParserImpl implements Parser {
     private final LoadSettings settings;
     private final ArrayStack<Production> states;
     private final ArrayStack<Mark> marksStack;
-    private Event currentEvent; // parsed event
+    private @Nullable Event currentEvent; // parsed event
     private Production state;
     private Map<String, String> directiveTags;
 
@@ -233,23 +234,21 @@ public class ParserImpl implements Parser {
             @SuppressWarnings("rawtypes")
             var token = (DirectiveToken) scanner.next();
             List<?> dirOption = token.getValue();
-            if (dirOption != null) {
-                // the value must be present
-                if (token.getName().equals(DirectiveToken.YAML_DIRECTIVE)) {
-                    if (yamlSpecVersion != null) {
-                        throw new ParserException("Found duplicate YAML directive", token.getStartMark());
-                    }
-                    var value = (List<Integer>) dirOption;
-                    yamlSpecVersion = settings.versionFunction().apply(SpecVersion.findVersion(value.get(0), value.get(1)));
-                } else if (token.getName().equals(DirectiveToken.TAG_DIRECTIVE)) {
-                    var value = (List<String>) dirOption;
-                    String handle = value.get(0);
-                    String prefix = value.get(1);
-                    if (tagHandles.containsKey(handle)) {
-                        throw new ParserException("Duplicate tag handle " + handle, token.getStartMark());
-                    }
-                    tagHandles.put(handle, prefix);
+            // the value must be present
+            if (token.getName().equals(DirectiveToken.YAML_DIRECTIVE)) {
+                if (yamlSpecVersion != null) {
+                    throw new ParserException("Found duplicate YAML directive", token.getStartMark());
                 }
+                var value = (List<Integer>) dirOption;
+                yamlSpecVersion = settings.versionFunction().apply(SpecVersion.findVersion(value.get(0), value.get(1)));
+            } else if (token.getName().equals(DirectiveToken.TAG_DIRECTIVE)) {
+                var value = (List<String>) dirOption;
+                String handle = value.get(0);
+                String prefix = value.get(1);
+                if (tagHandles.containsKey(handle)) {
+                    throw new ParserException("Duplicate tag handle " + handle, token.getStartMark());
+                }
+                tagHandles.put(handle, prefix);
             }
         }
         var detectedTagHandles = new HashMap<String, String>();
@@ -332,7 +331,7 @@ public class ParserImpl implements Parser {
                 String handle = tagTupleValue.handle();
                 String suffix = tagTupleValue.suffix();
                 if (!directiveTags.containsKey(handle)) {
-                    throw new ParserException("while parsing a node", startMark, "found undefined tag handle " + handle, tagMark);
+                    throw new ParserException("While parsing a node", startMark, "found undefined tag handle " + handle, tagMark);
                 }
                 tag = directiveTags.get(handle) + suffix;
             }
@@ -1087,8 +1086,7 @@ public class ParserImpl implements Parser {
                 return produceCommentEvent(pendingComments.remove(0));
             }
             // All comments emitted, now parse the actual node content
-            state = new ParseNodeContent(block, indentlessSequence, anchor, tag, startMark, endMark,
-                tagMark, nextState);
+            state = new ParseNodeContent(block, indentlessSequence, anchor, tag, startMark, endMark, tagMark, nextState);
             return state.produce();
         }
     }
@@ -1127,7 +1125,7 @@ public class ParserImpl implements Parser {
                 startMark = scanner.peekToken().getStartMark();
                 endMark = startMark;
             }
-            boolean implicit = tag.isEmpty();
+            boolean implicit = tag == null;
             if (indentlessSequence && scanner.checkToken(Token.Id.BlockEntry)) {
                 endMark = scanner.peekToken().getEndMark();
                 event = new SequenceStartEvent(anchor, tag, implicit, FlowStyle.BLOCK, startMark, endMark);
@@ -1137,9 +1135,9 @@ public class ParserImpl implements Parser {
                 var token = (ScalarToken) scanner.next();
                 endMark = token.getEndMark();
                 ImplicitTuple implicitValues;
-                if ((token.isPlain() && tag.isEmpty())) {
+                if ((token.isPlain() && tag == null)) {
                     implicitValues = ImplicitTuple.TRUE_FALSE;
-                } else if (tag.isEmpty()) {
+                } else if (tag == null) {
                     implicitValues = ImplicitTuple.FALSE_TRUE;
                 } else {
                     implicitValues = ImplicitTuple.FALSE_FALSE;

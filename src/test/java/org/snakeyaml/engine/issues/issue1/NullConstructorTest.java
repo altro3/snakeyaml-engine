@@ -20,7 +20,7 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.nodes.Tag;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,25 +30,21 @@ class NullConstructorTest {
 
     @Test
     void customConstructorMustBeCalledWithoutNode() {
-        var tagConstructors = new HashMap<Tag, ConstructNode>();
-        tagConstructors.put(Tag.NULL, new MyConstructNull());
-        LoadSettings settings = LoadSettings.builder()
+        var tagConstructors = Map.<Tag, ConstructNode>of(Tag.NULL, new MyConstructNull());
+        var loader = new Load(LoadSettings.builder()
             .setTagConstructors(tagConstructors)
-            .build();
-        var loader = new Load(settings);
+            .build());
         assertNotNull(loader.loadFromString(""), "Expected MyConstructNull to be called.");
         assertEquals("absent", loader.loadFromString(""), "Expected MyConstructNull to be called.");
     }
 
     @Test
     void customConstructorMustBeCalledWithNode() {
-        var tagConstructors = new HashMap<Tag, ConstructNode>();
-        tagConstructors.put(Tag.NULL, new MyConstructNull());
-        LoadSettings settings = LoadSettings.builder()
+        var tagConstructors = Map.<Tag, ConstructNode>of(Tag.NULL, new MyConstructNull());
+        var loader = new Load(LoadSettings.builder()
             .setTagConstructors(tagConstructors)
-            .build();
-        var loader = new Load(settings);
-        assertEquals("Present", loader.loadFromString("!!null null"), "Expected MyConstructNull to be called.");
+            .build());
+        assertEquals("present", loader.loadFromString("!!null null"), "Expected MyConstructNull to be called.");
     }
 
     private static class MyConstructNull implements ConstructNode {

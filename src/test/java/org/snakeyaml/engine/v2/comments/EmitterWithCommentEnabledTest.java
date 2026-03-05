@@ -13,12 +13,6 @@
  */
 package org.snakeyaml.engine.v2.comments;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.Load;
@@ -44,11 +38,17 @@ import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
 import org.snakeyaml.engine.v2.serializer.Serializer;
+import org.snakeyaml.engine.v2.util.StreamToStringWriter;
+
+import java.io.IOException;
+import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EmitterWithCommentEnabledTest {
 
     private String runEmitterWithCommentsEnabled(String data) {
-        StreamDataWriter output = new MyWriter();
+        var output = new StreamToStringWriter();
 
         DumpSettings dumpSettings = DumpSettings.builder().setDefaultScalarStyle(ScalarStyle.PLAIN)
             .setDefaultFlowStyle(FlowStyle.BLOCK).setDumpComments(true).build();
@@ -367,7 +367,7 @@ public class EmitterWithCommentEnabledTest {
 
     @Test
     public void testCommentsInFlowMapping() {
-        StreamDataWriter output = new MyWriter();
+        var output = new StreamToStringWriter();
         Emitter emitter = producePrettyFlowEmitter(output);
 
         emitter.emit(new StreamStartEvent(null, null));
@@ -406,7 +406,7 @@ public class EmitterWithCommentEnabledTest {
 
     @Test
     public void testCommentInEmptyFlowMapping() {
-        var output = new MyWriter();
+        var output = new StreamToStringWriter();
         Emitter emitter = producePrettyFlowEmitter(output);
 
         emitter.emit(new StreamStartEvent(null, null));
@@ -427,7 +427,7 @@ public class EmitterWithCommentEnabledTest {
 
     @Test
     public void testCommentInFlowSequence() {
-        var output = new MyWriter();
+        var output = new StreamToStringWriter();
         Emitter emitter = producePrettyFlowEmitter(output);
         var allImplicit = ImplicitTuple.TRUE_TRUE;
 
@@ -454,7 +454,7 @@ public class EmitterWithCommentEnabledTest {
 
     @Test
     public void testCommentInEmptySequence() {
-        MyWriter output = new MyWriter();
+        var output = new StreamToStringWriter();
         Emitter emitter = producePrettyFlowEmitter(output);
 
         emitter.emit(new StreamStartEvent(null, null));
@@ -490,9 +490,5 @@ public class EmitterWithCommentEnabledTest {
             + "\n"
             + "    # If true, players will be sent a notice in their chat box when they open a protection they own.\n"
             + "    showMyNotices: false\n";
-    }
-
-    class MyWriter extends StringWriter implements StreamDataWriter {
-
     }
 }
