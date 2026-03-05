@@ -34,25 +34,23 @@ class ComposerTest {
     @DisplayName("Fail to Compose one document when more documents are provided.")
     void composeOne() {
         var c = new Compose(LoadSettings.builder().build());
-        var exception = assertThrows(ComposerException.class, () -> c.composeString("a\n---\nb\n"));
-        assertTrue(exception.getMessage().contains("expected a single document in the stream"));
-        assertTrue(exception.getMessage().contains("but found another document"));
+        var e = assertThrows(ComposerException.class, () -> c.composeString("a\n---\nb\n"));
+        assertTrue(e.getMessage().contains("Expected a single document in the stream")
+            && e.getMessage().contains("but found another document"));
     }
 
     @Test
     void failToComposeUnknownAlias() {
         var c = new Compose(LoadSettings.builder().build());
-        var exception = assertThrows(ComposerException.class, () -> c.composeString("[a, *id b]"));
-        assertTrue(exception.getMessage().contains("found undefined alias id"), exception.getMessage());
+        var e = assertThrows(ComposerException.class, () -> c.composeString("[a, *id b]"));
+        assertTrue(e.getMessage().contains("found undefined alias id"), e.getMessage());
     }
 
     @Test
     void failToComposeNonScalarKey() {
         var c = new Compose(LoadSettings.builder().build());
-        var exception =
-            assertThrows(YamlEngineException.class, () -> c.composeString("{ [1,2]: value}"));
-        assertEquals("Non scalar key is detected but it is not configured to be allowed.",
-            exception.getMessage());
+        var e = assertThrows(YamlEngineException.class, () -> c.composeString("{ [1,2]: value}"));
+        assertEquals("Non scalar key is detected but it is not configured to be allowed.", e.getMessage());
     }
 
     @Test
@@ -61,6 +59,7 @@ class ComposerTest {
         var compose = new Compose(LoadSettings.builder().build());
         Node node = compose.composeString(data);
         assertNotNull(node);
+        assertNotNull(node.getAnchor());
         assertEquals("113", node.getAnchor().value());
     }
 }

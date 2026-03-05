@@ -29,7 +29,9 @@ class SpecVersionTest {
     @Test
     @DisplayName("Version 1.2 is accepted")
     void version12() {
-        var settings = LoadSettings.builder().setLabel("spec 1.2").build();
+        var settings = LoadSettings.builder()
+            .setLabel("spec 1.2")
+            .build();
         var node = (ScalarNode) new Compose(settings).composeString("%YAML 1.2\n---\nfoo");
         assertEquals("foo", node.getValue());
     }
@@ -37,7 +39,9 @@ class SpecVersionTest {
     @Test
     @DisplayName("Version 1.3 is accepted by default")
     void version13() {
-        var settings = LoadSettings.builder().setLabel("spec 1.3").build();
+        var settings = LoadSettings.builder()
+            .setLabel("spec 1.3")
+            .build();
         var node = (ScalarNode) new Compose(settings).composeString("%YAML 1.3\n---\nfoo");
         assertEquals("foo", node.getValue());
     }
@@ -45,15 +49,15 @@ class SpecVersionTest {
     @Test
     @DisplayName("Version 1.3 is rejected if configured")
     void version13rejected() {
-        var settings = LoadSettings.builder().setLabel("spec 1.3").setVersionFunction(version -> {
-            if (version.getMinor() > 2) {
-                throw new IllegalArgumentException("Too high.");
-            } else {
+        var settings = LoadSettings.builder()
+            .setLabel("spec 1.3")
+            .setVersionFunction(version -> {
+                if (version.getMinor() > 2) {
+                    throw new IllegalArgumentException("Too high.");
+                }
                 return version;
-            }
-        }).build();
-        var exception = assertThrows(IllegalArgumentException.class,
-            () -> new Compose(settings).composeString("%YAML 1.3\n---\nfoo"));
+            }).build();
+        var exception = assertThrows(IllegalArgumentException.class, () -> new Compose(settings).composeString("%YAML 1.3\n---\nfoo"));
         assertEquals("Too high.", exception.getMessage());
     }
 

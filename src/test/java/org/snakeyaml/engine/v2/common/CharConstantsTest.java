@@ -31,10 +31,8 @@ class CharConstantsTest {
         assertTrue(CharConstants.LINEBR.has('\n'), "LF must be included");
         assertFalse(CharConstants.LINEBR.has('\r'), "CR must be excluded");
         assertTrue(CharConstants.LINEBR.hasNo('\u0085'), "85 (next line) must not be included in 1.2");
-        assertTrue(CharConstants.LINEBR.hasNo('\u2028'),
-            "2028 (line separator) must not be included in 1.2");
-        assertTrue(CharConstants.LINEBR.hasNo('\u2029'),
-            "2029 (paragraph separator) must not be included in 1.2");
+        assertTrue(CharConstants.LINEBR.hasNo('\u2028'), "2028 (line separator) must not be included in 1.2");
+        assertTrue(CharConstants.LINEBR.hasNo('\u2029'), "2029 (paragraph separator) must not be included in 1.2");
         assertTrue(CharConstants.LINEBR.hasNo('a'), "normal char should not be included");
     }
 
@@ -44,12 +42,9 @@ class CharConstantsTest {
         assertTrue(CharConstants.NULL_OR_LINEBR.has('\n'));
         assertTrue(CharConstants.NULL_OR_LINEBR.has('\r'));
         assertTrue(CharConstants.NULL_OR_LINEBR.has('\u0000'));
-        assertFalse(CharConstants.NULL_OR_LINEBR.has('\u0085'),
-            "85 (next line) must not be included in 1.2");
-        assertFalse(CharConstants.NULL_OR_LINEBR.has('\u2028'),
-            "2028 (line separator) must not be included in 1.2");
-        assertFalse(CharConstants.NULL_OR_LINEBR.has('\u2029'),
-            "2029 (paragraph separator) must not be included in 1.2");
+        assertFalse(CharConstants.NULL_OR_LINEBR.has('\u0085'), "85 (next line) must not be included in 1.2");
+        assertFalse(CharConstants.NULL_OR_LINEBR.has('\u2028'), "2028 (line separator) must not be included in 1.2");
+        assertFalse(CharConstants.NULL_OR_LINEBR.has('\u2029'), "2029 (paragraph separator) must not be included in 1.2");
         assertFalse(CharConstants.NULL_OR_LINEBR.has('b'), "normal char should not be included");
     }
 

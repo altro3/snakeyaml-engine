@@ -35,8 +35,7 @@ class UriEncoderTest {
     @Test
     @DisplayName("Invalid decode")
     void testInvalidDecode() {
-        IllegalArgumentException exception =
-            assertThrows(IllegalArgumentException.class, () -> UriEncoder.decode("%2"));
-        assertEquals("URLDecoder: Incomplete trailing escape (%) pattern", exception.getMessage());
+        var e = assertThrows(IllegalArgumentException.class, () -> UriEncoder.decode("%2"));
+        assertEquals("URLDecoder: Incomplete trailing escape (%) pattern", e.getMessage());
     }
 }
