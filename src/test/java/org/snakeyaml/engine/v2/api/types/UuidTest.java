@@ -13,18 +13,16 @@
  */
 package org.snakeyaml.engine.v2.api.types;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.v2.nodes.Node;
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Dump;
-import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.nodes.Node;
-import org.snakeyaml.engine.v2.representer.StandardRepresenter;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_REPRESENTER;
 
 @org.junit.jupiter.api.Tag("fast")
 class UuidTest {
@@ -34,38 +32,28 @@ class UuidTest {
     @Test
     @DisplayName("Represent UUID as node with global tag")
     void representUUID() {
-        StandardRepresenter standardRepresenter =
-            new StandardRepresenter(DumpSettings.builder().build());
-        Node node = standardRepresenter.represent(THE_UUID);
+        Node node = DEFAULT_REPRESENTER.represent(THE_UUID);
         assertEquals("tag:yaml.org,2002:java.util.UUID", node.getTag().getValue());
     }
 
     @Test
     @DisplayName("Dump UUID as string")
     void dumpUuid() {
-        DumpSettings settings = DumpSettings.builder().build();
-        Dump dump = new Dump(settings);
-        String output = dump.dumpToString(THE_UUID);
+        String output = DEFAULT_DUMP.dumpToString(THE_UUID);
         assertEquals("!!java.util.UUID '37e6a9fa-52d3-11e8-9c2d-fa7ae01bbebc'\n", output);
     }
 
     @Test
     @DisplayName("Parse UUID")
     void parseUuid() {
-        LoadSettings settings = LoadSettings.builder().build();
-        Load load = new Load(settings);
-        UUID uuid =
-            (UUID) load.loadFromString("!!java.util.UUID '37e6a9fa-52d3-11e8-9c2d-fa7ae01bbebc'\n");
+        var uuid = (UUID) DEFAULT_LOAD.loadFromString("!!java.util.UUID '37e6a9fa-52d3-11e8-9c2d-fa7ae01bbebc'\n");
         assertEquals(THE_UUID, uuid);
     }
 
     @Test
     @DisplayName("Parse UUID as root")
     void parseUuidAsRoot() {
-        LoadSettings settings = LoadSettings.builder().build();
-        Load load = new Load(settings);
-        UUID uuid =
-            (UUID) load.loadFromString("!!java.util.UUID '37e6a9fa-52d3-11e8-9c2d-fa7ae01bbebc'\n");
+        var uuid = (UUID) DEFAULT_LOAD.loadFromString("!!java.util.UUID '37e6a9fa-52d3-11e8-9c2d-fa7ae01bbebc'\n");
         assertEquals(THE_UUID, uuid);
     }
 }

@@ -40,9 +40,7 @@ class DumpTest {
     @Test
     @DisplayName("Dump string")
     void dumpString() {
-        var settings = DumpSettings.builder().build();
-        var dump = new Dump(settings);
-        String str = dump.dumpToString("a");
+        String str = DEFAULT_DUMP.dumpToString("a");
         assertEquals("a\n", str);
     }
 

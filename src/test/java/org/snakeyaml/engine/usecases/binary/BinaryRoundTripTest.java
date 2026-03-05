@@ -15,6 +15,7 @@ package org.snakeyaml.engine.usecases.binary;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_REPRESENTER;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -81,10 +82,9 @@ public class BinaryRoundTripTest {
 
     @Test
     public void testStrNode() {
-        var standardRepresenter = new StandardRepresenter(DumpSettings.builder().build());
         String source = "\u0096";
-        var scalar = (ScalarNode) standardRepresenter.represent(source);
-        Node node = standardRepresenter.represent(source);
+        var scalar = (ScalarNode) DEFAULT_REPRESENTER.represent(source);
+        Node node = DEFAULT_REPRESENTER.represent(source);
         assertEquals(Tag.STR, node.getTag());
         assertEquals(NodeType.SCALAR, node.getNodeType());
         assertEquals("\u0096", scalar.getValue());

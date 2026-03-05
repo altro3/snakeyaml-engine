@@ -63,8 +63,7 @@ public class TimestampTagTest {
     public void testImplicitTagInMap() {
         LoadSettings settings = LoadSettings.builder().setSchema(new TimestampSchema()).build();
         Load loader = new Load(settings);
-        Map<String, LocalDateTime> map =
-            (Map<String, LocalDateTime>) loader.loadFromString("time: 2020-03-24T13:44:10.333");
+        var map = (Map<String, LocalDateTime>) loader.loadFromString("time: 2020-03-24T13:44:10.333");
         LocalDateTime time = map.get("time");
         assertEquals(LocalDateTime.of(2020, 3, 24, 13, 44, 10, 333000000), time);
     }
@@ -87,16 +86,14 @@ public class TimestampTagTest {
 
         // this is taken from YAML 1.1 types
         // it can be changed to represent the business case
-        public static final Pattern TIMESTAMP = Pattern.compile(
-            "^(?:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]?-[0-9][0-9]?(?:[Tt]|[ \t]+)[0-9][0-9]?:[0-9][0-9]:[0-9][0-9](?:\\.[0-9]*)?(?:[ \t]*(?:Z|[-+][0-9][0-9]?(?::[0-9][0-9])?))?)$");
+        public static final Pattern TIMESTAMP = Pattern.compile("^(?:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]?-[0-9][0-9]?(?:[Tt]|[ \t]+)[0-9][0-9]?:[0-9][0-9]:[0-9][0-9](?:\\.[0-9]*)?(?:[ \t]*(?:Z|[-+][0-9][0-9]?(?::[0-9][0-9])?))?)$");
 
         @Override
         public Tag resolve(String value, Boolean implicit) {
             if (TIMESTAMP.matcher(value).matches()) {
                 return myTimeTag;
-            } else {
-                return super.resolve(value, implicit);
             }
+            return super.resolve(value, implicit);
         }
     }
 

@@ -437,8 +437,8 @@ public class ParserImpl implements Parser {
         @Override
         public Event produce() {
             // Parse the stream start.
-            StreamStartToken token = (StreamStartToken) scanner.next();
-            Event event = new StreamStartEvent(token.getStartMark(), token.getEndMark());
+            var token = (StreamStartToken) scanner.next();
+            var event = new StreamStartEvent(token.getStartMark(), token.getEndMark());
             // Prepare the next state.
             state = new ParseImplicitDocumentStart();
             return event;
