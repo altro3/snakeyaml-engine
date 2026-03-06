@@ -26,8 +26,7 @@ import java.util.Objects;
 import java.util.Queue;
 
 /**
- * Used by the Composer and Emitter to collect comment events so that they can be used at a later
- * point in the process.
+ * Used by the Composer and Emitter to collect comment events so that they can be used at a later point in the process.
  */
 public class CommentEventsCollector {
 
@@ -39,8 +38,7 @@ public class CommentEventsCollector {
      * Constructor used to collect comment events emitted by a Parser.
      *
      * @param parser the event source.
-     * @param expectedCommentTypes the comment types expected. Any comment types not included are not
-     *     collected.
+     * @param expectedCommentTypes the comment types expected. Any comment types not included are not collected.
      */
     public CommentEventsCollector(@NonNull Parser parser, @NonNull CommentType... expectedCommentTypes) {
         this.eventSource = new AbstractQueue<>() {
@@ -78,8 +76,7 @@ public class CommentEventsCollector {
      * Constructor used to collect events emitted by the Serializer.
      *
      * @param eventSource the event source.
-     * @param expectedCommentTypes the comment types expected. Any comment types not included are not
-     *     collected.
+     * @param expectedCommentTypes the comment types expected. Any comment types not included are not collected.
      */
     public CommentEventsCollector(@NonNull Queue<Event> eventSource, @NonNull CommentType... expectedCommentTypes) {
         this.eventSource = eventSource;
@@ -106,9 +103,8 @@ public class CommentEventsCollector {
     }
 
     /**
-     * Collect all events of the expected type (set during construction) starting with the top event
-     * on the event source. Collection stops as soon as a non comment or comment of the unexpected
-     * type is encountered.
+     * Collect all events of the expected type (set during construction) starting with the top event on the event
+     * source. Collection stops as soon as a non comment or comment of the unexpected type is encountered.
      *
      * @return this object.
      */
@@ -145,8 +141,7 @@ public class CommentEventsCollector {
      * as a non comment or comment of the unexpected type is encountered.
      *
      * @param event the first event to attempt to collect.
-     * @return the event provided as an argument, if it is not collected; Otherwise, the first event
-     *     that is not collected.
+     * @return the event provided as an argument, if it is not collected; Otherwise, the first event that is not collected.
      */
     public Event collectEventsAndPoll(Event event) {
         Event nextEvent = collectEvents(event);

@@ -30,8 +30,8 @@ public class YamlOutputStreamWriter extends OutputStreamWriter implements Stream
     /**
      * Constructor.
      *
-     * @param out - the output
-     * @param cs - encoding to use to translate String to bytes
+     * @param out the output
+     * @param cs encoding to use to translate String to bytes
      */
     public YamlOutputStreamWriter(OutputStream out, Charset cs) {
         super(out, cs);

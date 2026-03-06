@@ -65,10 +65,10 @@ public class Serializer {
     private final MergeUtils mergeUtils;
 
     /**
-     * Create Serializer
+     * Constructor.
      *
-     * @param settings - dump configuration
-     * @param emitable - destination for the event stream
+     * @param settings dump configuration
+     * @param emitable destination for the event stream
      */
     public Serializer(DumpSettings settings, Emitable emitable) {
         this.settings = settings;
@@ -93,7 +93,7 @@ public class Serializer {
     /**
      * Serialize document
      *
-     * @param node - the document root
+     * @param node the document root
      */
     public void serializeDocument(Node node) {
         this.emitable.emit(new DocumentStartEvent(settings.explicitStart(), settings.yamlDirective(), settings.tagDirective()));
@@ -109,14 +109,14 @@ public class Serializer {
     }
 
     /**
-     * Emit {@link StreamStartEvent}
+     * Emit {@link StreamStartEvent}.
      */
     public void emitStreamStart() {
         this.emitable.emit(new StreamStartEvent());
     }
 
     /**
-     * Emit {@link StreamEndEvent}
+     * Emit {@link StreamEndEvent}.
      */
     public void emitStreamEnd() {
         this.emitable.emit(new StreamEndEvent());
@@ -157,9 +157,9 @@ public class Serializer {
     }
 
     /**
-     * Recursive serialization of a {@link Node}
+     * Recursive serialization of a {@link Node}.
      *
-     * @param node - content
+     * @param node content
      */
     private void serializeNode(Node node) {
         if (node.getNodeType() == NodeType.ANCHOR) {

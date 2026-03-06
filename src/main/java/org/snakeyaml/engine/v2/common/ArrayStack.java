@@ -25,25 +25,25 @@ public class ArrayStack<T> {
     private final ArrayList<T> stack;
 
     /**
-     * Create empty stack
+     * Create empty stack.
      *
-     * @param initSize - the initial size of the stack
+     * @param initSize the initial size of the stack
      */
     public ArrayStack(int initSize) {
         stack = new ArrayList<>(initSize);
     }
 
     /**
-     * Add the element to the head
+     * Add the element to the head.
      *
-     * @param obj - data to be added
+     * @param obj data to be added
      */
     public void push(T obj) {
         stack.add(obj);
     }
 
     /**
-     * Get the head and remove it from the stack
+     * Get the head and remove it from the stack.
      *
      * @return the head
      */
@@ -52,7 +52,7 @@ public class ArrayStack<T> {
     }
 
     /**
-     * Check
+     * Check is empty.
      *
      * @return true when it contains nothing
      */

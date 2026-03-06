@@ -145,20 +145,20 @@ public class ParserImpl implements Parser {
     private Map<String, String> directiveTags;
 
     /**
-     * Create
+     * Constructor.
      *
-     * @param settings - configuration options
-     * @param reader - the input
+     * @param settings configuration options
+     * @param reader the input
      */
     public ParserImpl(@NonNull LoadSettings settings, @NonNull StreamReader reader) {
         this(settings, new ScannerImpl(settings, reader));
     }
 
     /**
-     * Create
+     * Constructor.
      *
-     * @param settings - configuration options
-     * @param scanner - input
+     * @param settings configuration options
+     * @param scanner input
      */
     public ParserImpl(@NonNull LoadSettings settings, @NonNull Scanner scanner) {
         this.scanner = scanner;

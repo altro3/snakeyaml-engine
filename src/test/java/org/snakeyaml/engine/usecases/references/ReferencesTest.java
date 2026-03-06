@@ -33,7 +33,7 @@ public class ReferencesTest {
     /**
      * Create data which is difficult to parse.
      *
-     * @param size - size of the map, defines the complexity
+     * @param size size of the map, defines the complexity
      * @return YAML to parse
      */
     private String createDump(int size) {

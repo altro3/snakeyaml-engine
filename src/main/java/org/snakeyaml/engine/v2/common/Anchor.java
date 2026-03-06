@@ -21,9 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Value inside Anchor and Alias
+ * Value inside Anchor and Alias.
  *
- * @param value - the anchor value
+ * @param value the anchor value
  */
 public record Anchor(
     @NonNull String value

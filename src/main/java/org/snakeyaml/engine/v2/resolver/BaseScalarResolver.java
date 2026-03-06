@@ -50,13 +50,11 @@ public abstract class BaseScalarResolver implements ScalarResolver {
     }
 
     /**
-     * Add a resolver to resolve a value that matches the provided regular expression to the provided
-     * tag
+     * Add a resolver to resolve a value that matches the provided regular expression to the provided tag.
      *
-     * @param tag - the Tag to assign when the value matches
-     * @param regexp - the RE which is applied for every value
-     * @param first - the possible first characters (this is merely for performance improvement) to
-     *     skip RE evaluation to gain time
+     * @param tag the Tag to assign when the value matches
+     * @param regexp the RE which is applied for every value
+     * @param first the possible first characters (this is merely for performance improvement) to skip RE evaluation to gain time
      */
     public void addImplicitResolver(Tag tag, Pattern regexp, String first) {
         if (first == null) {

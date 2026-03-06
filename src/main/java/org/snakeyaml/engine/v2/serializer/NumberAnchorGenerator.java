@@ -21,7 +21,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 /**
- * Simple generate of the format id + number
+ * Simple generate of the format id + number.
  */
 public class NumberAnchorGenerator implements AnchorGenerator {
 
@@ -36,9 +36,9 @@ public class NumberAnchorGenerator implements AnchorGenerator {
     private int lastAnchorId;
 
     /**
-     * Create
+     * Constructor.
      *
-     * @param lastAnchorId - the number to start from
+     * @param lastAnchorId the number to start from
      */
     public NumberAnchorGenerator(int lastAnchorId) {
         this.lastAnchorId = lastAnchorId;
@@ -46,9 +46,9 @@ public class NumberAnchorGenerator implements AnchorGenerator {
 
     /**
      * Create the anchor name (increasing the number) or keep the one when it was already created in
-     * the node by the low level API
+     * the node by the low level API.
      *
-     * @param node - the data to anchor
+     * @param node the data to anchor
      * @return unique anchor name or existing anchor name
      */
     @Override

@@ -14,12 +14,11 @@
 package org.snakeyaml.engine.v2.common;
 
 import org.jspecify.annotations.NonNull;
-import org.snakeyaml.engine.v2.exceptions.YamlVersionException;
 
 import java.io.Serializable;
 
 /**
- * YAML Version indicator
+ * YAML Version indicator.
  */
 public enum SpecVersion implements Serializable {
 
@@ -31,23 +30,23 @@ public enum SpecVersion implements Serializable {
     ;
 
     /**
-     * keep major
+     * Major part
      */
     private final int major;
     /**
-     * keep minor
+     * Minor part
      */
     private final int minor;
     /**
-     * String representation like "1.2"
+     * String representation like "1.2".
      */
     private final String representation;
 
     /**
-     * Create
+     * Constructor.
      *
-     * @param major - major part ov version
-     * @param minor - minor part of version
+     * @param major major part of version
+     * @param minor minor part of version
      */
     SpecVersion(int major, int minor) {
         this.major = major;
@@ -55,29 +54,14 @@ public enum SpecVersion implements Serializable {
         representation = major + "." + minor;
     }
 
-    /**
-     * getter
-     *
-     * @return 1
-     */
     public int getMajor() {
         return major;
     }
 
-    /**
-     * getter
-     *
-     * @return 0 or 1
-     */
     public int getMinor() {
         return minor;
     }
 
-    /**
-     * create readable text
-     *
-     * @return text
-     */
     public String getRepresentation() {
         return representation;
     }

@@ -29,19 +29,19 @@ public class Present {
     private final DumpSettings settings;
 
     /**
-     * Create Present (emitter)
+     * Create Present (emitter).
      *
-     * @param settings - configuration
+     * @param settings configuration
      */
     public Present(@NonNull DumpSettings settings) {
         this.settings = settings;
     }
 
     /**
-     * Serialize the provided Events
+     * Serialize the provided Events.
      *
-     * @param events - the data to serialize
-     * @return - the YAML document
+     * @param events the data to serialize
+     * @return the YAML document
      */
     public String emitToString(@NonNull Iterator<Event> events) {
         var writer = new StreamToStringWriter();

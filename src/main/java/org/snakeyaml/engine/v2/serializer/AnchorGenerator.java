@@ -18,14 +18,14 @@ import org.snakeyaml.engine.v2.common.Anchor;
 import org.snakeyaml.engine.v2.nodes.Node;
 
 /**
- * Functional interface to define Anchor for dumping
+ * Functional interface to define Anchor for dumping.
  */
 public interface AnchorGenerator {
 
     /**
-     * Create anchor
+     * Create anchor.
      *
-     * @param node - the node to refer to
+     * @param node the node to refer to
      * @return unique name
      */
     @Nullable Anchor nextAnchor(Node node);

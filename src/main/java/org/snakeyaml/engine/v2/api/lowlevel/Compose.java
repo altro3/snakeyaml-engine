@@ -34,16 +34,16 @@ public class Compose {
     private final LoadSettings settings;
 
     /**
-     * Create instance with provided {@link LoadSettings}
+     * Create instance with provided {@link LoadSettings}.
      *
-     * @param settings - configuration
+     * @param settings configuration
      */
     public Compose(@NonNull LoadSettings settings) {
         this.settings = settings;
     }
 
     /**
-     * Parse a YAML stream and produce {@link Node}
+     * Parse a YAML stream and produce {@link Node}.
      *
      * @param yaml YAML document(s). Since the encoding is already known the BOM must not be present (it will be parsed as content)
      * @return parsed {@link Node} if available
@@ -55,7 +55,7 @@ public class Compose {
     }
 
     /**
-     * Parse a YAML stream and produce {@link Node}
+     * Parse a YAML stream and produce {@link Node}.
      *
      * @param yaml YAML document(s). Default encoding is UTF-8. The BOM must be present if the encoding is UTF-16 or UTF-32
      * @return parsed {@link Node} if available
@@ -67,7 +67,7 @@ public class Compose {
     }
 
     /**
-     * Parse a YAML stream and produce {@link Node}
+     * Parse a YAML stream and produce {@link Node}.
      *
      * @param yaml YAML document(s).
      * @return parsed {@link Node} if available

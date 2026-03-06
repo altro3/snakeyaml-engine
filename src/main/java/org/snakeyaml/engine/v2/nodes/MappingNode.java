@@ -31,14 +31,14 @@ public class MappingNode extends CollectionNode<NodeTuple> {
     private boolean mergeTag = false;
 
     /**
-     * Create
+     * Constructor.
      *
-     * @param tag - tag of the node
-     * @param resolved - true when the tag is implicitly resolved
-     * @param value - the value
-     * @param flowStyle - the flow style of the node
-     * @param startMark - start
-     * @param endMark - end
+     * @param tag tag of the node
+     * @param resolved true when the tag is implicitly resolved
+     * @param value the value
+     * @param flowStyle the flow style of the node
+     * @param startMark start
+     * @param endMark end
      */
     public MappingNode(Tag tag, boolean resolved, @NonNull List<NodeTuple> value, @NonNull FlowStyle flowStyle, Mark startMark, Mark endMark) {
         super(tag, flowStyle, startMark, endMark);
@@ -47,11 +47,11 @@ public class MappingNode extends CollectionNode<NodeTuple> {
     }
 
     /**
-     * Create
+     * Constructor.
      *
-     * @param tag - tag of the node
-     * @param value - the value
-     * @param flowStyle - the flow style of the node
+     * @param tag tag of the node
+     * @param value the value
+     * @param flowStyle the flow style of the node
      */
     public MappingNode(Tag tag, @NonNull List<NodeTuple> value, @NonNull FlowStyle flowStyle) {
         this(tag, true, value, flowStyle, null, null);
@@ -73,17 +73,16 @@ public class MappingNode extends CollectionNode<NodeTuple> {
     }
 
     /**
-     * Applications may need to replace the content (Spring Boot). Merging was removed, but it may be
-     * implemented.
+     * Applications may need to replace the content (Spring Boot). Merging was removed, but it may be implemented.
      *
-     * @param merged - merged data to replace the internal value
+     * @param merged merged data to replace the internal value
      */
     public void setValue(@NonNull List<NodeTuple> merged) {
         value = merged;
     }
 
     /**
-     * @param mergeTag - true if map contains merge node
+     * @param mergeTag true if map contains merge node
      */
     public void setHasMergeTag(boolean mergeTag) {
         this.mergeTag = mergeTag;

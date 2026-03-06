@@ -113,9 +113,9 @@ public final class CharConstants {
     );
 
     /**
-     * Replace a single character with its string representation
+     * Replace a single character with its string representation.
      *
-     * @param chRepresentation - the char to escape
+     * @param chRepresentation the char to escape
      * @return the same string or its escaped representation
      */
     public static String escapeChar(String chRepresentation) {

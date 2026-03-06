@@ -33,9 +33,9 @@ public class Parse {
     private final LoadSettings settings;
 
     /**
-     * Create instance with provided {@link LoadSettings}
+     * Create instance with provided {@link LoadSettings}.
      *
-     * @param settings - configuration
+     * @param settings configuration
      */
     public Parse(@NonNull LoadSettings settings) {
         this.settings = settings;
@@ -54,9 +54,9 @@ public class Parse {
 
     /**
      * Parse a YAML stream and produce parsing events. Since the encoding is already known the BOM
-     * must not be present (it will be parsed as content)
+     * must not be present (it will be parsed as content).
      *
-     * @param yaml - YAML document(s).
+     * @param yaml YAML document(s).
      * @return parsed events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */
@@ -67,7 +67,7 @@ public class Parse {
     /**
      * Parse a YAML stream and produce parsing events.
      *
-     * @param yaml - YAML document(s). The BOM must not be present (it will be parsed as content)
+     * @param yaml YAML document(s). The BOM must not be present (it will be parsed as content)
      * @return parsed events
      * @see <a href="http://www.yaml.org/spec/1.2/spec.html#id2762107">Processing Overview</a>
      */

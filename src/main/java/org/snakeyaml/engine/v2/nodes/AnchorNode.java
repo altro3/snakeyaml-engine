@@ -16,16 +16,16 @@ package org.snakeyaml.engine.v2.nodes;
 import org.jspecify.annotations.NonNull;
 
 /**
- * This class is only used during representation (dumping)
+ * This class is only used during representation (dumping).
  */
 public class AnchorNode extends Node {
 
     private final Node realNode;
 
     /**
-     * Create
+     * Constructor.
      *
-     * @param realNode - the source node
+     * @param realNode the source node
      */
     public AnchorNode(Node realNode) {
         super(realNode.getTag(), realNode.getStartMark(), realNode.getEndMark());
@@ -37,11 +37,6 @@ public class AnchorNode extends Node {
         return NodeType.ANCHOR;
     }
 
-    /**
-     * getter
-     *
-     * @return the origin
-     */
     public Node getRealNode() {
         return realNode;
     }

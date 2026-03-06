@@ -27,14 +27,14 @@ public interface StreamDataWriter {
     }
 
     /**
-     * Write the whole data
+     * Write the whole data.
      *
-     * @param str - data to write
+     * @param str data to write
      */
     void write(String str);
 
     /**
-     * Write part of the data
+     * Write part of the data.
      *
      * @param str the data to write (the source)
      * @param off offset to start from

@@ -167,9 +167,9 @@ public record DumpSettings(
         }
 
         /**
-         * Add YAML <a href="http://yaml.org/spec/1.2/spec.html#id2782090">directive</a>
+         * Add YAML <a href="http://yaml.org/spec/1.2/spec.html#id2782090">directive</a>.
          *
-         * @param yamlDirective - the version to be used in the directive
+         * @param yamlDirective the version to be used in the directive
          * @return the builder with the provided value
          */
         public Builder setYamlDirective(@NonNull SpecVersion yamlDirective) {
