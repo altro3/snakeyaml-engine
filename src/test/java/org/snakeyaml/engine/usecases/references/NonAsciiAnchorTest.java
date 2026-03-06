@@ -13,15 +13,13 @@
  */
 package org.snakeyaml.engine.usecases.references;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @org.junit.jupiter.api.Tag("fast")
 class NonAsciiAnchorTest {
@@ -57,14 +55,10 @@ class NonAsciiAnchorTest {
     @Test
     @DisplayName("Reject invalid anchors which contain one of " + NON_ANCHORS)
     void testNonAllowedAnchor() {
-        for (int i = 0; i < NON_ANCHORS.length(); i++) {
-            try {
-                loadWith(NON_ANCHORS.charAt(i));
-                fail("Special chars should not be allowed in anchor name");
-            } catch (Exception e) {
-                assertTrue(e.getMessage().contains("while scanning an anchor"), e.getMessage());
-                assertTrue(e.getMessage().contains("unexpected character found"), e.getMessage());
-            }
+        for (var c : NON_ANCHORS.toCharArray()) {
+            var e = assertThrows(Exception.class, () -> loadWith(c));
+            assertTrue(e.getMessage().contains("while scanning an anchor"), e.getMessage());
+            assertTrue(e.getMessage().contains("unexpected character found"), e.getMessage());
         }
     }
 

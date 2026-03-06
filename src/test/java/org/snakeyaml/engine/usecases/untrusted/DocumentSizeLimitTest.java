@@ -13,21 +13,21 @@
  */
 package org.snakeyaml.engine.usecases.untrusted;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.Iterator;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 
+import java.util.Iterator;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
- * https://bitbucket.org/snakeyaml/snakeyaml/issues/1065
+ * <a href="https://bitbucket.org/snakeyaml/snakeyaml/issues/1065">Issue 1065</a>
  */
 class DocumentSizeLimitTest {
 
@@ -37,24 +37,22 @@ class DocumentSizeLimitTest {
     @Test
     void testFirstLoadManyDocuments() {
         // within the limit = 8
-        LoadSettings settings1 = LoadSettings.builder().setCodePointLimit(8).build();
-        Load load1 = new Load(settings1);
+        var load1 = new Load(LoadSettings.builder()
+            .setCodePointLimit(8)
+            .build());
         String doc = "---\nfoo\n---\nbarbar\n";
         Iterator<Object> iter1 = load1.loadAllFromString(doc).iterator();
         assertEquals("foo", iter1.next());
         assertEquals("barbar", iter1.next());
         assertFalse(iter1.hasNext());
         // exceed the limit by 1
-        LoadSettings settings2 = LoadSettings.builder().setCodePointLimit(8 - 1).build();
-        Load load2 = new Load(settings2);
+        Load load2 = new Load(LoadSettings.builder()
+            .setCodePointLimit(8 - 1)
+            .build());
         Iterator<Object> iter2 = load2.loadAllFromString(doc).iterator();
         assertEquals("foo", iter2.next()); // the first document is loaded
-        try {
-            iter2.next();
-            fail("The second document should fail because of the limit");
-        } catch (YamlEngineException e) {
-            assertEquals("The incoming YAML document exceeds the limit: 7 code points.", e.getMessage());
-        }
+        var e = assertThrows(YamlEngineException.class, iter2::next);
+        assertEquals("The incoming YAML document exceeds the limit: 7 code points.", e.getMessage());
     }
 
     /**
@@ -62,25 +60,23 @@ class DocumentSizeLimitTest {
      * limit ('---' and '...')
      */
     @Test
-    public void testLastLoadManyDocuments() {
-        LoadSettings settings1 = LoadSettings.builder().setCodePointLimit(7).build();
-        Load load1 = new Load(settings1);
+    void testLastLoadManyDocuments() {
+        var load1 = new Load(LoadSettings.builder()
+            .setCodePointLimit(7)
+            .build());
         String complete = "foo\n...\n---\nbar\n";
         Iterator<Object> iter1 = load1.loadAllFromString(complete).iterator();
         assertEquals("foo", iter1.next());
         assertEquals("bar", iter1.next());
         assertFalse(iter1.hasNext());
         // exceed the limit
-        LoadSettings settings2 = LoadSettings.builder().setCodePointLimit(6).build();
-        Load load2 = new Load(settings2);
+        var load2 = new Load(LoadSettings.builder()
+            .setCodePointLimit(6)
+            .build());
         Iterator<Object> iter2 = load2.loadAllFromString(complete).iterator();
         assertEquals("foo", iter2.next());
-        try {
-            iter2.next();
-            fail("Second doc should fail because of doc limit");
-        } catch (YamlEngineException e) {
-            assertEquals("The incoming YAML document exceeds the limit: 6 code points.", e.getMessage());
-        }
+        var e = assertThrows(YamlEngineException.class, iter2::next);
+        assertEquals("The incoming YAML document exceeds the limit: 6 code points.", e.getMessage());
     }
 
     @Test
@@ -90,19 +86,15 @@ class DocumentSizeLimitTest {
         String docLongest = "---\ndocument: this is document three\n";
         String input = doc1 + doc2 + docLongest;
 
-        assertTrue(dumpAllDocs(input, input.length()),
-            "Test1. All should load, all docs are less than total input size.");
-
-        assertTrue(dumpAllDocs(input, docLongest.length()),
-            "Test2. All should load, all docs are less or equal to docLongest size.");
-
-        assertFalse(dumpAllDocs(input, doc2.length()),
-            "Test3. Fail to load, doc2 is not the longest in the stream.");
+        assertTrue(dumpAllDocs(input, input.length()), "Test1. All should load, all docs are less than total input size.");
+        assertTrue(dumpAllDocs(input, docLongest.length()), "Test2. All should load, all docs are less or equal to docLongest size.");
+        assertFalse(dumpAllDocs(input, doc2.length()), "Test3. Fail to load, doc2 is not the longest in the stream.");
     }
 
     private boolean dumpAllDocs(String input, int codePointLimit) {
-        LoadSettings settings1 = LoadSettings.builder().setCodePointLimit(codePointLimit).build();
-        Load load = new Load(settings1);
+        var load = new Load(LoadSettings.builder()
+            .setCodePointLimit(codePointLimit)
+            .build());
         Iterator<Object> docs = load.loadAllFromString(input).iterator();
         for (int ndx = 1; ndx <= 3; ndx++) {
             try {

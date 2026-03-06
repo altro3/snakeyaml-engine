@@ -15,7 +15,6 @@ package org.snakeyaml.engine.v2.api.lowlevel;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.nodes.Node;
 
 import java.io.ByteArrayInputStream;
@@ -23,36 +22,32 @@ import java.io.StringReader;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_COMPOSE;
 
 @Tag("fast")
 class ComposeTest {
 
     @Test
     void composeEmptyReader() {
-        var compose = new Compose(LoadSettings.builder().build());
-        Node node = compose.composeReader(new StringReader(""));
+        Node node = DEFAULT_COMPOSE.composeReader(new StringReader(""));
         assertNull(node);
     }
 
     @Test
     void composeEmptyInputStream() {
-        var compose = new Compose(LoadSettings.builder().build());
-        Node node = compose.composeInputStream(new ByteArrayInputStream("".getBytes()));
+        Node node = DEFAULT_COMPOSE.composeInputStream(new ByteArrayInputStream("".getBytes()));
         assertNull(node);
     }
 
     @Test
     void composeAllFromEmptyReader() {
-        var compose = new Compose(LoadSettings.builder().build());
-        Iterable<Node> nodes = compose.composeAllFromReader(new StringReader(""));
+        Iterable<Node> nodes = DEFAULT_COMPOSE.composeAllFromReader(new StringReader(""));
         assertFalse(nodes.iterator().hasNext());
     }
 
     @Test
     void composeAllFromEmptyInputStream() {
-        var compose = new Compose(LoadSettings.builder().build());
-        Iterable<Node> nodes =
-            compose.composeAllFromInputStream(new ByteArrayInputStream("".getBytes()));
+        Iterable<Node> nodes = DEFAULT_COMPOSE.composeAllFromInputStream(new ByteArrayInputStream("".getBytes()));
         assertFalse(nodes.iterator().hasNext());
     }
 }

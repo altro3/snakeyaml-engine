@@ -13,33 +13,35 @@
  */
 package org.snakeyaml.engine.usecases.tags;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 /**
  * Example of parsing a local tag
  */
 @org.junit.jupiter.api.Tag("fast")
-public class SetsTagTest {
+class SetsTagTest {
 
     @Test
     @DisplayName("Test that !!set tag creates a Set")
-    public void testSetsTag() {
-        LoadSettings settings = LoadSettings.builder().build();
-        Load loader = new Load(settings);
-        final String YAML = "---\n" + "sets: !!set\n" + "    ? a\n" + "    ? b\n";
-        Map<String, Set<String>> map = (Map<String, Set<String>>) loader.loadFromString(YAML);
+    void testSetsTag() {
+        final String yaml = """
+            ---
+            sets: !!set
+                ? a
+                ? b
+            """;
+        @SuppressWarnings("unchecked")
+        var map = (Map<String, Set<String>>) DEFAULT_LOAD.loadFromString(yaml);
         Set<String> set = map.get("sets");
         assertEquals(2, set.size());
-        Iterator iter = set.iterator();
+        var iter = set.iterator();
         assertEquals("a", iter.next());
         assertEquals("b", iter.next());
     }

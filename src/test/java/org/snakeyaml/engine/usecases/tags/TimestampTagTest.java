@@ -25,7 +25,6 @@ import org.snakeyaml.engine.v2.resolver.ScalarResolver;
 import org.snakeyaml.engine.v2.schema.JsonSchema;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -35,40 +34,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Example of parsing a !!timestamp tag
  */
 @org.junit.jupiter.api.Tag("fast")
-public class TimestampTagTest {
+class TimestampTagTest {
 
     // this is an example of the tag from YAML 1.1 spec. It can be anything else
-    public static final Tag myTimeTag = new Tag(Tag.PREFIX + "timestamp");
+    static final Tag MY_TIME_TAG = new Tag(Tag.PREFIX + "timestamp");
 
     @Test
-    public void testExplicitTag() {
-        Map<Tag, ConstructNode> tagConstructors = new HashMap<>();
-        tagConstructors.put(myTimeTag, new TimestampConstructor());
-        LoadSettings settings = LoadSettings.builder().setTagConstructors(tagConstructors).build();
-        Load loader = new Load(settings);
-        LocalDateTime obj =
-            (LocalDateTime) loader.loadFromString("!!timestamp 2020-03-24T12:34:00.333");
-        assertEquals(LocalDateTime.of(2020, 3, 24, 12, 34, 00, 333000000), obj);
+    void testExplicitTag() {
+        var loader = new Load(LoadSettings.builder()
+            .setTagConstructors(Map.of(MY_TIME_TAG, new TimestampConstructor()))
+            .build());
+        var obj = (LocalDateTime) loader.loadFromString("!!timestamp 2020-03-24T12:34:00.333");
+        assertEquals(LocalDateTime.of(2020, 3, 24, 12, 34, 0, 333000000), obj);
     }
 
     @Test
-    public void testImplicitTag() {
-        LoadSettings settings = LoadSettings.builder().setSchema(new TimestampSchema()).build();
-        Load loader = new Load(settings);
-        LocalDateTime obj = (LocalDateTime) loader.loadFromString("2020-03-24T12:34:00.333");
-        assertEquals(LocalDateTime.of(2020, 3, 24, 12, 34, 00, 333000000), obj);
+    void testImplicitTag() {
+        var loader = new Load(LoadSettings.builder()
+            .setSchema(new TimestampSchema())
+            .build());
+        var obj = (LocalDateTime) loader.loadFromString("2020-03-24T12:34:00.333");
+        assertEquals(LocalDateTime.of(2020, 3, 24, 12, 34, 0, 333000000), obj);
     }
 
     @Test
-    public void testImplicitTagInMap() {
-        LoadSettings settings = LoadSettings.builder().setSchema(new TimestampSchema()).build();
-        Load loader = new Load(settings);
+    void testImplicitTagInMap() {
+        var loader = new Load(LoadSettings.builder()
+            .setSchema(new TimestampSchema())
+            .build());
+        @SuppressWarnings("unchecked")
         var map = (Map<String, LocalDateTime>) loader.loadFromString("time: 2020-03-24T13:44:10.333");
         LocalDateTime time = map.get("time");
         assertEquals(LocalDateTime.of(2020, 3, 24, 13, 44, 10, 333000000), time);
     }
 
-    public static final class TimestampConstructor implements ConstructNode {
+    static final class TimestampConstructor implements ConstructNode {
 
         @Override
         public Object construct(Node node) {
@@ -82,7 +82,7 @@ public class TimestampTagTest {
     /**
      * This is required to support implicit tags
      */
-    public static final class MyScalarResolver extends JsonScalarResolver {
+    static final class MyScalarResolver extends JsonScalarResolver {
 
         // this is taken from YAML 1.1 types
         // it can be changed to represent the business case
@@ -91,7 +91,7 @@ public class TimestampTagTest {
         @Override
         public Tag resolve(String value, Boolean implicit) {
             if (TIMESTAMP.matcher(value).matches()) {
-                return myTimeTag;
+                return MY_TIME_TAG;
             }
             return super.resolve(value, implicit);
         }
@@ -107,7 +107,7 @@ public class TimestampTagTest {
         @Override
         public Map<Tag, ConstructNode> getSchemaTagConstructors() {
             Map<Tag, ConstructNode> parent = super.getSchemaTagConstructors();
-            parent.put(myTimeTag, new TimestampConstructor());
+            parent.put(MY_TIME_TAG, new TimestampConstructor());
             return parent;
         }
     }

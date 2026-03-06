@@ -21,6 +21,7 @@ import org.snakeyaml.engine.v2.util.TestUtils;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @Tag("fast")
 class LoadSequenceTest {
@@ -28,45 +29,40 @@ class LoadSequenceTest {
     @Test
     @DisplayName("Empty list [] is parsed")
     void parseEmptyList() {
-        var settings = LoadSettings.builder().build();
-        var load = new Load(settings);
-        var list = (List<Integer>) load.loadFromString("[]");
+        @SuppressWarnings("unchecked")
+        var list = (List<Integer>) DEFAULT_LOAD.loadFromString("[]");
         assertEquals(List.of(), list);
     }
 
     @Test
     @DisplayName("list [2] is parsed")
     void parseList1() {
-        var settings = LoadSettings.builder().build();
-        var load = new Load(settings);
-        var list = (List<Integer>) load.loadFromString("[2]");
+        @SuppressWarnings("unchecked")
+        var list = (List<Integer>) DEFAULT_LOAD.loadFromString("[2]");
         assertEquals(List.of(2), list);
     }
 
     @Test
     @DisplayName("list [2,3] is parsed")
     void parseList2() {
-        var settings = LoadSettings.builder().build();
-        var load = new Load(settings);
-        var list = (List<Integer>) load.loadFromString("[2,3]");
+        @SuppressWarnings("unchecked")
+        var list = (List<Integer>) DEFAULT_LOAD.loadFromString("[2,3]");
         assertEquals(List.of(2, 3), list);
     }
 
     @Test
     @DisplayName("list [2,a,true] is parsed")
     void parseList3() {
-        var settings = LoadSettings.builder().build();
-        var load = new Load(settings);
-        var list = (List<Object>) load.loadFromString("[2,a,true]");
+        @SuppressWarnings("unchecked")
+        var list = (List<Object>) DEFAULT_LOAD.loadFromString("[2,a,true]");
         assertEquals(List.of(2, "a", Boolean.TRUE), list);
     }
 
     @Test
     @DisplayName("list is parsed")
     void parseList4() {
-        var settings = LoadSettings.builder().build();
-        var load = new Load(settings);
-        var list = (List<Object>) load.loadFromString(TestUtils.getResource("load/list1.yaml"));
+        @SuppressWarnings("unchecked")
+        var list = (List<Object>) DEFAULT_LOAD.loadFromString(TestUtils.getResource("load/list1.yaml"));
         assertEquals(List.of("a", "bb", "ccc", "dddd"), list);
     }
 }

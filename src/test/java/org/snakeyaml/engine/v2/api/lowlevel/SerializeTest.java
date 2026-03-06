@@ -14,7 +14,6 @@
 package org.snakeyaml.engine.v2.api.lowlevel;
 
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.events.DocumentEndEvent;
@@ -33,21 +32,23 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
 
 @org.junit.jupiter.api.Tag("fast")
 class SerializeTest {
 
     @Test
     void serializeOneScalar() {
-        var serialize = new Serialize(DumpSettings.builder().build());
-        Iterable<Event> events =
-            serialize.serializeOne(new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN));
+        var serialize = new Serialize(DEFAULT_DUMP_SETTINGS);
+        Iterable<Event> events = serialize.serializeOne(new ScalarNode(Tag.STR, "a", ScalarStyle.PLAIN));
         var list = new ArrayList<Event>();
         events.forEach(list::add);
         assertEquals(5, list.size());
-        TestUtils.compareEvents(List.of(new StreamStartEvent(),
+        TestUtils.compareEvents(List.of(
+            new StreamStartEvent(),
             new DocumentStartEvent(false, SpecVersion.EMPTY, new HashMap<>()),
             new ScalarEvent(null, null, ImplicitTuple.FALSE_FALSE, "a", ScalarStyle.PLAIN),
-            new DocumentEndEvent(false), new StreamEndEvent()), list);
+            new DocumentEndEvent(false), new StreamEndEvent()
+        ), list);
     }
 }

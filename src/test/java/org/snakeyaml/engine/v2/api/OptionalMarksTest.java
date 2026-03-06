@@ -34,7 +34,10 @@ class OptionalMarksTest {
     @DisplayName("Compose: no marks")
     void composeWithoutMarks() {
         SuiteData data = SuiteUtils.getOne("2AUY");
-        var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
+        var settings = LoadSettings.builder()
+            .setLabel(data.getLabel())
+            .setUseMarks(false)
+            .build();
         Node node = new Compose(settings).composeString("{a: 4}");
         assertNotNull(node);
     }
@@ -43,11 +46,12 @@ class OptionalMarksTest {
     @DisplayName("Compose: failure with marks")
     void composeErrorWithoutMarks2() {
         SuiteData data = SuiteUtils.getOne("2AUY");
-        var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(true).build();
-        var exception =
-            assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
-        assertTrue(exception.getMessage().contains("line 1, column 7:"),
-            "The error must contain Mark data.");
+        var settings = LoadSettings.builder()
+            .setLabel(data.getLabel())
+            .setUseMarks(true)
+            .build();
+        var e = assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
+        assertTrue(e.getMessage().contains("line 1, column 7:"), "The error must contain Mark data.");
     }
 
 
@@ -55,10 +59,12 @@ class OptionalMarksTest {
     @DisplayName("Compose: failure without marks")
     void composeErrorWithoutMarks() {
         SuiteData data = SuiteUtils.getOne("2AUY");
-        var settings = LoadSettings.builder().setLabel(data.getLabel()).setUseMarks(false).build();
-        var exception =
-            assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
-        assertEquals("expected '<document start>', but found '}'\n", exception.getMessage());
+        var settings = LoadSettings.builder()
+            .setLabel(data.getLabel())
+            .setUseMarks(false)
+            .build();
+        var e = assertThrows(ParserException.class, () -> new Compose(settings).composeString("{a: 4}}"));
+        assertEquals("expected '<document start>', but found '}'\n", e.getMessage());
     }
 }
 

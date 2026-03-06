@@ -30,22 +30,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DumpCommentInFlowStyleTest {
-
-    private String extractInlineComment(Node node) {
-        MappingNode mapping = (MappingNode) node;
-        List<NodeTuple> value = mapping.getValue();
-        NodeTuple first = value.get(0);
-        Node textNode = first.valueNode();
-        return textNode.getInLineComments().get(0).value();
-    }
+class DumpCommentInFlowStyleTest {
 
     @Test
-    public void testFlowWithComments() {
-        LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
-        Compose loader = new Compose(loadSettings);
+    void testFlowWithComments() {
+        var loadSettings = LoadSettings.builder()
+            .setParseComments(true)
+            .build();
+        var loader = new Compose(loadSettings);
+        var parser = new Parse(loadSettings);
         String content = "{url: text # comment breaks it\n}";
-        Parse parser = new Parse(loadSettings);
         for (Event event : parser.parseReader(new StringReader(content))) {
             // System.out.println(event);
         }
@@ -53,37 +47,51 @@ public class DumpCommentInFlowStyleTest {
         Node node = loader.composeReader(new StringReader(content));
         assertEquals(" comment breaks it", extractInlineComment(node));
 
-        DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(true).build();
-        Serialize serialize = new Serialize(dumpSettings);
+        DumpSettings dumpSettings = DumpSettings.builder()
+            .setDumpComments(true)
+            .build();
+        var serialize = new Serialize(dumpSettings);
         List<Event> events = serialize.serializeOne(node);
         for (Event event : events) {
             // System.out.println(event);
         }
         assertEquals(9, events.size());
 
-        Present present = new Present(dumpSettings);
+        var present = new Present(dumpSettings);
         String output = present.emitToString(events.iterator());
         assertEquals(content, output.trim());
     }
 
     @Test
-    public void testBlockWithComments() {
-        Compose loader = new Compose(LoadSettings.builder().setParseComments(true).build());
+    void testBlockWithComments() {
+        var loader = new Compose(LoadSettings.builder()
+            .setParseComments(true)
+            .build());
         String content = "url: text # comment breaks it\n";
         Node node = loader.composeReader(new StringReader(content));
 
         assertEquals(" comment breaks it", extractInlineComment(node));
 
-        DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(true).build();
-        Serialize serialize = new Serialize(dumpSettings);
+        var dumpSettings = DumpSettings.builder()
+            .setDumpComments(true)
+            .build();
+        var serialize = new Serialize(dumpSettings);
         List<Event> events = serialize.serializeOne(node);
         for (Event event : events) {
             // System.out.println(event);
         }
         assertEquals(9, events.size());
 
-        Present present = new Present(dumpSettings);
+        var present = new Present(dumpSettings);
         String output = present.emitToString(events.iterator());
         assertEquals(content, output);
+    }
+
+    private String extractInlineComment(Node node) {
+        var mapping = (MappingNode) node;
+        List<NodeTuple> value = mapping.getValue();
+        NodeTuple first = value.get(0);
+        Node textNode = first.valueNode();
+        return textNode.getInLineComments().get(0).value();
     }
 }

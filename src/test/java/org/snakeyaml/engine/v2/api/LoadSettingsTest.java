@@ -13,19 +13,21 @@
  */
 package org.snakeyaml.engine.v2.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.Map;
-import java.util.function.UnaryOperator;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.common.SpecVersion;
 import org.snakeyaml.engine.v2.exceptions.DuplicateKeyException;
 import org.snakeyaml.engine.v2.schema.JsonSchema;
+
+import java.util.Map;
+import java.util.function.UnaryOperator;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
 
 @Tag("fast")
 class LoadSettingsTest {
@@ -36,62 +38,54 @@ class LoadSettingsTest {
         UnaryOperator<SpecVersion> strict12 = t -> {
             if (t.getMajor() != 1 || t.getMinor() != 2) {
                 throw new IllegalArgumentException("Only 1.2 is supported.");
-            } else {
-                return t;
             }
+            return t;
         };
 
-        LoadSettings settings = LoadSettings.builder().setVersionFunction(strict12).build();
-        Load load = new Load(settings);
-        try {
-            load.loadFromString("%YAML 1.1\n...\nfoo");
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("Only 1.2 is supported.", e.getMessage());
-        }
+        var load = new Load(LoadSettings.builder()
+            .setVersionFunction(strict12)
+            .build());
+
+        var e = assertThrows(IllegalArgumentException.class, () -> load.loadFromString("%YAML 1.1\n...\nfoo"));
+        assertEquals("Only 1.2 is supported.", e.getMessage());
     }
 
     @Test
     @DisplayName("Do not allow duplicate keys")
     void doNotAllowDuplicateKeys() {
-        LoadSettings settings = LoadSettings.builder().setAllowDuplicateKeys(false).build();
-        Load load = new Load(settings);
-        try {
-            load.loadFromString("{a: 1, a: 2}");
-            fail("Duplicate keys must not be allowed.");
-        } catch (DuplicateKeyException e) {
-            assertTrue(e.getMessage().contains("found duplicate key a"));
-        }
+        var load = new Load(LoadSettings.builder()
+            .setAllowDuplicateKeys(false)
+            .build());
+        var e = assertThrows(DuplicateKeyException.class, () -> load.loadFromString("{a: 1, a: 2}"));
+        assertTrue(e.getMessage().contains("found duplicate key a"));
     }
 
     @Test
     @DisplayName("Do not allow duplicate keys by default")
     void doNotAllowDuplicateKeysByDefault() {
-        LoadSettings settings = LoadSettings.builder().build();
-        Load load = new Load(settings);
-        try {
-            load.loadFromString("{a: 1, a: 2}");
-            fail("Duplicate keys must not be allowed.");
-        } catch (DuplicateKeyException e) {
-            assertTrue(e.getMessage().contains("found duplicate key a"));
-        }
+        var e = assertThrows(DuplicateKeyException.class, () -> DEFAULT_LOAD.loadFromString("{a: 1, a: 2}"));
+        assertTrue(e.getMessage().contains("found duplicate key a"));
     }
 
     @Test
     @DisplayName("Allow duplicate keys")
     void allowDuplicateKeysWhenSpecified() {
-        LoadSettings settings = LoadSettings.builder().setAllowDuplicateKeys(true).build();
-        Load load = new Load(settings);
-        Map<String, Integer> map = (Map<String, Integer>) load.loadFromString("{a: 1, a: 2}");
-        assertEquals(Integer.valueOf(2), map.get("a"));
+        var load = new Load(LoadSettings.builder()
+            .setAllowDuplicateKeys(true)
+            .build());
+        @SuppressWarnings("unchecked")
+        var map = (Map<String, Integer>) load.loadFromString("{a: 1, a: 2}");
+        assertEquals(2, map.get("a"));
     }
 
     @Test
     @DisplayName("Set and get custom property")
     void customProperty() {
-        SomeKey key = new SomeKey();
-        LoadSettings settings = LoadSettings.builder().setCustomProperty(key, "foo")
-            .setCustomProperty(SomeStatus.DELIVERED, "bar").build();
+        var key = new SomeKey();
+        var settings = LoadSettings.builder()
+            .setCustomProperty(key, "foo")
+            .setCustomProperty(SomeStatus.DELIVERED, "bar")
+            .build();
         assertEquals("foo", settings.getCustomProperty(key));
         assertEquals("bar", settings.getCustomProperty(SomeStatus.DELIVERED));
     }
@@ -99,19 +93,21 @@ class LoadSettingsTest {
     @Test
     @DisplayName("Set and get custom I/O buffer size")
     void bufferSize() {
-        LoadSettings settings = LoadSettings.builder().setBufferSize(4096).build();
-        assertEquals(Integer.valueOf(4096), settings.bufferSize());
+        var settings = LoadSettings.builder()
+            .setBufferSize(4096)
+            .build();
+        assertEquals(4096, settings.bufferSize());
     }
 
     @Test
     @DisplayName("Use JSON schema by default")
     void defaultSchema() {
-        LoadSettings settings = LoadSettings.builder().build();
-        assertEquals(JsonSchema.class, settings.schema().getClass());
+        assertEquals(JsonSchema.class, DEFAULT_LOAD_SETTINGS.schema().getClass());
     }
 
     public enum SomeStatus implements SettingKey {
-        ORDERED, DELIVERED
+        ORDERED,
+        DELIVERED,
     }
 
     public static final class SomeKey implements SettingKey {

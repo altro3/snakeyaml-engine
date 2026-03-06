@@ -13,50 +13,42 @@
  */
 package org.snakeyaml.engine.usecases.untrusted;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.Iterator;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 
-public class ByteLimitTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class ByteLimitTest {
 
     @Test
     @DisplayName("Limit a single document")
-    public void testSetCodePointLimit() {
-        LoadSettings settings = LoadSettings.builder().setCodePointLimit(15).build();
-        Load load = new Load(settings);
-        try {
-            load.loadFromString("12345678901234567890");
-            fail("Long input should not be accepted");
-        } catch (Exception e) {
-            assertEquals("The incoming YAML document exceeds the limit: 15 code points.", e.getMessage());
-        }
+    void testSetCodePointLimit() {
+        var load = new Load(LoadSettings.builder()
+            .setCodePointLimit(15)
+            .build());
+        var e = assertThrows(Exception.class, () -> load.loadFromString("12345678901234567890"));
+        assertEquals("The incoming YAML document exceeds the limit: 15 code points.", e.getMessage());
     }
 
     @Test
-    public void testLoadAll553() {
-        LoadSettings settings = LoadSettings.builder().setCodePointLimit(15).build();
-        Load load = new Load(settings);
-        try {
-            Iterator<Object> iter = load.loadAllFromString("12345678901234567890").iterator();
-            iter.next();
-            fail("Long input should not be accepted for loadAll");
-        } catch (Exception e) {
-            assertEquals("The incoming YAML document exceeds the limit: 15 code points.", e.getMessage());
-        }
+    void testLoadAll553() {
+        var load = new Load(LoadSettings.builder()
+            .setCodePointLimit(15)
+            .build());
+        var e = assertThrows(Exception.class, () -> load.loadAllFromString("12345678901234567890").iterator().next());
+        assertEquals("The incoming YAML document exceeds the limit: 15 code points.", e.getMessage());
     }
 
     @Test
-    public void testLoadManyDocuments() {
-        LoadSettings settings = LoadSettings.builder().setCodePointLimit(8).build();
-        Load load = new Load(settings);
-        Iterator<Object> iter = load.loadAllFromString("---\nfoo\n---\nbar\n---\nyep").iterator();
+    void testLoadManyDocuments() {
+        var load = new Load(LoadSettings.builder()
+            .setCodePointLimit(8)
+            .build());
+        var iter = load.loadAllFromString("---\nfoo\n---\nbar\n---\nyep").iterator();
         assertEquals("foo", iter.next());
         assertEquals("bar", iter.next());
         assertEquals("yep", iter.next());

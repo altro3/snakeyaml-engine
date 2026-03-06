@@ -15,26 +15,25 @@ package org.snakeyaml.engine.v2.api.lowlevel;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.events.Event;
 import org.snakeyaml.engine.v2.events.StreamEndEvent;
 import org.snakeyaml.engine.v2.events.StreamStartEvent;
 import org.snakeyaml.engine.v2.util.TestUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
 
 @Tag("fast")
 class ParseTest {
 
     @Test
-    void parseEmptyReader() throws IOException {
-        var parse = new Parse(LoadSettings.builder().build());
+    void parseEmptyReader() {
+        var parse = new Parse(DEFAULT_LOAD_SETTINGS);
         Iterable<Event> events = parse.parseReader(new StringReader(""));
         var list = new ArrayList<Event>();
         events.forEach(list::add);
@@ -44,7 +43,7 @@ class ParseTest {
 
     @Test
     void parseEmptyInputStream() {
-        var parse = new Parse(LoadSettings.builder().build());
+        var parse = new Parse(DEFAULT_LOAD_SETTINGS);
         Iterable<Event> events = parse.parseInputStream(new ByteArrayInputStream("".getBytes()));
         var list = new ArrayList<Event>();
         events.forEach(list::add);

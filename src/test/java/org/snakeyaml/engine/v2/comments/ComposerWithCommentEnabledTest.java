@@ -33,139 +33,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class ComposerWithCommentEnabledTest {
+class ComposerWithCommentEnabledTest {
 
-    private final boolean DEBUG = false;
-
-    private void printBlockComment(Node node, int level, PrintStream out) {
-        if (node.getBlockComments() != null) {
-            List<CommentLine> blockComments = node.getBlockComments();
-            for (int i = 0; i < blockComments.size(); i++) {
-                printWithIndent("Block Comment", level, out);
-            }
-        }
-    }
-
-    private void printEndComment(Node node, int level, PrintStream out) {
-        if (node.getEndComments() != null) {
-            List<CommentLine> endComments = node.getEndComments();
-            for (int i = 0; i < endComments.size(); i++) {
-                printWithIndent("End Comment", level, out);
-            }
-        }
-    }
-
-    private void printInLineComment(Node node, int level, PrintStream out) {
-        if (node.getInLineComments() != null) {
-            List<CommentLine> inLineComments = node.getInLineComments();
-            for (int i = 0; i < inLineComments.size(); i++) {
-                printWithIndent("InLine Comment", level + 1, out);
-            }
-        }
-    }
-
-    private void printWithIndent(String line, int level, PrintStream out) {
-        for (int ix = 0; ix < level; ix++) {
-            out.print("    ");
-        }
-        out.print(line);
-        out.print("\n");
-    }
-
-    private void printNodeInternal(Node node, int level, PrintStream out) {
-
-        if (node instanceof MappingNode) {
-            MappingNode mappingNode = (MappingNode) node;
-            printBlockComment(mappingNode, level, out);
-            printWithIndent(mappingNode.getClass().getSimpleName(), level, out);
-            for (NodeTuple childNodeTuple : mappingNode.getValue()) {
-                printWithIndent("Tuple", level + 1, out);
-                printNodeInternal(childNodeTuple.keyNode(), level + 2, out);
-                printNodeInternal(childNodeTuple.valueNode(), level + 2, out);
-            }
-            printInLineComment(mappingNode, level, out);
-            printEndComment(mappingNode, level, out);
-
-        } else if (node instanceof SequenceNode) {
-            SequenceNode sequenceNode = (SequenceNode) node;
-            printBlockComment(sequenceNode, level, out);
-            printWithIndent(sequenceNode.getClass().getSimpleName(), level, out);
-            for (Node childNode : sequenceNode.getValue()) {
-                printNodeInternal(childNode, level + 1, out);
-            }
-            printInLineComment(sequenceNode, level, out);
-            printEndComment(sequenceNode, level, out);
-
-        } else if (node instanceof ScalarNode) {
-            ScalarNode scalarNode = (ScalarNode) node;
-            printBlockComment(scalarNode, level, out);
-            printWithIndent(scalarNode.getClass().getSimpleName() + ": " + scalarNode.getValue(), level,
-                out);
-            printInLineComment(scalarNode, level, out);
-            printEndComment(scalarNode, level, out);
-
-        } else {
-            printBlockComment(node, level, out);
-            printWithIndent(node.getClass().getSimpleName(), level, out);
-            printInLineComment(node, level, out);
-            printEndComment(node, level, out);
-        }
-    }
-
-    private void printNodeList(List<Node> nodeList) {
-        if (DEBUG) {
-            System.out.println("BEGIN");
-            boolean first = true;
-            for (Node node : nodeList) {
-                if (first) {
-                    first = false;
-                } else {
-                    System.out.println("---");
-                }
-                printNodeInternal(node, 1, System.out);
-            }
-            System.out.println("DONE\n");
-        }
-    }
-
-    private List<Node> getNodeList(Composer composer) {
-        List<Node> nodeList = new ArrayList<>();
-        while (composer.hasNext()) {
-            nodeList.add(composer.next());
-        }
-        return nodeList;
-    }
-
-    private void assertNodesEqual(String[] expected, List<Node> nodeList) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        boolean first = true;
-        try (PrintStream out = new PrintStream(baos)) {
-            for (Node node : nodeList) {
-                if (first) {
-                    first = false;
-                } else {
-                    out.print("---\n");
-                }
-                printNodeInternal(node, 0, out);
-            }
-        }
-        String actualString = baos.toString();
-        String[] actuals = actualString.split("\n");
-        for (int ix = 0; ix < Math.min(expected.length, actuals.length); ix++) {
-            assertEquals(expected[ix], actuals[ix]);
-        }
-        assertEquals(expected.length, actuals.length);
-    }
-
-    public Composer newComposerWithCommentsEnabled(String data) {
-        LoadSettings settings = LoadSettings.builder().setParseComments(true).build();
-        return new Composer(settings, new ParserImpl(settings, new StreamReader(settings, data)));
-    }
+    private static final boolean DEBUG = false;
 
     @Test
-    public void testEmpty() {
+    void testEmpty() {
         String data = "";
         String[] expected = new String[] { //
             "" //
@@ -179,9 +54,9 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testParseWithOnlyComment() {
+    void testParseWithOnlyComment() {
         String data = "# Comment";
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "Block Comment", //
             "MappingNode", //
         };
@@ -194,12 +69,13 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testCommentEndingALine() {
-        String data = "" + //
-            "key: # Comment\n" + //
-            "  value\n";
+    void testCommentEndingALine() {
+        String data = """
+            key: # Comment
+              value
+            """;
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        ScalarNode: key", //
@@ -215,14 +91,15 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testMultiLineComment() {
-        String data = "" + //
-            "key: # Comment\n" + //
-            "     # lines\n" + //
-            "  value\n" + //
-            "\n";
+    void testMultiLineComment() {
+        var data = """
+            key: # Comment
+                 # lines
+              value
+            
+            """;
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        ScalarNode: key", //
@@ -240,11 +117,10 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testBlankLine() {
-        String data = "" + //
-            "\n";
+    void testBlankLine() {
+        var data = "\n";
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "Block Comment", //
             "MappingNode", //
         };
@@ -257,14 +133,15 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testBlankLineComments() {
-        String data = "" + //
-            "\n" + //
-            "abc: def # commment\n" + //
-            "\n" + //
-            "\n";
+    void testBlankLineComments() {
+        var data = """
+            
+            abc: def # commment
+            
+            
+            """;
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        Block Comment", //
@@ -283,14 +160,15 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void test_blockScalar() {
-        String data = "" + //
-            "abc: > # Comment\n" + //
-            "    def\n" + //
-            "    hij\n" + //
-            "\n";
+    void test_blockScalar() {
+        var data = """
+            abc: > # Comment
+                def
+                hij
+            
+            """;
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        ScalarNode: abc", //
@@ -306,11 +184,11 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testDirectiveLineEndComment() {
-        String data = "%YAML 1.1 #Comment\n---\n";
+    void testDirectiveLineEndComment() {
+        var data = "%YAML 1.1 #Comment\n---\n";
 
-        String[] expected = new String[] { //
-            "ScalarNode: " //
+        var expected = new String[] {
+            "ScalarNode: "
         };
 
         Composer sut = newComposerWithCommentsEnabled(data);
@@ -321,15 +199,16 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testSequence() {
-        String data = "" + //
-            "# Comment\n" + //
-            "list: # InlineComment1\n" + //
-            "# Block Comment\n" + //
-            "- item # InlineComment2\n" + //
-            "# Comment\n";
+    void testSequence() {
+        var data = """
+            # Comment
+            list: # InlineComment1
+            # Block Comment
+            - item # InlineComment2
+            # Comment
+            """;
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        Block Comment", //
@@ -350,28 +229,28 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testAllComments1() throws Exception {
-        String data = "" + //
-            "# Block Comment1\n" + //
-            "# Block Comment2\n" + //
-            "key: # Inline Comment1a\n" + //
-            "     # Inline Comment1b\n" + //
-            "  # Block Comment3a\n" + //
-            "  # Block Comment3b\n" + //
-            "  value # Inline Comment2\n" + //
-            "# Block Comment4\n" + //
-            "list: # InlineComment3a\n" + //
-            "      # InlineComment3b\n" + //
-            "# Block Comment5\n" + //
-            "- item1 # InlineComment4\n" + //
-            "- item2: [ value2a, value2b ] # InlineComment5\n" + //
-            "- item3: { key3a: [ value3a1, value3a2 ], key3b: value3b } # InlineComment6\n" + //
-            "# Block Comment6\n" + //
-            "---\n" + //
-            "# Block Comment7\n" + //
-            "";
+    void testAllComments1() {
+        var data = """
+            # Block Comment1
+            # Block Comment2
+            key: # Inline Comment1a
+                 # Inline Comment1b
+              # Block Comment3a
+              # Block Comment3b
+              value # Inline Comment2
+            # Block Comment4
+            list: # InlineComment3a
+                  # InlineComment3b
+            # Block Comment5
+            - item1 # InlineComment4
+            - item2: [ value2a, value2b ] # InlineComment5
+            - item3: { key3a: [ value3a1, value3a2 ], key3b: value3b } # InlineComment6
+            # Block Comment6
+            ---
+            # Block Comment7
+            """;
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        Block Comment", //
@@ -426,19 +305,19 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testAllComments2() throws Exception {
-        String data = "" + //
-            "# Block Comment1\n" + //
-            "# Block Comment2\n" + //
-            "- item1 # Inline Comment1a\n" + //
-            "        # Inline Comment1b\n" + //
-            "# Block Comment3a\n" + //
-            "# Block Comment3b\n" + //
-            "- item2: value # Inline Comment2\n" + //
-            "# Block Comment4\n" + //
-            "";
+    void testAllComments2() {
+        var data = """
+            # Block Comment1
+            # Block Comment2
+            - item1 # Inline Comment1a
+                    # Inline Comment1b
+            # Block Comment3a
+            # Block Comment3b
+            - item2: value # Inline Comment2
+            # Block Comment4
+            """;
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "SequenceNode", //
             "    Block Comment", //
             "    Block Comment", //
@@ -463,14 +342,14 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testAllComments3() throws Exception {
-        String data = "" + //
-            "# Block Comment1\n" + //
-            "[ item1, item2: value2, {item3: value3} ] # Inline Comment1\n" + //
-            "# Block Comment2\n" + //
-            "";
+    void testAllComments3() {
+        var data = """
+            # Block Comment1
+            [ item1, item2: value2, {item3: value3} ] # Inline Comment1
+            # Block Comment2
+            """;
 
-        String[] expected = new String[] { //
+        var expected = new String[] { //
             "Block Comment", //
             "SequenceNode", //
             "    ScalarNode: item1", //
@@ -494,13 +373,14 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testGetSingleNode() {
-        String data = "" + //
-            "\n" + //
-            "abc: def # commment\n" + //
-            "\n" + //
-            "\n";
-        String[] expected = new String[] { //
+    void testGetSingleNode() {
+        var data = """
+            
+            abc: def # commment
+            
+            
+            """;
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        Block Comment", "        ScalarNode: abc", //
@@ -518,15 +398,16 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testGetSingleNodeHeaderComment() {
-        String data = "" + //
-            "\n" + //
-            "# Block Comment1\n" + //
-            "# Block Comment2\n" + //
-            "abc: def # commment\n" + //
-            "\n" + //
-            "\n";
-        String[] expected = new String[] { //
+    void testGetSingleNodeHeaderComment() {
+        var data = """
+            
+            # Block Comment1
+            # Block Comment2
+            abc: def # commment
+            
+            
+            """;
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        Block Comment", //
@@ -547,29 +428,32 @@ public class ComposerWithCommentEnabledTest {
     }
 
     @Test
-    public void testBaseConstructorGetData() {
-        String data = "" + //
-            "\n" + //
-            "abc: def # commment\n" + //
-            "\n" + //
-            "\n";
+    void testBaseConstructorGetData() {
+        var data = """
+            
+            abc: def # commment
+            
+            
+            """;
 
-        TestConstructor sut = new TestConstructor(LoadSettings.builder().build());
+        var sut = new TestConstructor(LoadSettings.builder().build());
         Composer composer = newComposerWithCommentsEnabled(data);
         Object result = sut.constructSingleDocument(composer.getSingleNode());
-        assertTrue(result instanceof LinkedHashMap);
+        assertInstanceOf(LinkedHashMap.class, result);
         @SuppressWarnings("unchecked")
-        LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) result;
+        var map = (LinkedHashMap<String, Object>) result;
         assertEquals(1, map.size());
-        assertEquals(map.get("abc"), "def");
+        assertEquals("def", map.get("abc"));
     }
 
     @Test
-    public void testEmptyEntryInMap() {
-        String data = "userProps:\n" + //
-            "#password\n" + //
-            "pass: mySecret\n";
-        String[] expected = new String[] { //
+    void testEmptyEntryInMap() {
+        var data = """
+            userProps:
+            #password
+            pass: mySecret
+            """;
+        var expected = new String[] { //
             "MappingNode", //
             "    Tuple", //
             "        ScalarNode: userProps", //
@@ -585,6 +469,129 @@ public class ComposerWithCommentEnabledTest {
 
         printNodeList(result);
         assertNodesEqual(expected, result);
+    }
+
+    private void printBlockComment(Node node, int level, PrintStream out) {
+        if (node.getBlockComments() != null) {
+            List<CommentLine> blockComments = node.getBlockComments();
+            for (int i = 0; i < blockComments.size(); i++) {
+                printWithIndent("Block Comment", level, out);
+            }
+        }
+    }
+
+    private void printEndComment(Node node, int level, PrintStream out) {
+        if (node.getEndComments() != null) {
+            List<CommentLine> endComments = node.getEndComments();
+            for (int i = 0; i < endComments.size(); i++) {
+                printWithIndent("End Comment", level, out);
+            }
+        }
+    }
+
+    private void printInLineComment(Node node, int level, PrintStream out) {
+        if (node.getInLineComments() != null) {
+            List<CommentLine> inLineComments = node.getInLineComments();
+            for (int i = 0; i < inLineComments.size(); i++) {
+                printWithIndent("InLine Comment", level + 1, out);
+            }
+        }
+    }
+
+    private void printWithIndent(String line, int level, PrintStream out) {
+        for (int ix = 0; ix < level; ix++) {
+            out.print("    ");
+        }
+        out.print(line);
+        out.print("\n");
+    }
+
+    private void printNodeInternal(Node node, int level, PrintStream out) {
+
+        if (node instanceof MappingNode mappingNode) {
+            printBlockComment(mappingNode, level, out);
+            printWithIndent(mappingNode.getClass().getSimpleName(), level, out);
+            for (NodeTuple childNodeTuple : mappingNode.getValue()) {
+                printWithIndent("Tuple", level + 1, out);
+                printNodeInternal(childNodeTuple.keyNode(), level + 2, out);
+                printNodeInternal(childNodeTuple.valueNode(), level + 2, out);
+            }
+            printInLineComment(mappingNode, level, out);
+            printEndComment(mappingNode, level, out);
+
+        } else if (node instanceof SequenceNode sequenceNode) {
+            printBlockComment(sequenceNode, level, out);
+            printWithIndent(sequenceNode.getClass().getSimpleName(), level, out);
+            for (Node childNode : sequenceNode.getValue()) {
+                printNodeInternal(childNode, level + 1, out);
+            }
+            printInLineComment(sequenceNode, level, out);
+            printEndComment(sequenceNode, level, out);
+
+        } else if (node instanceof ScalarNode scalarNode) {
+            printBlockComment(scalarNode, level, out);
+            printWithIndent(scalarNode.getClass().getSimpleName() + ": " + scalarNode.getValue(), level, out);
+            printInLineComment(scalarNode, level, out);
+            printEndComment(scalarNode, level, out);
+
+        } else {
+            printBlockComment(node, level, out);
+            printWithIndent(node.getClass().getSimpleName(), level, out);
+            printInLineComment(node, level, out);
+            printEndComment(node, level, out);
+        }
+    }
+
+    private void printNodeList(List<Node> nodeList) {
+        if (DEBUG) {
+            System.out.println("BEGIN");
+            boolean first = true;
+            for (Node node : nodeList) {
+                if (first) {
+                    first = false;
+                } else {
+                    System.out.println("---");
+                }
+                printNodeInternal(node, 1, System.out);
+            }
+            System.out.println("DONE\n");
+        }
+    }
+
+    private List<Node> getNodeList(Composer composer) {
+        var nodeList = new ArrayList<Node>();
+        while (composer.hasNext()) {
+            nodeList.add(composer.next());
+        }
+        return nodeList;
+    }
+
+    private void assertNodesEqual(String[] expected, List<Node> nodeList) {
+        var baos = new ByteArrayOutputStream();
+        boolean first = true;
+        try (var out = new PrintStream(baos)) {
+            for (Node node : nodeList) {
+                if (first) {
+                    first = false;
+                } else {
+                    out.print("---\n");
+                }
+                printNodeInternal(node, 0, out);
+            }
+        }
+        String actualString = baos.toString();
+        String[] actuals = actualString.split("\n");
+        for (int ix = 0; ix < Math.min(expected.length, actuals.length); ix++) {
+            assertEquals(expected[ix], actuals[ix]);
+        }
+        assertEquals(expected.length, actuals.length);
+    }
+
+    private Composer newComposerWithCommentsEnabled(String data) {
+        var settings = LoadSettings.builder()
+            .setParseComments(true)
+            .build();
+        return new Composer(settings, new ParserImpl(settings, new StreamReader(settings, data)));
     }
 
     private static class TestConstructor extends StandardConstructor {

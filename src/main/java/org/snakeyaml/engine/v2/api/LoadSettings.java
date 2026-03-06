@@ -314,7 +314,7 @@ public record LoadSettings(
         public LoadSettings build() {
             return new LoadSettings(
                 label,
-                tagConstructors,
+                Map.copyOf(tagConstructors),
                 defaultList,
                 defaultSet,
                 defaultMap,
@@ -329,7 +329,7 @@ public record LoadSettings(
                 codePointLimit,
                 schema,
                 allowNonScalarKeys,
-                customProperties
+                Map.copyOf(customProperties)
             );
         }
     }

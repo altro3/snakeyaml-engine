@@ -13,16 +13,6 @@
  */
 package org.snakeyaml.engine.v2.comments;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.events.CommentEvent;
@@ -32,65 +22,31 @@ import org.snakeyaml.engine.v2.parser.Parser;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
 
-public class ProblematicYamlTest {
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-    private static final LoadSettings LOAD_OPTIONS =
-        LoadSettings.builder().setParseComments(true).build();
-    private final boolean DEBUG = false;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
 
-    private void println(String s) {
-        if (DEBUG) {
-            System.out.println(s);
-        }
-    }
+class ProblematicYamlTest {
 
-    private void println() {
-        if (DEBUG) {
-            System.out.println();
-        }
-    }
-
-    private void assertEventListEquals(List<Id> expectedEventIdList,
-                                       List<CommentType> expectedCommentTypeList, Parser parser) {
-        Iterator<CommentType> commentTypeIterator = expectedCommentTypeList.iterator();
-        for (Id expectedEventId : expectedEventIdList) {
-            parser.checkEvent(expectedEventId);
-            Event event = parser.next();
-            println("Expected: " + expectedEventId);
-            if (event == null) {
-                fail("Missing event: " + expectedEventId);
-            }
-            println("Got: " + event
-                + (event.getEventId() == Id.Comment ? " " + ((CommentEvent) event).getCommentType()
-                : ""));
-            println();
-            if (expectedCommentTypeList != null && event.getEventId() == Id.Comment) {
-                assertEquals(commentTypeIterator.next(), ((CommentEvent) event).getCommentType());
-            }
-            assertEquals(expectedEventId, event.getEventId());
-        }
-    }
-
-    @SuppressWarnings("unused")
-    private void printEventList(Parser parser) {
-        for (Event event = parser.next(); event != null; event = parser.next()) {
-            println("Got: " + event
-                + (event.getEventId() == Id.Comment ? " " + ((CommentEvent) event).getCommentType()
-                : ""));
-            println();
-        }
-    }
+    private static final boolean DEBUG = false;
+    private static final LoadSettings LOAD_OPTIONS = LoadSettings.builder()
+        .setParseComments(true)
+        .build();
 
     @Test
-    public void testParseProblematicYaml1() {
-        final String yamlString1 = "" + //
-            "key: value\n" + //
+    void testParseProblematicYaml1() {
+        final String yamlString1 = "key: value\n" +
             "  # Comment 1\n" + // s.b BLOCK, classified as INLINE
-            "\n" + //
-            "  # Comment 2\n" + //
-            "";
+            "\n" +
+            "  # Comment 2\n";
 
-        List<Id> expectedEventIdList = Arrays.asList(//
+        var expectedEventIdList = List.of(//
             Id.StreamStart, //
             Id.DocumentStart, //
             Id.MappingStart, //
@@ -103,7 +59,7 @@ public class ProblematicYamlTest {
             Id.DocumentEnd, //
             Id.StreamEnd //
         );
-        List<CommentType> expectedCommentTypeList = Arrays.asList(//
+        List<CommentType> expectedCommentTypeList = List.of(//
             CommentType.BLOCK, CommentType.BLANK_LINE, CommentType.BLOCK);
         ParserImpl parser =
             new ParserImpl(LOAD_OPTIONS, new StreamReader(LOAD_OPTIONS, new StringReader(yamlString1)));
@@ -111,15 +67,13 @@ public class ProblematicYamlTest {
     }
 
     @Test
-    public void testParseProblematicYaml2() {
-        final String yamlString2 = "" + //
-            "key: value\n" + //
-            "\n" + //
+    void testParseProblematicYaml2() {
+        final String yamlString2 = "key: value\n" +
+            "\n" +
             "  # Comment 1\n" + // s.b BLOCK, classified as INLINE
-            "\n" + //
-            "  # Comment 2\n" + //
-            "";
-        List<Id> expectedEventIdList = Arrays.asList(//
+            "\n" +
+            "  # Comment 2\n";
+        var expectedEventIdList = List.of(//
             Id.StreamStart, //
             Id.DocumentStart, //
             Id.MappingStart, //
@@ -133,21 +87,19 @@ public class ProblematicYamlTest {
             Id.DocumentEnd, //
             Id.StreamEnd //
         );
-        List<CommentType> expectedCommentTypeList = Arrays.asList(//
-            CommentType.BLANK_LINE, CommentType.BLOCK, CommentType.BLANK_LINE, CommentType.BLOCK);
-        ParserImpl parser =
-            new ParserImpl(LOAD_OPTIONS, new StreamReader(LOAD_OPTIONS, new StringReader(yamlString2)));
+        var expectedCommentTypeList = List.of(CommentType.BLANK_LINE, CommentType.BLOCK, CommentType.BLANK_LINE, CommentType.BLOCK);
+        var parser = new ParserImpl(LOAD_OPTIONS, new StreamReader(LOAD_OPTIONS, new StringReader(yamlString2)));
         assertEventListEquals(expectedEventIdList, expectedCommentTypeList, parser);
     }
 
     @Test
-    public void testParseProblematicYaml3() {
-        final String yamlString3 = "" + //
-            "key: value\n" + //
-            "\n" + //
-            "key: value\n" + //
-            "";
-        List<Id> expectedEventIdList = Arrays.asList(//
+    void testParseProblematicYaml3() {
+        final String yamlString3 = """
+            key: value
+            
+            key: value
+            """;
+        var expectedEventIdList = List.of(//
             Id.StreamStart, //
             Id.DocumentStart, //
             Id.MappingStart, //
@@ -160,34 +112,33 @@ public class ProblematicYamlTest {
             Id.DocumentEnd, //
             Id.StreamEnd //
         );
-        List<CommentType> expectedCommentTypeList = Collections.singletonList(CommentType.BLANK_LINE);
-        ParserImpl parser =
-            new ParserImpl(LOAD_OPTIONS, new StreamReader(LOAD_OPTIONS, new StringReader(yamlString3)));
+        var expectedCommentTypeList = Collections.singletonList(CommentType.BLANK_LINE);
+        var parser = new ParserImpl(LOAD_OPTIONS, new StreamReader(LOAD_OPTIONS, new StringReader(yamlString3)));
         assertEventListEquals(expectedEventIdList, expectedCommentTypeList, parser);
     }
 
     @Test
-    public void testParseProblematicYaml4() {
-        String yamlString4 = "" + //
-            "---\n" + //
-            "in the block context:\n" + //
-            "    indentation should be kept: { \n" + //
-            "    but in the flow context: [\n" + //
-            "it may be violated]\n" + //
-            "}\n" + //
-            "---\n" + //
-            "the parser does not require scalars\n" + //
-            "to be indented with at least one space\n" + //
-            "...\n" + //
-            "---\n" + //
-            "\"the parser does not require scalars\n" + //
-            "to be indented with at least one space\"\n" + //
-            "---\n" + //
-            "foo:\n" + //
-            "    bar: 'quoted scalars\n" + //
-            "may not adhere indentation'\n" + //
-            "";
-        List<Id> expectedEventIdList = Arrays.asList(//
+    void testParseProblematicYaml4() {
+        String yamlString4 = """
+            ---
+            in the block context:
+                indentation should be kept: {\s
+                but in the flow context: [
+            it may be violated]
+            }
+            ---
+            the parser does not require scalars
+            to be indented with at least one space
+            ...
+            ---
+            "the parser does not require scalars
+            to be indented with at least one space"
+            ---
+            foo:
+                bar: 'quoted scalars
+            may not adhere indentation'
+            """;
+        var expectedEventIdList = List.of(//
             Id.StreamStart, //
             Id.DocumentStart, //
             Id.MappingStart, //
@@ -220,9 +171,45 @@ public class ProblematicYamlTest {
             Id.DocumentEnd, //
             Id.StreamEnd//
         );
-        LoadSettings settings = LoadSettings.builder().build();
-        Parser parser =
-            new ParserImpl(settings, new StreamReader(settings, new StringReader(yamlString4)));
-        assertEventListEquals(expectedEventIdList, new ArrayList<CommentType>(), parser);
+        var parser = new ParserImpl(DEFAULT_LOAD_SETTINGS, new StreamReader(DEFAULT_LOAD_SETTINGS, new StringReader(yamlString4)));
+        assertEventListEquals(expectedEventIdList, new ArrayList<>(), parser);
+    }
+
+    private void assertEventListEquals(List<Id> expectedEventIdList, List<CommentType> expectedCommentTypeList, Parser parser) {
+        Iterator<CommentType> commentTypeIterator = expectedCommentTypeList.iterator();
+        for (Id expectedEventId : expectedEventIdList) {
+            parser.checkEvent(expectedEventId);
+            Event event = parser.next();
+            println("Expected: " + expectedEventId);
+            if (event == null) {
+                fail("Missing event: " + expectedEventId);
+            }
+            println("Got: " + event + (event.getEventId() == Id.Comment ? " " + ((CommentEvent) event).getCommentType() : ""));
+            println();
+            if (event.getEventId() == Id.Comment) {
+                assertEquals(commentTypeIterator.next(), ((CommentEvent) event).getCommentType());
+            }
+            assertEquals(expectedEventId, event.getEventId());
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void printEventList(Parser parser) {
+        for (Event event = parser.next(); event != null; event = parser.next()) {
+            println("Got: " + event + (event.getEventId() == Id.Comment ? " " + ((CommentEvent) event).getCommentType() : ""));
+            println();
+        }
+    }
+
+    private void println(String s) {
+        if (DEBUG) {
+            System.out.println(s);
+        }
+    }
+
+    private void println() {
+        if (DEBUG) {
+            System.out.println();
+        }
     }
 }

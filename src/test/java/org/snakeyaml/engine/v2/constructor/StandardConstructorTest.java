@@ -27,7 +27,7 @@ class StandardConstructorTest {
 
     @Test
     void constructMergeExample() {
-        Compose compose = new Compose(LoadSettings.builder().build());
+        var compose = new Compose(LoadSettings.builder().build());
         Node node = compose.composeString(TestUtils.getResource("load/list1.yaml"));
         var constructor = new StandardConstructor(LoadSettings.builder().build());
         Object object = constructor.construct(node);

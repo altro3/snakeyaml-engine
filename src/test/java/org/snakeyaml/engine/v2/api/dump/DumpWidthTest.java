@@ -13,15 +13,14 @@
  */
 package org.snakeyaml.engine.v2.api.dump;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @Tag("fast")
 class DumpWidthTest {
@@ -34,7 +33,7 @@ class DumpWidthTest {
 
     @Test
     void testSplitLinesDoubleQuoted() {
-        Dump dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED).build());
+        var dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED).build());
         // Split lines enabled (default)
         String output = dump.dumpToString(data1);
         assertEquals(
@@ -48,13 +47,13 @@ class DumpWidthTest {
             output);
 
         // Split lines disabled
-        Dump dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED).build());
+        var dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED).build());
 
         output = dump2.dumpToString(data1);
         assertEquals("\"1111111111 2222222222 3333333333 4444444444 5555555555 6666666666 7777777777 8888888888 9999999999 0000000000\"\n", output);
 
         // setWidth
-        Dump dump3 = new Dump(split.setWidth(15).build());
+        var dump3 = new Dump(split.setWidth(15).build());
         output = dump3.dumpToString(data1);
         assertEquals("\"1111111111 2222222222\\\n" + "  \\ 3333333333 4444444444\\\n"
             + "  \\ 5555555555 6666666666\\\n" + "  \\ 7777777777 8888888888\\\n"
@@ -63,7 +62,7 @@ class DumpWidthTest {
 
     @Test
     void testSplitLinesSingleQuoted() {
-        Dump dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED).build());
+        var dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED).build());
         // Split lines enabled (default)
         String output = dump.dumpToString(data1);
         assertEquals(
@@ -77,7 +76,7 @@ class DumpWidthTest {
             output);
 
         // Split lines disabled
-        Dump dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED).build());
+        var dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED).build());
 
         output = dump2.dumpToString(data1);
         assertEquals(
@@ -87,13 +86,13 @@ class DumpWidthTest {
 
     @Test
     void testSplitLinesFolded() {
-        Dump dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.FOLDED).build());
+        var dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.FOLDED).build());
         // Split lines enabled (default)
         String output = dump.dumpToString(data1);
         assertEquals(
             ">-\n  1111111111 2222222222 3333333333 4444444444 5555555555 6666666666 7777777777 8888888888\n  9999999999 0000000000\n",
             output);
-        String str = (String) new Load(LoadSettings.builder().build()).loadFromString(
+        var str = (String) DEFAULT_LOAD.loadFromString(
             ">-\n\n  1111111111 2222222222 3333333333 4444444444 5555555555 6666666666 7777777777 8888888888\n  9999999999 0000000000\n");
         assertEquals("\n" + data1, str, "No LF must be added");
 
@@ -104,7 +103,7 @@ class DumpWidthTest {
             output);
 
         // Split lines disabled
-        Dump dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.FOLDED).build());
+        var dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.FOLDED).build());
 
         output = dump2.dumpToString(data1);
         assertEquals(
@@ -114,7 +113,7 @@ class DumpWidthTest {
 
     @Test
     void testSplitLinesLiteral() {
-        Dump dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.LITERAL).build());
+        var dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.LITERAL).build());
         String output = dump.dumpToString(data1);
         // Split lines enabled (default) -- split lines does not apply to literal style
         assertEquals(
@@ -124,7 +123,7 @@ class DumpWidthTest {
 
     @Test
     void testSplitLinesPlain() {
-        Dump dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.PLAIN).build());
+        var dump = new Dump(split.setDefaultScalarStyle(ScalarStyle.PLAIN).build());
         // Split lines enabled (default)
         String output = dump.dumpToString(data1);
         assertEquals(
@@ -136,7 +135,7 @@ class DumpWidthTest {
         assertEquals(data2 + "\n", output);
 
         // Split lines disabled
-        Dump dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.PLAIN).build());
+        var dump2 = new Dump(noSplit.setDefaultScalarStyle(ScalarStyle.PLAIN).build());
 
         output = dump2.dumpToString(data1);
         assertEquals(data1 + "\n", output);

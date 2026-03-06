@@ -24,7 +24,6 @@ public class CustomConstructor implements ConstructNode {
 
     @Override
     public Object construct(Node node) {
-        var scalar = (ScalarNode) node;
-        return new ImportValueImpl(scalar.getValue());
+        return new ImportValueImpl(((ScalarNode) node).getValue());
     }
 }
