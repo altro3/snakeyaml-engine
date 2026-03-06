@@ -22,7 +22,6 @@ import org.snakeyaml.engine.v2.api.lowlevel.Parse;
 import org.snakeyaml.engine.v2.events.Event;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,8 +32,9 @@ class ParseSuiteTest {
 
     private final List<SuiteData> all =
         // TODO FIXME JEF9-02 is not according to the spec
-        SuiteUtils.getAll().stream().filter(data -> !data.getName().equals("JEF9-02"))
-            .collect(Collectors.toList());
+        SuiteUtils.getAll().stream()
+            .filter(data -> !data.getName().equals("JEF9-02"))
+            .toList();
 
     /**
      * This test is used to debug one test (which is given explicitly)
@@ -43,8 +43,11 @@ class ParseSuiteTest {
     @DisplayName("Parse: Run one test")
     void runOne() {
         var data = SuiteUtils.getOne("Y79Y-002");
-        var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
-        Iterable<Event> iterable = new Parse(settings).parseString(data.getInput());
+        var settings = LoadSettings.builder()
+            .setLabel(data.getLabel())
+            .build();
+        Iterable<Event> iterable = new Parse(settings)
+            .parseString(data.getInput());
         for (Event event : iterable) {
             assertNotNull(event);
             // System.out.println(event);
@@ -62,39 +65,23 @@ class ParseSuiteTest {
                 shouldFail = !shouldFail;
             }
             if (shouldFail) {
-                assertNotNull(result.getError(), "Expected error, but got none in file " + data.getName()
-                    + ", " + data.getLabel() + "\n" + result.getEvents());
+                assertNotNull(result.error(), "Expected error, but got none in file " + data.getName() + ", " + data.getLabel() + "\n" + result.events());
             } else {
-                assertNull(result.getError(), "Testcase: " + data.getName() + "; label: " + data.getLabel()
-                    + "\nExpected NO error, but got: " + result.getError());
-                List<ParsePair> pairs =
-                    Streams.zip(data.getEvents().stream(), result.getEvents().stream(), ParsePair::new)
-                        .collect(Collectors.toList());
+                assertNull(result.error(), "Testcase: " + data.getName() + "; label: " + data.getLabel() + "\nExpected NO error, but got: " + result.error());
+                List<ParsePair> pairs = Streams.zip(data.getEvents().stream(), result.events().stream(), ParsePair::new)
+                    .toList();
                 for (ParsePair pair : pairs) {
-                    var representation = new EventRepresentation(pair.getEvent());
-                    assertEquals(pair.getExpected(), representation.getRepresentation(),
-                        "Failure in " + data.getName());
+                    var representation = new EventRepresentation(pair.event());
+                    assertEquals(pair.expected(), representation.getRepresentation(), "Failure in " + data.getName());
                 }
             }
         }
     }
 
-    static class ParsePair {
+    record ParsePair(
+        String expected,
+        Event event
+    ) {
 
-        private final String expected;
-        private final Event event;
-
-        public ParsePair(String expected, Event event) {
-            this.expected = expected;
-            this.event = event;
-        }
-
-        public String getExpected() {
-            return expected;
-        }
-
-        public Event getEvent() {
-            return event;
-        }
     }
 }

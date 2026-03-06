@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class SuiteUtils {
 
@@ -97,8 +96,9 @@ public class SuiteUtils {
         if (!file.isDirectory()) {
             throw new RuntimeException("Must be folder: " + file.getAbsolutePath());
         }
-        return Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(File::isDirectory)
-            .collect(Collectors.toList());
+        return Arrays.stream(Objects.requireNonNull(file.listFiles()))
+            .filter(File::isDirectory)
+            .toList();
     }
 
     public static SuiteData readData(File file) {
@@ -106,8 +106,9 @@ public class SuiteUtils {
             String name = file.getName();
             String label = Files.asCharSource(new File(file, "==="), StandardCharsets.UTF_8).read();
             String input = Files.asCharSource(new File(file, "in.yaml"), StandardCharsets.UTF_8).read();
-            List<String> events = Files.readLines(new File(file, "test.event"), StandardCharsets.UTF_8)
-                .stream().filter(line -> !line.isEmpty()).collect(Collectors.toList());
+            List<String> events = Files.readLines(new File(file, "test.event"), StandardCharsets.UTF_8).stream()
+                .filter(line -> !line.isEmpty())
+                .toList();
             boolean error = new File(file, "error").exists();
             return new SuiteData(name, label, input, events, error);
         } catch (IOException e) {
@@ -117,7 +118,9 @@ public class SuiteUtils {
 
     public static List<SuiteData> getAll() {
         List<File> allSuiteFiles = getAllFoldersIn(FOLDER_NAME);
-        return allSuiteFiles.stream().map(SuiteUtils::readData).collect(Collectors.toList());
+        return allSuiteFiles.stream()
+            .map(SuiteUtils::readData)
+            .toList();
     }
 
     public static SuiteData getOne(String name) {
@@ -128,8 +131,11 @@ public class SuiteUtils {
         Exception error = null;
         var list = new ArrayList<Event>();
         try {
-            var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
-            Iterable<Event> iterable = new Parse(settings).parseString(data.getInput());
+            var settings = LoadSettings.builder()
+                .setLabel(data.getLabel())
+                .build();
+            Iterable<Event> iterable = new Parse(settings)
+                .parseString(data.getInput());
             iterable.forEach(list::add);
         } catch (YamlEngineException e) {
             error = e;
@@ -137,22 +143,10 @@ public class SuiteUtils {
         return new ParseResult(list, error);
     }
 
-    public static class ParseResult {
+    public record ParseResult(
+        List<Event> events,
+        Exception error
+    ) {
 
-        private final List<Event> events;
-        private final Exception error;
-
-        public ParseResult(List<Event> events, Exception error) {
-            this.events = events;
-            this.error = error;
-        }
-
-        public List<Event> getEvents() {
-            return events;
-        }
-
-        public Exception getError() {
-            return error;
-        }
     }
 }

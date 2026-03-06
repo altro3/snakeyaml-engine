@@ -56,7 +56,7 @@ public class EventRepresentation {
         if (event instanceof MappingStartEvent) {
             var e = (CollectionStartEvent) event;
             String mapTag = Tag.MAP.getValue();
-            if (!mapTag.equals(e.getTag())) {
+            if (e.getTag() != null && !mapTag.equals(e.getTag())) {
                 String last = splitted[splitted.length - 1];
                 if (!last.equals("<" + e.getTag() + ">")) {
                     return false;
@@ -64,42 +64,46 @@ public class EventRepresentation {
             }
         }
         if (event instanceof SequenceStartEvent e) {
-            if (!Tag.SEQ.getValue().equals(e.getTag())) {
+            if (e.getTag() != null && !Tag.SEQ.getValue().equals(e.getTag())) {
                 String last = splitted[splitted.length - 1];
                 if (!last.equals("<" + e.getTag() + ">")) {
                     return false;
                 }
             }
         }
-        if (event instanceof NodeEvent) {
+        if (event instanceof NodeEvent e) {
             int indexOfAlias = 1;
-            if (event.getEventId().equals(Event.Id.SequenceStart)
-                || event.getEventId().equals(Event.Id.MappingStart)) {
-                var start = (CollectionStartEvent) event;
-                if (start.getFlowStyle() == FlowStyle.FLOW) {
-                    indexOfAlias = 2;
+            if (e.getAnchor() != null) {
+                if (event.getEventId().equals(Event.Id.SequenceStart)
+                    || event.getEventId().equals(Event.Id.MappingStart)) {
+                    var start = (CollectionStartEvent) event;
+                    if (start.getFlowStyle() == FlowStyle.FLOW) {
+                        indexOfAlias = 2;
+                    }
                 }
-            }
-            if (event instanceof AliasEvent) {
-                if (!splitted[indexOfAlias].startsWith("*")) {
-                    return false;
-                }
-            } else {
-                if (!splitted[indexOfAlias].startsWith("&")) {
-                    return false;
+                if (event instanceof AliasEvent) {
+                    if (!splitted[indexOfAlias].startsWith("*")) {
+                        return false;
+                    }
+                } else {
+                    if (!splitted[indexOfAlias].startsWith("&")) {
+                        return false;
+                    }
                 }
             }
         }
-        if (event instanceof ScalarEvent scalarEvent) {
-            String tag = scalarEvent.getTag();
-            ImplicitTuple implicit = scalarEvent.getImplicit();
-            if (implicit.bothFalse()) {
-                if (!eventData.contains("<" + tag + ">")) {
-                    return false;
+        if (event instanceof ScalarEvent e) {
+            String tag = e.getTag();
+            if (tag != null) {
+                ImplicitTuple implicit = e.getImplicit();
+                if (implicit.bothFalse()) {
+                    if (!eventData.contains("<" + tag + ">")) {
+                        return false;
+                    }
                 }
+                String end = e.getScalarStyle() + e.escapedValue();
+                return eventData.endsWith(end);
             }
-            String end = scalarEvent.getScalarStyle() + scalarEvent.escapedValue();
-            return eventData.endsWith(end);
         }
         return true;
     }

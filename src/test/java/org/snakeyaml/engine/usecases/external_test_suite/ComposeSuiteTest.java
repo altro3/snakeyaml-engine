@@ -25,7 +25,6 @@ import org.snakeyaml.engine.v2.nodes.Node;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,26 +39,31 @@ class ComposeSuiteTest {
      */
     public static final List<String> emptyNodes = List.of("AVM7", "8G76", "98YD");
 
-    private final List<SuiteData> allValid =
-        SuiteUtils.getAll().stream().filter(data -> !data.hasError())
-            .filter(data -> !SuiteUtils.deviationsWithSuccess.contains(data.getName()))
-            .filter(data -> !SuiteUtils.deviationsWithError.contains(data.getName()))
-            // TODO FIXME JEF9-02 is not according to the spec
-            .filter(data -> !data.getName().equals("JEF9-02")).collect(Collectors.toList());
+    private final List<SuiteData> allValid = SuiteUtils.getAll().stream()
+        .filter(data -> !data.hasError()
+            && !SuiteUtils.deviationsWithSuccess.contains(data.getName())
+            && !SuiteUtils.deviationsWithError.contains(data.getName())
+            && !data.getName().equals("JEF9-02")
+        )
+        .toList();
 
     private final List<SuiteData> allValidAndNonEmpty = allValid.stream()
-        .filter(data -> !emptyNodes.contains(data.getName())).collect(Collectors.toList());
+        .filter(data -> !emptyNodes.contains(data.getName()))
+        .toList();
 
     private final List<SuiteData> allValidAndEmpty = allValid.stream()
-        .filter(data -> emptyNodes.contains(data.getName())).collect(Collectors.toList());
+        .filter(data -> emptyNodes.contains(data.getName()))
+        .toList();
 
 
     public static ComposeResult composeData(SuiteData data) {
         Exception error = null;
         var list = new ArrayList<Node>();
         try {
-            var settings =
-                LoadSettings.builder().setLabel(data.getLabel()).setAllowNonScalarKeys(true).build();
+            var settings = LoadSettings.builder()
+                .setLabel(data.getLabel())
+                .setAllowNonScalarKeys(true)
+                .build();
             Iterable<Node> iterable = new Compose(settings).composeAllFromString(data.getInput());
             iterable.forEach(list::add);
         } catch (YamlEngineException e) {
@@ -72,7 +76,9 @@ class ComposeSuiteTest {
     @DisplayName("Compose: run one test")
     void runOne() {
         var data = SuiteUtils.getOne("C4HZ");
-        var settings = LoadSettings.builder().setLabel(data.getLabel()).build();
+        var settings = LoadSettings.builder()
+            .setLabel(data.getLabel())
+            .build();
         Node node = new Compose(settings).composeString(data.getInput());
         assertNotNull(node);
         // System.out.println(node);
@@ -83,21 +89,21 @@ class ComposeSuiteTest {
     void runAllNonEmpty() {
         for (SuiteData data : allValidAndNonEmpty) {
             ComposeResult result = composeData(data);
-            List<Node> nodes = result.getNode();
-            assertFalse(nodes.isEmpty(),
-                data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
-            var settings = DumpSettings.builder().setExplicitStart(true).setExplicitEnd(true).build();
+            List<Node> nodes = result.node();
+            assertFalse(nodes.isEmpty(), data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
+            var settings = DumpSettings.builder()
+                .setExplicitStart(true)
+                .setExplicitEnd(true)
+                .build();
             var serialize = new Serialize(settings);
             List<Event> events = serialize.serializeAll(nodes);
-            assertEquals(data.getEvents().size(), events.size(),
-                data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
+            assertEquals(data.getEvents().size(), events.size(), data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
             for (int i = 0; i < events.size(); i++) {
                 Event event = events.get(i);
                 var representation = new EventRepresentation(event);
                 String expectation = data.getEvents().get(i);
                 boolean theSame = representation.isSameAs(expectation);
-                assertTrue(theSame, data.getName() + " -> " + data.getLabel() + "\n" + data.getInput()
-                    + "\n" + data.getEvents().get(i) + "\n" + events.get(i) + "\n");
+                assertTrue(theSame, data.getName() + " -> " + data.getLabel() + "\n" + data.getInput() + "\n" + data.getEvents().get(i) + "\n" + events.get(i) + "\n");
             }
         }
     }
@@ -107,29 +113,15 @@ class ComposeSuiteTest {
     void runAllEmpty() {
         for (SuiteData data : allValidAndEmpty) {
             ComposeResult result = composeData(data);
-            List<Node> nodes = result.getNode();
-            assertTrue(nodes.isEmpty(),
-                data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
+            List<Node> nodes = result.node();
+            assertTrue(nodes.isEmpty(), data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
         }
     }
 
-    static class ComposeResult {
+    record ComposeResult(
+        List<Node> node,
+        Exception error
+    ) {
 
-        private final List<Node> node;
-        private final Exception error;
-
-        public ComposeResult(List<Node> node, Exception error) {
-            this.node = node;
-            this.error = error;
-        }
-
-        public List<Node> getNode() {
-            return node;
-        }
-
-        public Exception getError() {
-            return error;
-        }
     }
-
 }

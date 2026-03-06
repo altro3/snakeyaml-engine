@@ -74,12 +74,10 @@ class EventRepresentationTest {
     @Test
     @DisplayName("Represent DocumentStartEvent")
     void testDocumentStartEvent() {
-        valid(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap()),
-            "+DOC ---");
-        valid(new DocumentStartEvent(true, SpecVersion.V_1_2, Collections.emptyMap()), "+DOC");
-        valid(new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap()), "+DOC");
-        valid(new DocumentStartEvent(false, SpecVersion.V_1_2, Collections.emptyMap()),
-            "+DOC ---");
+        valid(new DocumentStartEvent(true, SpecVersion.EMPTY, Collections.emptyMap()), "+DOC ---");
+        valid(new DocumentStartEvent(true, SpecVersion.EMPTY, Collections.emptyMap()), "+DOC");
+        valid(new DocumentStartEvent(false, SpecVersion.EMPTY, Collections.emptyMap()), "+DOC");
+        valid(new DocumentStartEvent(false, SpecVersion.EMPTY, Collections.emptyMap()), "+DOC ---");
     }
 
     @Test
@@ -93,11 +91,9 @@ class EventRepresentationTest {
     @Test
     @DisplayName("Represent SequenceStartEvent")
     void testSequenceStartEvent() {
-        valid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.FLOW),
-            "+SEQ [] &a <ttt>");
+        valid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.FLOW), "+SEQ [] &a <ttt>");
         valid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ &a <ttt>");
-        invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK),
-            "+SEQ *a <ttt>");
+        invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ *a <ttt>");
         invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ &a <t>");
         invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ <ttt>");
         invalid(new SequenceStartEvent(new Anchor("a"), "ttt", false, FlowStyle.BLOCK), "+SEQ *a");
@@ -113,16 +109,11 @@ class EventRepresentationTest {
     @Test
     @DisplayName("Represent ScalarEvent")
     void testScalarEvent() {
-        valid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
-            ScalarStyle.FOLDED), "=VAL &a <ttt> >v1");
-        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
-            ScalarStyle.PLAIN), "=VAL <ttt> >v1");
-        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
-            ScalarStyle.PLAIN), "=VAL &a >v1");
-        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
-            ScalarStyle.PLAIN), "=VAL &a <ttt>");
-        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1",
-            ScalarStyle.PLAIN), "=VAL &a <ttt> |v1");
+        valid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1", ScalarStyle.FOLDED), "=VAL &a <ttt> >v1");
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1", ScalarStyle.PLAIN), "=VAL <ttt> >v1");
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1", ScalarStyle.PLAIN), "=VAL &a >v1");
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1", ScalarStyle.PLAIN), "=VAL &a <ttt>");
+        invalid(new ScalarEvent(new Anchor("a"), "ttt", ImplicitTuple.FALSE_FALSE, "v1", ScalarStyle.PLAIN), "=VAL &a <ttt> |v1");
     }
 
     @Test
