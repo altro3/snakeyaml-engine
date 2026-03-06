@@ -30,5 +30,7 @@ tasks {
 
     test {
         useJUnitPlatform()
+        environment("EnvironmentKey1", "EnvironmentValue1")
+        environment("EnvironmentEmpty", "")
     }
 }
