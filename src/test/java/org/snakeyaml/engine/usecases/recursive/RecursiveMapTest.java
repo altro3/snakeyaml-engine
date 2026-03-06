@@ -16,6 +16,8 @@ package org.snakeyaml.engine.usecases.recursive;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.v2.api.Dump;
+import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
@@ -26,6 +28,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
 import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @Tag("fast")
@@ -58,7 +61,7 @@ class RecursiveMapTest {
         map2.put("name", "second");
         map1.put("next", map2);
         map2.put("next", map1);
-        String output1 = DEFAULT_DUMP.dumpToString(map1);
+        String output1 = new Dump(DumpSettings.builder().build()).dumpToString(map1);
         assertEquals("""
             &id001
             name: first

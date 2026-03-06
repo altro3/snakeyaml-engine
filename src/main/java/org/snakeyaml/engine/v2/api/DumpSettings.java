@@ -81,7 +81,7 @@ public record DumpSettings(
         private Tag explicitRootTag;
         private AnchorGenerator anchorGenerator = new NumberAnchorGenerator(0);
         private SpecVersion yamlDirective = SpecVersion.EMPTY;
-        private Map<String, String> tagDirective = new HashMap<>();
+        private Map<String, String> tagDirective = Map.of();
         private FlowStyle defaultFlowStyle = FlowStyle.AUTO;
         private ScalarStyle defaultScalarStyle = ScalarStyle.PLAIN;
         private boolean dereferenceAliases;
@@ -98,7 +98,7 @@ public record DumpSettings(
         private boolean indentWithIndicator;
         private boolean dumpComments;
         private Schema schema = new JsonSchema();
-        Map<SettingKey, Object> customProperties = new HashMap<>();
+        private final Map<SettingKey, Object> customProperties = new HashMap<>();
 
         /**
          * Define flow style.
@@ -403,7 +403,7 @@ public record DumpSettings(
                 explicitRootTag,
                 anchorGenerator,
                 yamlDirective,
-                tagDirective,
+                Map.copyOf(tagDirective),
                 defaultFlowStyle,
                 defaultScalarStyle,
                 dereferenceAliases,
@@ -419,7 +419,7 @@ public record DumpSettings(
                 indentWithIndicator,
                 dumpComments,
                 schema,
-                customProperties
+                Map.copyOf(customProperties)
             );
         }
     }

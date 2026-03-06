@@ -47,12 +47,19 @@ class EmitterTest {
             .setDefaultScalarStyle(ScalarStyle.FOLDED)
             .build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<>();
+        var map = new LinkedHashMap<String, String>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla\n");
         String output = dump(settings, map);
-        String expected =
-            "\"aaa\": >-\n  0123456789 0123456789\n\n  0123456789 0123456789\n\"bbb\": >2\n\n  bla-bla\n";
+        String expected = """
+            "aaa": >-
+              0123456789 0123456789
+            
+              0123456789 0123456789
+            "bbb": >2
+            
+              bla-bla
+            """;
         assertEquals(expected, output);
     }
 
@@ -62,12 +69,17 @@ class EmitterTest {
             .setDefaultScalarStyle(ScalarStyle.LITERAL)
             .build();
         String folded = "0123456789 0123456789 0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<>();
+        var map = new LinkedHashMap<String, String>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla\n");
         String output = dump(settings, map);
-        String expected =
-            "\"aaa\": |-\n  0123456789 0123456789 0123456789 0123456789\n\"bbb\": |2\n\n  bla-bla\n";
+        String expected = """
+            "aaa": |-
+              0123456789 0123456789 0123456789 0123456789
+            "bbb": |2
+            
+              bla-bla
+            """;
         assertEquals(expected, output);
     }
 
@@ -77,12 +89,18 @@ class EmitterTest {
             .setDefaultScalarStyle(ScalarStyle.PLAIN)
             .build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<>();
+        var map = new LinkedHashMap<String, String>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
-        String expected =
-            "aaa: |-\n  0123456789 0123456789\n  0123456789 0123456789\nbbb: |2-\n\n  bla-bla\n";
+        String expected = """
+            aaa: |-
+              0123456789 0123456789
+              0123456789 0123456789
+            bbb: |2-
+            
+              bla-bla
+            """;
         assertEquals(expected, output);
     }
 
@@ -93,12 +111,18 @@ class EmitterTest {
             .setMultiLineFlow(true)
             .build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<>();
+        var map = new LinkedHashMap<String, String>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
-        String expected =
-            "aaa: |-\n  0123456789 0123456789\n  0123456789 0123456789\nbbb: |2-\n\n  bla-bla\n";
+        String expected = """
+            aaa: |-
+              0123456789 0123456789
+              0123456789 0123456789
+            bbb: |2-
+            
+              bla-bla
+            """;
         assertEquals(expected, output);
     }
 
@@ -108,12 +132,18 @@ class EmitterTest {
             .setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED)
             .build();
         String folded = "0123456789 0123456789\n0123456789 0123456789";
-        Map<String, String> map = new LinkedHashMap<>();
+        var map = new LinkedHashMap<String, String>();
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
-        String expected =
-            "'aaa': '0123456789 0123456789\n\n  0123456789 0123456789'\n'bbb': '\n\n  bla-bla'\n";
+        String expected = """
+            'aaa': '0123456789 0123456789
+            
+              0123456789 0123456789'
+            'bbb': '
+            
+              bla-bla'
+            """;
         assertEquals(expected, output);
     }
 
@@ -127,7 +157,10 @@ class EmitterTest {
         map.put("aaa", folded);
         map.put("bbb", "\nbla-bla");
         String output = dump(settings, map);
-        String expected = "\"aaa\": \"0123456789 0123456789\\n0123456789 0123456789\"\n\"bbb\": \"\\nbla-bla\"\n";
+        String expected = """
+            "aaa": "0123456789 0123456789\\n0123456789 0123456789"
+            "bbb": "\\nbla-bla"
+            """;
         assertEquals(expected, output);
     }
 

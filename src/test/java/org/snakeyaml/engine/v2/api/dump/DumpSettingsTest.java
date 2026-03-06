@@ -27,6 +27,7 @@ import org.snakeyaml.engine.v2.exceptions.EmitterException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
@@ -63,7 +64,7 @@ class DumpSettingsTest {
         assertEquals(NonPrintableStyle.ESCAPE, settings.nonPrintableStyle());
         assertEquals(80, settings.width());
         assertEquals(SpecVersion.EMPTY, settings.yamlDirective());
-        assertEquals(new HashMap<>(), settings.tagDirective());
+        assertEquals(Map.of(), settings.tagDirective());
         assertNotNull(settings.anchorGenerator());
     }
 
