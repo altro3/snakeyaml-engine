@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @org.junit.jupiter.api.Tag("fast")
@@ -37,49 +38,42 @@ class EnvVariableTest {
 
     @Test
     @DisplayName("Parse docker-compose.yaml example")
-    public void testDockerCompose() {
-        var loader = new Load(LoadSettings.builder().setEnvConfig(new EnvConfig() {
-        }).build());
+    void testDockerCompose() {
+        var loader = new Load(LoadSettings.builder()
+            .setEnvConfig(new EnvConfig() {
+            }).build());
         String resource = TestUtils.getResource("env/docker-compose.yaml");
+        @SuppressWarnings("unchecked")
         var compose = (Map<String, Object>) loader.loadFromString(resource);
         String output = compose.toString();
-        assertTrue(output.endsWith(
-                "environment={URL1=EnvironmentValue1, URL2=, URL3=server3, URL4=, URL5=server5, URL6=server6}}}}"),
-            output);
+        assertTrue(output.endsWith("environment={URL1=EnvironmentValue1, URL2=, URL3=server3, URL4=, URL5=server5, URL6=server6}}}}"), output);
     }
 
     @Test
     @DisplayName("Custom EVN config example")
-    public void testCustomEnvConfig() {
+    void testCustomEnvConfig() {
         var provided = new HashMap<String, String>();
         provided.put(KEY1, "VVVAAA111");
         System.setProperty(EMPTY, "VVVAAA222");
-        var loader =
-            new Load(LoadSettings.builder().setEnvConfig(new CustomEnvConfig(provided)).build());
+        var loader = new Load(LoadSettings.builder()
+            .setEnvConfig(new CustomEnvConfig(provided))
+            .build());
         String resource = TestUtils.getResource("env/docker-compose.yaml");
+        @SuppressWarnings("unchecked")
         var compose = (Map<String, Object>) loader.loadFromString(resource);
         String output = compose.toString();
-        assertTrue(output.endsWith(
-                "environment={URL1=VVVAAA111, URL2=VVVAAA222, URL3=VVVAAA222, URL4=VVVAAA222, URL5=server5, URL6=server6}}}}"),
-            output);
-    }
-
-    private String load(String template) {
-        var loader = new Load(LoadSettings.builder().setEnvConfig(new EnvConfig() {
-        }).build());
-        var loaded = (String) loader.loadFromString(template);
-        return loaded;
+        assertTrue(output.endsWith("environment={URL1=VVVAAA111, URL2=VVVAAA222, URL3=VVVAAA222, URL4=VVVAAA222, URL5=server5, URL6=server6}}}}"), output);
     }
 
     @Test
-    public void testEnvironmentSet() {
+    void testEnvironmentSet() {
         assertEquals(VALUE1, System.getenv(KEY1), "Surefire plugin must set the variable.");
         assertEquals("", System.getenv(EMPTY), "Surefire plugin must set the variable.");
     }
 
     @Test
     @DisplayName("Parsing ENV variables must be explicitly enabled")
-    public void testNoEnvConstructor() {
+    void testNoEnvConstructor() {
         var loader = new Load(LoadSettings.builder().build());
         String loaded = (String) loader.loadFromString("${EnvironmentKey1}");
         assertEquals("${EnvironmentKey1}", loaded);
@@ -87,7 +81,7 @@ class EnvVariableTest {
 
     @Test
     @DisplayName("Parsing ENV variable which is defined and not empty")
-    public void testEnvConstructor() {
+    void testEnvConstructor() {
         assertEquals(VALUE1, load("${EnvironmentKey1}"));
         assertEquals(VALUE1, load("${EnvironmentKey1-any}"));
         assertEquals(VALUE1, load("${EnvironmentKey1:-any}"));
@@ -97,35 +91,36 @@ class EnvVariableTest {
 
     @Test
     @DisplayName("Parsing ENV variable which is defined as empty")
-    public void testEnvConstructorForEmpty() {
+    void testEnvConstructorForEmpty() {
         assertEquals("", load("${EnvironmentEmpty}"));
         assertEquals("", load("${EnvironmentEmpty?}"));
         assertEquals("detected", load("${EnvironmentEmpty:-detected}"));
         assertEquals("", load("${EnvironmentEmpty-detected}"));
         assertEquals("", load("${EnvironmentEmpty?detectedError}"));
-        try {
-            load("${EnvironmentEmpty:?detectedError}");
-        } catch (MissingEnvironmentVariableException e) {
-            assertEquals("Empty mandatory variable EnvironmentEmpty: detectedError", e.getMessage());
-        }
+        var e = assertThrows(MissingEnvironmentVariableException.class, () -> load("${EnvironmentEmpty:?detectedError}"));
+        assertEquals("Empty mandatory variable EnvironmentEmpty: detectedError", e.getMessage());
     }
 
     @Test
     @DisplayName("Parsing ENV variable which is not set")
-    public void testEnvConstructorForUnset() {
+    void testEnvConstructorForUnset() {
         assertEquals("", load("${EnvironmentUnset}"));
         assertEquals("", load("${EnvironmentUnset:- }"));
         assertEquals("detected", load("${EnvironmentUnset:-detected}"));
         assertEquals("detected", load("${EnvironmentUnset-detected}"));
-        try {
-            load("${EnvironmentUnset:?detectedError}");
-        } catch (MissingEnvironmentVariableException e) {
-            assertEquals("Missing mandatory variable EnvironmentUnset: detectedError", e.getMessage());
-        }
-        try {
-            load("${EnvironmentUnset?detectedError}");
-        } catch (MissingEnvironmentVariableException e) {
-            assertEquals("Missing mandatory variable EnvironmentUnset: detectedError", e.getMessage());
-        }
+
+        var e = assertThrows(MissingEnvironmentVariableException.class, () -> load("${EnvironmentUnset:?detectedError}"));
+        assertEquals("Missing mandatory variable EnvironmentUnset: detectedError", e.getMessage());
+
+        e = assertThrows(MissingEnvironmentVariableException.class, () -> load("${EnvironmentUnset:?detectedError}"));
+        assertEquals("Missing mandatory variable EnvironmentUnset: detectedError", e.getMessage());
+    }
+
+    private String load(String template) {
+        var loader = new Load(LoadSettings.builder()
+            .setEnvConfig(new EnvConfig() {
+            })
+            .build());
+        return (String) loader.loadFromString(template);
     }
 }

@@ -13,34 +13,28 @@
  */
 package org.snakeyaml.engine.issues.issue149;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Parse;
 import org.snakeyaml.engine.v2.events.Event;
 import org.snakeyaml.engine.v2.exceptions.ParserException;
 import org.snakeyaml.engine.v2.util.TestUtils;
 
-@org.junit.jupiter.api.Tag("fast")
-public class GlobalDirectivesTest {
+import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
-    Iterable<Event> yamlToEvents(final String resourceName) {
-        InputStream input = TestUtils.getResourceAsStream(resourceName);
-        Parse parser = new Parse(LoadSettings.builder().build());
-        return parser.parseInputStream(input);
-    }
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
+
+@org.junit.jupiter.api.Tag("fast")
+class GlobalDirectivesTest {
 
     @Test
     @DisplayName("Use tag directive")
-    public void testOneDocument() {
+    void testOneDocument() {
         Iterable<Event> events = yamlToEvents("issues/issue149-one-document.yaml");
-        final AtomicInteger counter = new AtomicInteger(0);
+        final var counter = new AtomicInteger(0);
         events.forEach(event -> counter.incrementAndGet());
 
         assertEquals(10, counter.get());
@@ -48,9 +42,9 @@ public class GlobalDirectivesTest {
 
     @Test
     @DisplayName("Fail to parse because directive does not stay for the second document")
-    public void testDirectives() {
+    void testDirectives() {
         Iterable<Event> events = yamlToEvents("issues/issue149-losing-directives.yaml");
-        final AtomicInteger counter = new AtomicInteger(0);
+        final var counter = new AtomicInteger(0);
         try {
             events.forEach(event -> counter.incrementAndGet());
         } catch (ParserException e) {
@@ -60,11 +54,17 @@ public class GlobalDirectivesTest {
 
     @Test
     @DisplayName("Parse both tag directives")
-    public void testDirectives2() {
+    void testDirectives2() {
         Iterable<Event> events = yamlToEvents("issues/issue149-losing-directives-2.yaml");
-        final AtomicInteger counter = new AtomicInteger(0);
+        final var counter = new AtomicInteger(0);
         events.forEach(event -> counter.incrementAndGet());
 
         assertEquals(18, counter.get());
+    }
+
+    private Iterable<Event> yamlToEvents(final String resourceName) {
+        InputStream input = TestUtils.getResourceAsStream(resourceName);
+        var parser = new Parse(DEFAULT_LOAD_SETTINGS);
+        return parser.parseInputStream(input);
     }
 }

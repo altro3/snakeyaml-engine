@@ -13,17 +13,18 @@
  */
 package org.snakeyaml.engine.issues.issue44;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.representer.StandardRepresenter;
 
-public class ProtectedClassesTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
+
+class ProtectedClassesTest {
 
     @Test
-    public void testSubstitution() {
-        ExampleRepresenter r = new ExampleRepresenter(DumpSettings.builder().build());
+    void testSubstitution() {
+        var r = new ExampleRepresenter(DEFAULT_DUMP_SETTINGS);
         assertEquals(1, 1);
     }
 

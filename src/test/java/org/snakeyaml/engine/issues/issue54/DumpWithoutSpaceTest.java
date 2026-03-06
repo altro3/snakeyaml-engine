@@ -30,7 +30,7 @@ import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
  * Issue 54: add a space after anchor (when it is a simple key)
  */
 @org.junit.jupiter.api.Tag("fast")
-public class DumpWithoutSpaceTest {
+class DumpWithoutSpaceTest {
 
     @Test
     @DisplayName("The document does not have a space after the *1 alias")

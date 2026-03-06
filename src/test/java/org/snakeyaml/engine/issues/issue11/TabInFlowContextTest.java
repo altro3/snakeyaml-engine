@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @org.junit.jupiter.api.Tag("fast")
-public class TabInFlowContextTest {
+class TabInFlowContextTest {
 
     @Test
     @DisplayName("Do not fail to parse if TAB is used (issue 11)")
@@ -39,7 +39,7 @@ public class TabInFlowContextTest {
 
     @Test
     @DisplayName("TAB cannot start a token.")
-    public void testWrongTab() {
+    void testWrongTab() {
         var e = assertThrows(Exception.class, () -> DEFAULT_LOAD.loadFromString("\t  data: 1"));
         assertEquals("""
             while scanning for the next token
@@ -51,7 +51,7 @@ public class TabInFlowContextTest {
     }
 
     @Test
-    public void testIssue55() {
+    void testIssue55() {
         var obj = DEFAULT_LOAD.loadFromString("{ \"foo\":\t\"bar\" }");
         assertNotNull(obj);
     }

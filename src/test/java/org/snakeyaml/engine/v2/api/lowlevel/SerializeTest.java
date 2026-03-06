@@ -46,7 +46,7 @@ class SerializeTest {
         events.forEach(list::add);
         assertEquals(5, list.size());
         TestUtils.compareEvents(List.of(new StreamStartEvent(),
-            new DocumentStartEvent(false, SpecVersion.V_1_2, new HashMap<>()),
+            new DocumentStartEvent(false, SpecVersion.EMPTY, new HashMap<>()),
             new ScalarEvent(null, null, ImplicitTuple.FALSE_FALSE, "a", ScalarStyle.PLAIN),
             new DocumentEndEvent(false), new StreamEndEvent()), list);
     }

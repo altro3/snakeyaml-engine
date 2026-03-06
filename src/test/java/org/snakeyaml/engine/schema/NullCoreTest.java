@@ -26,7 +26,9 @@ import org.snakeyaml.engine.v2.schema.CoreSchema;
 @org.junit.jupiter.api.Tag("fast")
 public class NullCoreTest {
 
-    Load loader = new Load(LoadSettings.builder().setSchema(new CoreSchema()).build());
+    Load loader = new Load(LoadSettings.builder()
+        .setSchema(new CoreSchema())
+        .build());
 
     @Test
     void parseNull() {
@@ -40,7 +42,9 @@ public class NullCoreTest {
 
     @Test
     void dumpNull() {
-        Dump dumper = new Dump(DumpSettings.builder().setSchema(new CoreSchema()).build());
+        var dumper = new Dump(DumpSettings.builder()
+            .setSchema(new CoreSchema())
+            .build());
         assertEquals("null\n", dumper.dumpToString(null));
     }
 }

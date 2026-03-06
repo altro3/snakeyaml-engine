@@ -17,34 +17,35 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.api.StreamDataWriter;
 import org.snakeyaml.engine.v2.emitter.Emitter;
 import org.snakeyaml.engine.v2.events.Event;
 import org.snakeyaml.engine.v2.events.ScalarEvent;
-import org.snakeyaml.engine.v2.parser.Parser;
 import org.snakeyaml.engine.v2.parser.ParserImpl;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
 import org.snakeyaml.engine.v2.util.StreamToStringWriter;
 import org.snakeyaml.engine.v2.util.TestUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @org.junit.jupiter.api.Tag("fast")
-public class EmitCommentAndSpacesTest {
+class EmitCommentAndSpacesTest {
 
     @Test
     @DisplayName("Issue 39: extra space added")
     void emitCommentWithEvent() {
-        LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
-        String input = TestUtils.getResource("issues/issue39-input.yaml");
-        Parser parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
-        DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
-        StreamDataWriter writer = new StreamToStringWriter();
-        Emitter emitter = new Emitter(settings, writer);
+        var loadSettings = LoadSettings.builder()
+            .setParseComments(true)
+            .build();
+        var input = TestUtils.getResource("issues/issue39-input.yaml");
+        var parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
+        var writer = new StreamToStringWriter();
+        var emitter = new Emitter(DumpSettings.builder()
+            .setDumpComments(true)
+            .build(), writer
+        );
         while (parser.hasNext()) {
             Event event = parser.next();
             emitter.emit(event);
@@ -55,13 +56,16 @@ public class EmitCommentAndSpacesTest {
     @Test
     @DisplayName("Issue 39: extra space added - small example")
     void emitCommentWithEventSmall() {
-        LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
+        var loadSettings = LoadSettings.builder()
+            .setParseComments(true)
+            .build();
         String input = "first:\n  second: abc\n  \n  \n\n";
-        Parser parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
-        DumpSettings settings = DumpSettings.builder().setDumpComments(true).build();
+        var parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, input));
         var writer = new StreamToStringWriter();
-        Emitter emitter = new Emitter(settings, writer);
-        List<Event> events = new ArrayList<Event>();
+        var emitter = new Emitter(DumpSettings.builder()
+            .setDumpComments(true)
+            .build(), writer);
+        var events = new ArrayList<Event>();
         while (parser.hasNext()) {
             Event event = parser.next();
             events.add(event);

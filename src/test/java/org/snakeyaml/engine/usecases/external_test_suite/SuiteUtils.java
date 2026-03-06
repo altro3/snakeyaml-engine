@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.external_test_suite;
 
-import com.google.common.io.Files;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Parse;
 import org.snakeyaml.engine.v2.events.Event;
@@ -22,6 +21,7 @@ import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -104,9 +104,9 @@ public class SuiteUtils {
     public static SuiteData readData(File file) {
         try {
             String name = file.getName();
-            String label = Files.asCharSource(new File(file, "==="), StandardCharsets.UTF_8).read();
-            String input = Files.asCharSource(new File(file, "in.yaml"), StandardCharsets.UTF_8).read();
-            List<String> events = Files.readLines(new File(file, "test.event"), StandardCharsets.UTF_8).stream()
+            String label = Files.readString(new File(file, "===").toPath(), StandardCharsets.UTF_8);
+            String input = Files.readString(new File(file, "in.yaml").toPath(), StandardCharsets.UTF_8);
+            List<String> events = Files.readAllLines(new File(file, "test.event").toPath(), StandardCharsets.UTF_8).stream()
                 .filter(line -> !line.isEmpty())
                 .toList();
             boolean error = new File(file, "error").exists();
@@ -131,10 +131,9 @@ public class SuiteUtils {
         Exception error = null;
         var list = new ArrayList<Event>();
         try {
-            var settings = LoadSettings.builder()
+            Iterable<Event> iterable = new Parse(LoadSettings.builder()
                 .setLabel(data.getLabel())
-                .build();
-            Iterable<Event> iterable = new Parse(settings)
+                .build())
                 .parseString(data.getInput());
             iterable.forEach(list::add);
         } catch (YamlEngineException e) {

@@ -13,16 +13,16 @@
  */
 package org.snakeyaml.engine.usecases.env;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.v2.resolver.JsonScalarResolver;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.resolver.JsonScalarResolver;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*
  * ${VARIABLE:-default} evaluates to default if VARIABLE is unset or empty in the environment.
@@ -35,12 +35,12 @@ import org.snakeyaml.engine.v2.resolver.JsonScalarResolver;
  * the environment.
  */
 @org.junit.jupiter.api.Tag("fast")
-public class EnvFormatTest {
+class EnvFormatTest {
 
-    public static final Pattern ENV_FORMAT = JsonScalarResolver.ENV_FORMAT;
+    static final Pattern ENV_FORMAT = JsonScalarResolver.ENV_FORMAT;
 
     @Test
-    public void testMatchBasic() {
+    void testMatchBasic() {
         assertTrue(ENV_FORMAT.matcher("${V}").matches());
         assertTrue(ENV_FORMAT.matcher("${PATH}").matches());
         assertTrue(ENV_FORMAT.matcher("${VARIABLE}").matches());
@@ -60,7 +60,7 @@ public class EnvFormatTest {
     }
 
     @Test
-    public void testMatchDefault() {
+    void testMatchDefault() {
         assertTrue(ENV_FORMAT.matcher("${VARIABLE-default}").matches());
         assertTrue(ENV_FORMAT.matcher("${ VARIABLE-default}").matches());
         assertTrue(ENV_FORMAT.matcher("${ VARIABLE-default }").matches());
@@ -79,7 +79,7 @@ public class EnvFormatTest {
     }
 
     @Test
-    public void testMatchDefaultOrEmpty() {
+    void testMatchDefaultOrEmpty() {
         assertTrue(ENV_FORMAT.matcher("${VARIABLE:-default}").matches());
         assertTrue(ENV_FORMAT.matcher("${ VARIABLE:-default }").matches());
         assertTrue(ENV_FORMAT.matcher("${ VARIABLE:-}").matches());
@@ -96,7 +96,7 @@ public class EnvFormatTest {
     }
 
     @Test
-    public void testMatchErrorDefaultOrEmpty() {
+    void testMatchErrorDefaultOrEmpty() {
         assertTrue(ENV_FORMAT.matcher("${VARIABLE:?err}").matches());
         assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?err }").matches());
         assertTrue(ENV_FORMAT.matcher("${ VARIABLE:? }").matches());
@@ -113,7 +113,7 @@ public class EnvFormatTest {
     }
 
     @Test
-    public void testMatchErrorDefault() {
+    void testMatchErrorDefault() {
         assertTrue(ENV_FORMAT.matcher("${VARIABLE?err}").matches());
         assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?err }").matches());
         assertTrue(ENV_FORMAT.matcher("${ VARIABLE:?}").matches());

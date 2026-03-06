@@ -17,8 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
 import org.snakeyaml.engine.v2.exceptions.ScannerException;
 
@@ -26,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 /**
  * Issue 67: ScannerException on block scalar "\n" See
@@ -34,14 +34,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 @org.junit.jupiter.api.Tag("fast")
 public class DumpLineBreakTest {
 
-    private final LoadSettings loadSettings = LoadSettings.builder().build();
-    private final Load load = new Load(loadSettings);
-
     @Test
     @DisplayName("Dump default scalar style")
     void dumpDefaultScalaStyle() {
-        DumpSettings dumpSettings = DumpSettings.builder().build();
-        assertEquals(ScalarStyle.PLAIN, dumpSettings.defaultScalarStyle());
+        assertEquals(ScalarStyle.PLAIN, DEFAULT_DUMP_SETTINGS.defaultScalarStyle());
     }
 
     @Test
@@ -97,30 +93,42 @@ public class DumpLineBreakTest {
         Dump dump = new Dump(dumpSettings);
         String dumpString = dump.dumpToString(yaml);
         assertEquals(expected, dumpString);
-        assertEquals(yaml, load.loadFromString(dumpString));
+        assertEquals(yaml, DEFAULT_LOAD.loadFromString(dumpString));
     }
 
     @Test
     @DisplayName("Use Keep in Literal scalar")
     void parseLiteral() {
-        String input = "---\n" + "top:\n" + "  foo:\n" + "  - problem: |2+\n" + "\n" + "  bar: baz\n";
+        String input = """
+            ---
+            top:
+              foo:
+              - problem: |2+
+            
+              bar: baz
+            """;
         // System.out.println(input);
-        Object obj = load.loadFromString(input);
+        Object obj = DEFAULT_LOAD.loadFromString(input);
         assertNotNull(obj);
     }
 
-    @Test
-    @DisplayName("Use Keep in Literal scalar: S98Z")
     /**
      * <a href="https://matrix.yaml.info/details/S98Z.html">YAML Test Matrix</a>
      * <a href="https://github.com/yaml/yaml-test-suite/issues/37">S98Z under YAML 1.2</a>
      * <a href="https://github.com/yaml/yaml-test-suite/blob/main/src/S98Z.yaml">yaml-test-suite</a>
      */
+    @Test
+    @DisplayName("Use Keep in Literal scalar: S98Z")
     void parseLiteralS98Z() {
-        String input = "empty block scalar: >\n" + " \n" + "  \n" + "   \n" + " # comment";
+        String input = """
+            empty block scalar: >
+            \s
+             \s
+              \s
+             # comment""";
         // System.out.println(input);
         try {
-            load.loadFromString(input);
+            DEFAULT_LOAD.loadFromString(input);
             fail("S98Z");
         } catch (ScannerException e) {
             assertTrue(
@@ -130,17 +138,33 @@ public class DumpLineBreakTest {
         }
     }
 
-    @Test
-    @DisplayName("Use Keep in Literal scalar: T26H")
     /**
      * <a href="https://matrix.yaml.info/details/T26H.html">YAML Test Matrix</a>
      * <a href="https://github.com/yaml/yaml-test-suite/blob/main/src/T26H.yaml">yaml-test-suite</a>
      */
+    @Test
+    @DisplayName("Use Keep in Literal scalar: T26H")
     void parseLiteralT26H() {
-        String input = "--- |\n" + " \n" + "  \n" + "  literal\n" + "   \n" + "  \n" + "  text\n" + "\n"
-            + " # Comment\n";
+        String input = """
+            --- |
+            \s
+             \s
+              literal
+              \s
+             \s
+              text
+            
+             # Comment
+            """;
         // System.out.println(input);
-        Object obj = load.loadFromString(input);
-        assertEquals("\n" + "\n" + "literal\n" + " \n" + "\n" + "text\n", obj);
+        Object obj = DEFAULT_LOAD.loadFromString(input);
+        assertEquals("""
+            
+            
+            literal
+            \s
+            
+            text
+            """, obj);
     }
 }

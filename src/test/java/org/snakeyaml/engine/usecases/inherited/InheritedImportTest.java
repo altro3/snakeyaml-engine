@@ -13,7 +13,12 @@
  */
 package org.snakeyaml.engine.usecases.inherited;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.snakeyaml.engine.v2.api.LoadSettings;
+import org.snakeyaml.engine.v2.api.YamlUnicodeReader;
+import org.snakeyaml.engine.v2.events.Event;
+import org.snakeyaml.engine.v2.parser.ParserImpl;
+import org.snakeyaml.engine.v2.scanner.StreamReader;
+import org.snakeyaml.engine.v2.util.TestUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -22,53 +27,47 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.api.YamlUnicodeReader;
-import org.snakeyaml.engine.v2.events.Event;
-import org.snakeyaml.engine.v2.parser.Parser;
-import org.snakeyaml.engine.v2.parser.ParserImpl;
-import org.snakeyaml.engine.v2.scanner.StreamReader;
-import org.snakeyaml.engine.v2.util.TestUtils;
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
 
 public abstract class InheritedImportTest {
 
     public static final String PATH = "inherited_yaml_1_1";
 
-
     protected String getResource(String theName) {
         return TestUtils.getResource(PATH + File.separator + theName);
     }
 
-    protected File[] getStreamsByExtension(String extention) {
-        return getStreamsByExtension(extention, false);
+    protected File[] getStreamsByExtension(String extension) {
+        return getStreamsByExtension(extension, false);
     }
 
-    protected File[] getStreamsByExtension(String extention, boolean onlyIfCanonicalPresent) {
-        File file = new File("src/test/resources/" + PATH);
+    protected File[] getStreamsByExtension(String extension, boolean onlyIfCanonicalPresent) {
+        var file = new File("src/test/resources/" + PATH);
         assertTrue(file.exists(), "Folder not found: " + file.getAbsolutePath());
         assertTrue(file.isDirectory());
-        return file.listFiles(new InheritedFilenameFilter(extention, onlyIfCanonicalPresent));
+        return file.listFiles(new InheritedFilenameFilter(extension, onlyIfCanonicalPresent));
     }
 
     protected File getFileByName(String name) {
-        File file = new File("src/test/resources/" + PATH + "/" + name);
+        var file = new File("src/test/resources/" + PATH + "/" + name);
         assertTrue(file.exists(), "Folder not found: " + file.getAbsolutePath());
         assertTrue(file.isFile());
         return file;
     }
 
     protected List<Event> canonicalParse(InputStream input2, String label) throws IOException {
-        LoadSettings setting = LoadSettings.builder().setLabel(label).build();
-        StreamReader reader = new StreamReader(setting, new YamlUnicodeReader(input2));
-        StringBuilder buffer = new StringBuilder();
+        LoadSettings setting = LoadSettings.builder()
+            .setLabel(label)
+            .build();
+        var reader = new StreamReader(setting, new YamlUnicodeReader(input2));
+        var buffer = new StringBuilder();
         while (reader.peek() != '\0') {
             buffer.appendCodePoint(reader.peek());
             reader.forward();
         }
-        CanonicalParser parser =
-            new CanonicalParser(buffer.toString().replace(System.lineSeparator(), "\n"), label);
-        List<Event> result = new ArrayList();
+        var parser = new CanonicalParser(buffer.toString().replace(System.lineSeparator(), "\n"), label);
+        var result = new ArrayList<Event>();
         while (parser.hasNext()) {
             result.add(parser.next());
         }
@@ -77,10 +76,9 @@ public abstract class InheritedImportTest {
     }
 
     protected List<Event> parse(InputStream input) throws IOException {
-        LoadSettings settings = LoadSettings.builder().build();
-        StreamReader reader = new StreamReader(settings, new YamlUnicodeReader(input));
-        Parser parser = new ParserImpl(settings, reader);
-        List<Event> result = new ArrayList();
+        var reader = new StreamReader(DEFAULT_LOAD_SETTINGS, new YamlUnicodeReader(input));
+        var parser = new ParserImpl(DEFAULT_LOAD_SETTINGS, reader);
+        var result = new ArrayList<Event>();
         while (parser.hasNext()) {
             result.add(parser.next());
         }
@@ -88,25 +86,20 @@ public abstract class InheritedImportTest {
         return result;
     }
 
-    private class InheritedFilenameFilter implements FilenameFilter {
+    private record InheritedFilenameFilter(
+        String extension,
+        boolean onlyIfCanonicalPresent
+    ) implements FilenameFilter {
 
-        private final String extension;
-        private final boolean onlyIfCanonicalPresent;
-
-        public InheritedFilenameFilter(String extension, boolean onlyIfCanonicalPresent) {
-            this.extension = extension;
-            this.onlyIfCanonicalPresent = onlyIfCanonicalPresent;
-        }
-
+        @Override
         public boolean accept(File dir, String name) {
             int position = name.lastIndexOf('.');
             String canonicalFileName = name.substring(0, position) + ".canonical";
-            File canonicalFile = new File(dir, canonicalFileName);
+            var canonicalFile = new File(dir, canonicalFileName);
             if (onlyIfCanonicalPresent && !canonicalFile.exists()) {
                 return false;
-            } else {
-                return name.endsWith(extension);
             }
+            return name.endsWith(extension);
         }
     }
 }

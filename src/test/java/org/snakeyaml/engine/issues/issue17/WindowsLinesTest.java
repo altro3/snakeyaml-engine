@@ -13,18 +13,16 @@
  */
 package org.snakeyaml.engine.issues.issue17;
 
+import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
-
 @org.junit.jupiter.api.Tag("fast")
-public class WindowsLinesTest {
+class WindowsLinesTest {
 
     @Test
     void parseWindowsNewLine() {

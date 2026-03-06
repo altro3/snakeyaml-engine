@@ -44,14 +44,12 @@ import java.util.List;
 public class CanonicalParser implements Parser {
 
     private final String label;
-    private final List<Event> events;
+    private final List<Event> events = new ArrayList<>();
     private final CanonicalScanner scanner;
     private boolean parsed;
 
     public CanonicalParser(String data, String label) {
         this.label = label;
-        events = new ArrayList<>();
-        parsed = false;
         scanner = new CanonicalScanner(data, label);
     }
 
@@ -60,11 +58,10 @@ public class CanonicalParser implements Parser {
         scanner.getToken(Token.Id.StreamStart);
         events.add(new StreamStartEvent(null, null));
         while (!scanner.checkToken(Token.Id.StreamEnd)) {
-            if (scanner.checkToken(Token.Id.Directive, Token.Id.DocumentStart)) {
-                parseDocument();
-            } else {
+            if (!scanner.checkToken(Token.Id.Directive, Token.Id.DocumentStart)) {
                 throw new CanonicalException("Document is expected, got " + scanner.tokens.get(0) + " in " + label);
             }
+            parseDocument();
         }
         scanner.getToken(Token.Id.StreamEnd);
         events.add(new StreamEndEvent(null, null));

@@ -13,28 +13,27 @@
  */
 package org.snakeyaml.engine.issues.issue69;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
- * Test for <a href=
- * "https://bitbucket.org/asomov/snakeyaml/issues/69/tab-in-double-quotes-is-replaced-with-space">Issue
- * 69</a>
+ * Test for <a href="https://bitbucket.org/asomov/snakeyaml/issues/69/tab-in-double-quotes-is-replaced-with-space">Issue 69</a>
  */
-public class TabInDoubleQuoteTest {
+class TabInDoubleQuoteTest {
 
     @Test
-    public void testTabInDoubleQuote() {
-        LoadSettings options = LoadSettings.builder().setParseComments(true).build();
-        Load load = new Load(options);
+    void testTabInDoubleQuote() {
+        Load load = new Load(LoadSettings.builder()
+            .setParseComments(true)
+            .build());
         String str = "- \"\\\t\""; // "\TAB"
         @SuppressWarnings("unchecked")
-        List<String> obj = (List<String>) load.loadFromString(str);
+        var obj = (List<String>) load.loadFromString(str);
         assertEquals(1, obj.size());
         String parsed = obj.get(0);
         assertEquals("\t", parsed);

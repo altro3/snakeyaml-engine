@@ -32,7 +32,7 @@ import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
 import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
 
 @org.junit.jupiter.api.Tag("fast")
-public class EmptyStringOutputTest {
+class EmptyStringOutputTest {
 
     @Test
     void outputEmptyString() {

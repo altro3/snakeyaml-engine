@@ -40,48 +40,50 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Issue 53
  */
 @org.junit.jupiter.api.Tag("fast")
-public class DumpWithoutCommentsTest {
-
-    public Node createNodeWithComments(String source) {
-        var loadSettings = LoadSettings.builder().setParseComments(true).build();
-        var parser =
-            new ParserImpl(loadSettings, new StreamReader(loadSettings, new StringReader(source)));
-        var composer = new Composer(loadSettings, parser);
-        Node node = composer.getSingleNode();
-        assertNotNull(node);
-        return node;
-    }
+class DumpWithoutCommentsTest {
 
     @DisplayName("Issue 53 - Serialization failure of commented Node")
     @Test
-    public void dumpMapWithComments() {
+    void dumpMapWithComments() {
         final String yaml = """
             a: 1 # A
             b: 2 # B
             """;
-        DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(false).build();
-        Emitter emitter = new Emitter(dumpSettings,
+        var dumpSettings = DumpSettings.builder()
+            .setDumpComments(false)
+            .build();
+        var emitter = new Emitter(dumpSettings,
             new YamlOutputStreamWriter(new ByteArrayOutputStream(), StandardCharsets.UTF_8) {
                 @Override
                 public void processIOException(IOException e) {
                     throw new RuntimeException(e);
                 }
             });
-        Serializer serializer = new Serializer(dumpSettings, emitter);
-
+        var serializer = new Serializer(dumpSettings, emitter);
         serializer.emitStreamStart();
         serializer.serializeDocument(createNodeWithComments(yaml));
         serializer.emitStreamEnd();
     }
 
     @Test
-    public void checkNoComments() {
+    void checkNoComments() {
         String source = "a: 1 # comment";
-        DumpSettings dumpSettings = DumpSettings.builder().setDumpComments(false).build();
-        Serialize serializer = new Serialize(dumpSettings);
+        var dumpSettings = DumpSettings.builder().setDumpComments(false).build();
+        var serializer = new Serialize(dumpSettings);
         List<Event> events = serializer.serializeOne(createNodeWithComments(source));
         List<Event> commentEvents = events.stream().filter(e -> e.getEventId() == Event.Id.Comment)
             .toList();
         assertEquals(0, commentEvents.size(), "Unexpected: " + commentEvents);
+    }
+
+    private Node createNodeWithComments(String source) {
+        var loadSettings = LoadSettings.builder()
+            .setParseComments(true)
+            .build();
+        var parser = new ParserImpl(loadSettings, new StreamReader(loadSettings, new StringReader(source)));
+        var composer = new Composer(loadSettings, parser);
+        Node node = composer.getSingleNode();
+        assertNotNull(node);
+        return node;
     }
 }

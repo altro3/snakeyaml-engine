@@ -13,7 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.references;
 
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -29,19 +28,18 @@ import java.io.StringReader;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @org.junit.jupiter.api.Tag("fast")
-public class DumpAnchorTest {
+class DumpAnchorTest {
 
     @Test
-    public void test_anchor_test() {
+    void test_anchor_test() {
         var str = TestUtils.getResource("anchor/issue481.yaml");
         var compose = new Compose(LoadSettings.builder().build());
         Node node = compose.composeReader(new StringReader(str));
 
-        var setting = DumpSettings.builder()
+        var yaml = new Dump(DumpSettings.builder()
             .setDefaultFlowStyle(FlowStyle.BLOCK)
             .setAnchorGenerator(Node::getAnchor)
-            .build();
-        var yaml = new Dump(setting);
+            .build());
 
         var writer = new StreamToStringWriter();
         yaml.dumpNode(node, writer);

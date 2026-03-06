@@ -16,6 +16,7 @@ package org.snakeyaml.engine.usecases.references;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,44 +24,39 @@ import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 
 @org.junit.jupiter.api.Tag("fast")
-public class NonAsciiAnchorTest {
+class NonAsciiAnchorTest {
 
     private final String NON_ANCHORS = ",[]{}*&./";
 
     @Test
     @DisplayName("Non ASCII anchor name must be accepted")
-    public void testNonAsciiAnchor() {
-        LoadSettings settings = LoadSettings.builder().build();
-        Load load = new Load(settings);
-        String floatValue = (String) load.loadFromString("&something_タスク タスク");
+    void testNonAsciiAnchor() {
+        var floatValue = (String) DEFAULT_LOAD.loadFromString("&something_タスク タスク");
         assertEquals("タスク", floatValue);
     }
 
     @Test
-    public void testUnderscore() {
-        Load loader = new Load(LoadSettings.builder().build());
-        Object value = loader.loadFromString("&_ タスク");
+    void testUnderscore() {
+        Object value = DEFAULT_LOAD.loadFromString("&_ タスク");
         assertEquals("タスク", value);
     }
 
     @Test
-    public void testSmile() {
-        Load loader = new Load(LoadSettings.builder().build());
-        Object value = loader.loadFromString("&\uD83D\uDE01 v1");
+    void testSmile() {
+        Object value = DEFAULT_LOAD.loadFromString("&\uD83D\uDE01 v1");
         // System.out.println("&\uD83D\uDE01 v1");
         assertEquals("v1", value);
     }
 
     @Test
-    public void testAlpha() {
-        Load loader = new Load(LoadSettings.builder().build());
-        Object value = loader.loadFromString("&kääk v1");
+    void testAlpha() {
+        Object value = DEFAULT_LOAD.loadFromString("&kääk v1");
         assertEquals("v1", value);
     }
 
     @Test
     @DisplayName("Reject invalid anchors which contain one of " + NON_ANCHORS)
-    public void testNonAllowedAnchor() {
+    void testNonAllowedAnchor() {
         for (int i = 0; i < NON_ANCHORS.length(); i++) {
             try {
                 loadWith(NON_ANCHORS.charAt(i));
@@ -73,8 +69,6 @@ public class NonAsciiAnchorTest {
     }
 
     private void loadWith(char c) {
-        LoadSettings settings = LoadSettings.builder().build();
-        Load load = new Load(settings);
-        load.loadFromString("&" + c + " value");
+        DEFAULT_LOAD.loadFromString("&" + c + " value");
     }
 }

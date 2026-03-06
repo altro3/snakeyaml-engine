@@ -13,34 +13,33 @@
  */
 package org.snakeyaml.engine.usecases.fuzzy;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 
-public class FuzzyCollectionTest {
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class FuzzyCollectionTest {
 
     /**
-     * https://bitbucket.org/snakeyaml/snakeyaml/issues/1064 This is different from SnakeYAML - the
-     * YAML looks valid.
+     * <a href="https://bitbucket.org/snakeyaml/snakeyaml/issues/1064">link</a> This is different from SnakeYAML - the YAML looks valid.
      */
     @Test
-    public void testFuzzyInput() {
-        String datastring =
-            " ? - - ? - - ? ? - - ? ? ? - - ? ? - - ? ? ? - - ? ? - ? ? - - ? - - ? ? ? - - ? ? - ?  -? - ? ? - - ? - - ? ? ? - - ? ? - ?  -? - ? ? - - ? - ";
-        InputStream datastream = new ByteArrayInputStream(datastring.getBytes());
-        InputStreamReader reader = new InputStreamReader(datastream, StandardCharsets.UTF_8);
+    void testFuzzyInput() {
+        String datastring = " ? - - ? - - ? ? - - ? ? ? - - ? ? - - ? ? ? - - ? ? - ? ? - - ? - - ? ? ? - - ? ? - ?  -? - ? ? - - ? - - ? ? ? - - ? ? - ?  -? - ? ? - - ? - ";
+        var dataStream = new ByteArrayInputStream(datastring.getBytes(StandardCharsets.UTF_8));
+        var reader = new InputStreamReader(dataStream, StandardCharsets.UTF_8);
 
-        LoadSettings settings =
-            LoadSettings.builder().setAllowRecursiveKeys(true).setMaxAliasesForCollections(1000)
-                .setAllowDuplicateKeys(true).setAllowNonScalarKeys(true).build();
-        Load yamlProcessor = new Load(settings);
+        var yamlProcessor = new Load(LoadSettings.builder()
+            .setAllowRecursiveKeys(true)
+            .setMaxAliasesForCollections(1000)
+            .setAllowDuplicateKeys(true)
+            .setAllowNonScalarKeys(true)
+            .build());
         Object fuzzy = yamlProcessor.loadFromReader(reader);
         assertTrue(fuzzy.toString().startsWith("{[[{[[{{[[{{{[[{{[[{{{[[{{[{{[[{[[{{{[[{{[{-?"));
     }

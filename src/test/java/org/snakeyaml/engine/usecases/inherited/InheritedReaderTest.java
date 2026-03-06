@@ -13,45 +13,40 @@
  */
 package org.snakeyaml.engine.usecases.inherited;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.YamlUnicodeReader;
 import org.snakeyaml.engine.v2.exceptions.ReaderException;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 import org.snakeyaml.engine.v2.scanner.StreamReader;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
+
 @org.junit.jupiter.api.Tag("fast")
-public class InheritedReaderTest extends InheritedImportTest {
+class InheritedReaderTest extends InheritedImportTest {
 
     @Test
     @DisplayName("Reader errors")
-    public void testReaderUnicodeErrors() throws IOException {
+    void testReaderUnicodeErrors() throws IOException {
         File[] inputs = getStreamsByExtension(".stream-error");
-        for (int i = 0; i < inputs.length; i++) {
-            InputStream input = new FileInputStream(inputs[i]);
-            YamlUnicodeReader unicodeReader = new YamlUnicodeReader(input);
-            StreamReader stream = new StreamReader(LoadSettings.builder().build(), unicodeReader);
-            try {
+        for (File file : inputs) {
+            try (var input = new FileInputStream(file)) {
+                var unicodeReader = new YamlUnicodeReader(input);
+                var stream = new StreamReader(DEFAULT_LOAD_SETTINGS, unicodeReader);
                 while (stream.peek() != '\u0000') {
                     stream.forward();
                 }
-                fail("Invalid stream must not be accepted: " + inputs[i].getAbsolutePath() + "; encoding="
-                    + unicodeReader.getEncoding());
+                fail("Invalid stream must not be accepted: " + file.getAbsolutePath() + "; encoding=" + unicodeReader.getEncoding());
             } catch (ReaderException e) {
                 assertTrue(e.toString().contains(" special characters are not allowed"), e.toString());
             } catch (YamlEngineException e) {
                 assertTrue(e.toString().contains("MalformedInputException"), e.toString());
-            } finally {
-                input.close();
             }
         }
     }

@@ -13,7 +13,7 @@
  */
 package org.snakeyaml.engine.v2.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.snakeyaml.engine.v2.events.Event;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.snakeyaml.engine.v2.events.Event;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class TestUtils {
 
@@ -32,8 +32,7 @@ public abstract class TestUtils {
     }
 
     public static InputStream getResourceAsStream(String theName) {
-        InputStream inputStream =
-            Thread.currentThread().getContextClassLoader().getResourceAsStream(theName);
+        var inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(theName);
         if (inputStream == null) {
             throw new RuntimeException("Resource not found: " + theName);
         }

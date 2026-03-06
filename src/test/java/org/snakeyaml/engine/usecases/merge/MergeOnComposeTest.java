@@ -30,52 +30,53 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
 
 @org.junit.jupiter.api.Tag("fast")
-public class MergeOnComposeTest {
-
-    private String merge(String inputName, LoadSettings loadSettings) {
-        String input = TestUtils.getResource(inputName);
-        var loader = new Compose(loadSettings);
-        Node sourceTree = loader.composeReader(new StringReader(input));
-        Serialize serialize = new Serialize(DumpSettings.builder().setDereferenceAliases(true).build());
-        List<Event> events = serialize.serializeOne(sourceTree);
-        Present present = new Present(DumpSettings.builder().build());
-
-        return present.emitToString(events.iterator());
-    }
+class MergeOnComposeTest {
 
     @Test
-    public void simple_load_Merge() {
-        String out = merge("merge/issue1096-simple-merge-input.yaml",
-            LoadSettings.builder().setSchema(new CoreSchema()).build());
+    void simple_load_Merge() {
+        String out = merge("merge/issue1096-simple-merge-input.yaml", LoadSettings.builder()
+            .setSchema(new CoreSchema())
+            .build());
         String expected = TestUtils.getResource("merge/issue1096-simple-merge-output.yaml");
         assertEquals(expected, out);
     }
 
     @Test
-    public void complex_load_Merge() {
-        String out = merge("merge/issue1096-complex-merge-input.yaml",
-            LoadSettings.builder().setSchema(new CoreSchema()).build());
+    void complex_load_Merge() {
+        String out = merge("merge/issue1096-complex-merge-input.yaml", LoadSettings.builder()
+            .setSchema(new CoreSchema())
+            .build());
         String expected = TestUtils.getResource("merge/issue1096-complex-merge-output.yaml");
         assertEquals(expected, out);
     }
 
     @Test
-    public void specs_load_Merge() {
-        String out = merge("merge/issue1096-merge-input.yaml",
-            LoadSettings.builder().setSchema(new CoreSchema()).setParseComments(false).build());
+    void specs_load_Merge() {
+        String out = merge("merge/issue1096-merge-input.yaml", LoadSettings.builder()
+            .setSchema(new CoreSchema())
+            .setParseComments(false)
+            .build());
         String expected = TestUtils.getResource("merge/issue1096-merge-output.yaml");
         assertEquals(expected, out);
     }
 
     @Test
-    public void merge_As_Scalar() {
-        String str =
-            "test-list:\n" + " - &1\n" + "   a: 1\n" + "   b: 2\n" + " - &2 <<: *1\n" + " - <<: *2";
+    void merge_As_Scalar() {
+        String str = """
+            test-list:
+             - &1
+               a: 1
+               b: 2
+             - &2 <<: *1
+             - <<: *2""";
 
-        var loader = new Compose(
-            LoadSettings.builder().setSchema(new CoreSchema()).setParseComments(false).build());
+        var loader = new Compose(LoadSettings.builder()
+            .setSchema(new CoreSchema())
+            .setParseComments(false)
+            .build());
         try {
             loader.composeReader(new StringReader(str));
             fail();
@@ -84,5 +85,18 @@ public class MergeOnComposeTest {
             assertTrue(error.contains("Expected mapping node or an anchor referencing mapping"), error);
             assertTrue(error.contains("in reader, line 6, column 10:"), error);
         }
+    }
+
+    private String merge(String inputName, LoadSettings loadSettings) {
+        String input = TestUtils.getResource(inputName);
+        var loader = new Compose(loadSettings);
+        Node sourceTree = loader.composeReader(new StringReader(input));
+        var serialize = new Serialize(DumpSettings.builder()
+            .setDereferenceAliases(true)
+            .build());
+        List<Event> events = serialize.serializeOne(sourceTree);
+        var present = new Present(DEFAULT_DUMP_SETTINGS);
+
+        return present.emitToString(events.iterator());
     }
 }

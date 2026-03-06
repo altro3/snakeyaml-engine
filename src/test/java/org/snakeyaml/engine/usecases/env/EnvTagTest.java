@@ -13,23 +13,21 @@
  */
 package org.snakeyaml.engine.usecases.env;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.api.lowlevel.Compose;
 import org.snakeyaml.engine.v2.nodes.Node;
 import org.snakeyaml.engine.v2.nodes.Tag;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_COMPOSE;
 
 /**
  * test that implicit resolver assigns the tag
  */
-public class EnvTagTest {
+class EnvTagTest {
 
     @Test
-    public void testImplicitResolverForEnvConstructor() {
-        var loader = new Compose(LoadSettings.builder().build());
-        Node loaded = loader.composeString("${PATH}");
+    void testImplicitResolverForEnvConstructor() {
+        Node loaded = DEFAULT_COMPOSE.composeString("${PATH}");
         assertEquals(Tag.ENV_TAG, loaded.getTag());
     }
 }

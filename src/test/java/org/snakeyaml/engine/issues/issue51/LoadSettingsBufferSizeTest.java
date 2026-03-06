@@ -25,24 +25,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @org.junit.jupiter.api.Tag("fast")
-public class LoadSettingsBufferSizeTest {
+class LoadSettingsBufferSizeTest {
 
-    private final String yaml = " - foo: bar\n" + "   if: 'aaa' == 'bbb'";
-    private final String expectedError = "while parsing a block mapping\n"
-        + " in reader, line 1, column 4:\n" + "     - foo: bar\n" + "       ^\n"
-        + "expected <block end>, but found '<scalar>'\n" + " in reader, line 2, column 14:\n"
-        + "       if: 'aaa' == 'bbb'\n" + "                 ^\n";
-
-    private void parse(String yaml) {
-        LoadSettings settings = LoadSettings.builder().setBufferSize(yaml.length()).build();
-        new Composer(settings, new ParserImpl(settings, new StreamReader(settings, yaml)))
-            .getSingleNode();
-    }
+    private final String yaml = """
+         - foo: bar
+           if: 'aaa' == 'bbb'
+        """;
 
     @DisplayName("Issue 51 - exact buffer size")
     @Test
-    public void setBufferSizeCutsError() {
-        ParserException exception = assertThrows(ParserException.class, () -> parse(yaml));
-        assertEquals(expectedError, exception.getMessage());
+    void setBufferSizeCutsError() {
+        var e = assertThrows(ParserException.class, () -> parse(yaml));
+        assertEquals("""
+            while parsing a block mapping
+             in reader, line 1, column 4:
+                 - foo: bar
+                   ^
+            expected <block end>, but found '<scalar>'
+             in reader, line 2, column 14:
+                   if: 'aaa' == 'bbb'
+                             ^
+            """, e.getMessage());
+    }
+
+    private void parse(String yaml) {
+        var settings = LoadSettings.builder()
+            .setBufferSize(yaml.length())
+            .build();
+        new Composer(settings, new ParserImpl(settings, new StreamReader(settings, yaml)))
+            .getSingleNode();
     }
 }

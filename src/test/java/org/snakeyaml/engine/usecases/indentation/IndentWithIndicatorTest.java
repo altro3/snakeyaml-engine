@@ -13,27 +13,29 @@
  */
 package org.snakeyaml.engine.usecases.indentation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.util.TestUtils;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @org.junit.jupiter.api.Tag("fast")
-public class IndentWithIndicatorTest {
+class IndentWithIndicatorTest {
 
     @Test
-    public void testIndentWithIndicator1() {
-        DumpSettings settings = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK)
-            .setIndentWithIndicator(true).setIndent(2).setIndicatorIndent(1).build();
-        Dump dumper = new Dump(settings);
+    void testIndentWithIndicator1() {
+        var dumper = new Dump(DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setIndentWithIndicator(true)
+            .setIndent(2)
+            .setIndicatorIndent(1)
+            .build());
         String output = dumper.dumpToString(createData());
 
         String doc = TestUtils.getResource("indentation/issue416-1.yaml");
@@ -42,11 +44,13 @@ public class IndentWithIndicatorTest {
     }
 
     @Test
-    public void testIndentWithIndicator2() {
-        DumpSettings settings = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK)
-            .setIndentWithIndicator(true).setIndent(2).setIndicatorIndent(2).build();
-
-        Dump dumper = new Dump(settings);
+    void testIndentWithIndicator2() {
+        var dumper = new Dump(DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setIndentWithIndicator(true)
+            .setIndent(2)
+            .setIndicatorIndent(2)
+            .build());
         String output = dumper.dumpToString(createData());
 
         String doc = TestUtils.getResource("indentation/issue416-2.yaml");
@@ -55,9 +59,13 @@ public class IndentWithIndicatorTest {
     }
 
     @Test
-    public void testIndentWithIndicator3() {
-        DumpSettings settings = DumpSettings.builder().setDefaultFlowStyle(FlowStyle.BLOCK)
-            .setIndentWithIndicator(false).setIndent(4).setIndicatorIndent(2).build();
+    void testIndentWithIndicator3() {
+        DumpSettings settings = DumpSettings.builder()
+            .setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setIndentWithIndicator(false)
+            .setIndent(4)
+            .setIndicatorIndent(2)
+            .build();
 
         Dump dumper = new Dump(settings);
         String output = dumper.dumpToString(createData());
@@ -68,24 +76,24 @@ public class IndentWithIndicatorTest {
     }
 
     private Map<String, Object> createData() {
-        Map<String, String> fred = new LinkedHashMap<>();
+        var fred = new LinkedHashMap<String, String>();
         fred.put("name", "Fred");
         fred.put("role", "creator");
 
-        Map<String, String> john = new LinkedHashMap<>();
+        var john = new LinkedHashMap<String, String>();
         john.put("name", "John");
         john.put("role", "committer");
 
-        List<Map<String, String>> developers = new ArrayList<>();
+        var developers = new ArrayList<Map<String, String>>();
         developers.add(fred);
         developers.add(john);
 
-        Map<String, Object> company = new LinkedHashMap<>();
+        var company = new LinkedHashMap<String, Object>();
         company.put("developers", developers);
         company.put("name", "Yet Another Company");
         company.put("location", "Maastricht");
 
-        Map<String, Object> data = new LinkedHashMap<>();
+        var data = new LinkedHashMap<String, Object>();
         data.put("company", company);
 
         return data;

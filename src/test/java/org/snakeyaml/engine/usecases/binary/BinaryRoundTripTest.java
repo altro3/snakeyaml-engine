@@ -13,21 +13,9 @@
  */
 package org.snakeyaml.engine.usecases.binary;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.snakeyaml.engine.util.TestUtil.DEFAULT_REPRESENTER;
-
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Serialize;
 import org.snakeyaml.engine.v2.common.NonPrintableStyle;
 import org.snakeyaml.engine.v2.common.ScalarStyle;
@@ -40,34 +28,47 @@ import org.snakeyaml.engine.v2.nodes.ScalarNode;
 import org.snakeyaml.engine.v2.nodes.Tag;
 import org.snakeyaml.engine.v2.representer.StandardRepresenter;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_REPRESENTER;
+
 @org.junit.jupiter.api.Tag("fast")
 public class BinaryRoundTripTest {
 
     @Test
-    public void testBinary() throws UnsupportedEncodingException {
-        Dump dumper =
-            new Dump(DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.BINARY).build());
+    public void testBinary() {
+        var dumper = new Dump(DumpSettings.builder()
+            .setNonPrintableStyle(NonPrintableStyle.BINARY)
+            .build());
         String source = "\u0096";
         String serialized = dumper.dumpToString(source);
-        assertEquals("!!binary |-\n" + "  wpY=\n", serialized);
+        assertEquals("""
+            !!binary |-
+              wpY=
+            """, serialized);
         // parse back to bytes
-        Load loader = new Load(LoadSettings.builder().build());
-        byte[] deserialized = (byte[]) loader.loadFromString(serialized);
+        var deserialized = (byte[]) DEFAULT_LOAD.loadFromString(serialized);
         assertEquals(source, new String(deserialized, StandardCharsets.UTF_8));
     }
 
     @Test
     public void testBinaryNode() {
+        var standardRepresenter = new StandardRepresenter(DumpSettings.builder()
+            .setNonPrintableStyle(NonPrintableStyle.BINARY)
+            .build());
         String source = "\u0096";
-        var standardRepresenter = new StandardRepresenter(
-            DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.BINARY).build());
         var scalar = (ScalarNode) standardRepresenter.represent(source);
         // check Node
-        assertEquals(org.snakeyaml.engine.v2.nodes.Tag.BINARY, scalar.getTag());
+        assertEquals(Tag.BINARY, scalar.getTag());
         assertEquals(NodeType.SCALAR, scalar.getNodeType());
         assertEquals("wpY=", scalar.getValue());
         // check Event
-        Serialize serialize = new Serialize(DumpSettings.builder().build());
+        var serialize = new Serialize(DumpSettings.builder().build());
         List<Event> eventsIter = serialize.serializeOne(scalar);
         List<Event> events = eventsIter.subList(0, eventsIter.size());
         assertEquals(5, events.size());
@@ -92,15 +93,14 @@ public class BinaryRoundTripTest {
 
     @Test
     public void testRoundTripBinary() {
-        var dumper =
-            new Dump(DumpSettings.builder().setNonPrintableStyle(NonPrintableStyle.ESCAPE).build());
-        var toSerialized = new HashMap<String, String>();
-        toSerialized.put("key", "a\u0096b");
+        var dumper = new Dump(DumpSettings.builder()
+            .setNonPrintableStyle(NonPrintableStyle.ESCAPE)
+            .build());
+        var toSerialized = Map.of("key", "a\u0096b");
         String output = dumper.dumpToString(toSerialized);
         assertEquals("{key: \"a\\x96b\"}\n", output);
-        var loader = new Load(LoadSettings.builder().build());
         @SuppressWarnings("unchecked")
-        var parsed = (Map<String, String>) loader.loadFromString(output);
+        var parsed = (Map<String, String>) DEFAULT_LOAD.loadFromString(output);
         assertEquals(toSerialized.get("key"), parsed.get("key"));
         assertEquals(toSerialized, parsed);
     }

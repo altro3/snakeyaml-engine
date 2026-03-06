@@ -13,53 +13,48 @@
  */
 package org.snakeyaml.engine.issues.issue75;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.exceptions.ScannerException;
 
-/**
- * Test for <a href=
- * "https://bitbucket.org/snakeyaml/snakeyaml-engine/issues/75/fails-to-parse-valid-json-0x7f-in-quoted">Issue75</a>
- */
-public class EscapeCharInDoubleQuoteTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
-    private final Load load = new Load(LoadSettings.builder().build());
+/**
+ * Test for <a href="https://bitbucket.org/snakeyaml/snakeyaml-engine/issues/75/fails-to-parse-valid-json-0x7f-in-quoted">Issue75</a>
+ */
+class EscapeCharInDoubleQuoteTest {
 
     @Test
-    public void testSpecialCharInDoubleQuote() {
+    void testSpecialCharInDoubleQuote() {
         String str = "\"\u007F\""; // "\DEL"
-        String parsed = (String) load.loadFromString(str);
-        assertEquals("\u007F", parsed);
+        assertEquals("\u007F", DEFAULT_LOAD.loadFromString(str));
     }
 
     @Test
     void testDELAllowedInDoubleQuoted() {
         String str = "\"\u007F\"";
-        String parsed = (String) load.loadFromString(str);
-        assertEquals("\u007F", parsed); // Should pass - nb-json allows 0x7F
+        assertEquals("\u007F", DEFAULT_LOAD.loadFromString(str)); // Should pass - nb-json allows 0x7F
     }
 
     @Test
     void testDELAllowedInSingleQuoted() {
         String str = "'\u007F'";
-        String parsed = (String) load.loadFromString(str);
-        assertEquals("\u007F", parsed); // Should pass - nb-json allows 0x7F
+        assertEquals("\u007F", DEFAULT_LOAD.loadFromString(str)); // Should pass - nb-json allows 0x7F
     }
 
     @Test
     void testDELRejectedInPlainScalar() {
         String str = "key: \u007F"; // DEL in plain scalar value
-        assertThrows(ScannerException.class, () -> load.loadFromString(str));
+        assertThrows(ScannerException.class, () -> DEFAULT_LOAD.loadFromString(str));
     }
 
     @Test
     void testDELRejectedInPlainScalarKey() {
         String str = "ke\u007Fy: value"; // DEL in plain scalar key
-        assertThrows(ScannerException.class, () -> load.loadFromString(str));
+        assertThrows(ScannerException.class, () -> DEFAULT_LOAD.loadFromString(str));
     }
 
     @Test
@@ -73,12 +68,12 @@ public class EscapeCharInDoubleQuoteTest {
     @Test
     void testDELRejectedInBlockScalar() {
         String str = "|\n  text with \u007F"; // DEL in literal block scalar
-        assertThrows(ScannerException.class, () -> load.loadFromString(str));
+        assertThrows(ScannerException.class, () -> DEFAULT_LOAD.loadFromString(str));
     }
 
     @Test
     void testDELRejectedInFoldedBlockScalar() {
         String str = ">\n  text with \u007F"; // DEL in folded block scalar
-        assertThrows(ScannerException.class, () -> load.loadFromString(str));
+        assertThrows(ScannerException.class, () -> DEFAULT_LOAD.loadFromString(str));
     }
 }

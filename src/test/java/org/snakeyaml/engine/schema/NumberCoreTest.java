@@ -13,10 +13,6 @@
  */
 package org.snakeyaml.engine.schema;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.math.BigInteger;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
@@ -24,6 +20,10 @@ import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.schema.CoreSchema;
+
+import java.math.BigInteger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @org.junit.jupiter.api.Tag("fast")
 public class NumberCoreTest {
@@ -33,15 +33,14 @@ public class NumberCoreTest {
     @Test
     @DisplayName("Test all integers which are defined in the core schema & JSON")
     void parseInteger() {
-        assertEquals(Integer.valueOf(1), loader.loadFromString("1"));
-        assertEquals(Integer.valueOf(-1), loader.loadFromString("-1"));
-        assertEquals(Integer.valueOf(0), loader.loadFromString("0"));
-        assertEquals(Integer.valueOf(0), loader.loadFromString("-0"));
-        assertEquals(Integer.valueOf(1), loader.loadFromString("0001"));
-        assertEquals(Integer.valueOf(1234567890), loader.loadFromString("1234567890"));
-        assertEquals(Long.valueOf(12345678901L), loader.loadFromString("12345678901"));
-        assertEquals(new BigInteger("1234567890123456789123"),
-            loader.loadFromString("1234567890123456789123"));
+        assertEquals(1, loader.loadFromString("1"));
+        assertEquals(-1, loader.loadFromString("-1"));
+        assertEquals(0, loader.loadFromString("0"));
+        assertEquals(0, loader.loadFromString("-0"));
+        assertEquals(1, loader.loadFromString("0001"));
+        assertEquals(1234567890, loader.loadFromString("1234567890"));
+        assertEquals(12345678901L, loader.loadFromString("12345678901"));
+        assertEquals(new BigInteger("1234567890123456789123"), loader.loadFromString("1234567890123456789123"));
     }
 
     @Test
@@ -81,21 +80,21 @@ public class NumberCoreTest {
     @Test
     @DisplayName("Test all doubles which are defined in the core schema & JSON")
     void parseDouble() {
-        assertEquals(Double.valueOf(-1.345), loader.loadFromString("-1.345"));
-        assertEquals(Double.valueOf(0), loader.loadFromString("0.0"));
-        assertEquals(Double.valueOf(0f), loader.loadFromString("0.0"));
-        assertEquals(Double.valueOf(0d), loader.loadFromString("0.0"));
-        assertEquals(Double.valueOf(+0), loader.loadFromString("0.0"));
-        assertEquals(Double.valueOf(-0.0), loader.loadFromString("-0.0"));
-        assertEquals(Double.valueOf(0.123), loader.loadFromString("0.123"));
-        assertEquals(Double.valueOf(1.23E-6), loader.loadFromString("1.23e-6"));
-        assertEquals(Double.valueOf(1.23E6), loader.loadFromString("1.23e+6"));
-        assertEquals(Double.valueOf(1.23E6), loader.loadFromString("1.23e6"));
-        assertEquals(Double.valueOf(1.23E6), loader.loadFromString("1.23E6"));
-        assertEquals(Double.valueOf(-1.23E6), loader.loadFromString("-1.23e6"));
-        assertEquals(Double.valueOf(1000.25), loader.loadFromString("1000.25"));
-        assertEquals(Double.valueOf(9000.0), loader.loadFromString("9000.00"));
-        assertEquals(Double.valueOf(1.0), loader.loadFromString("1."));
+        assertEquals(-1.345, loader.loadFromString("-1.345"));
+        assertEquals((double) 0, loader.loadFromString("0.0"));
+        assertEquals(0.0, loader.loadFromString("0.0"));
+        assertEquals(0d, loader.loadFromString("0.0"));
+        assertEquals((double) +0, loader.loadFromString("0.0"));
+        assertEquals(-0.0, loader.loadFromString("-0.0"));
+        assertEquals(0.123, loader.loadFromString("0.123"));
+        assertEquals(1.23E-6, loader.loadFromString("1.23e-6"));
+        assertEquals(1.23E6, loader.loadFromString("1.23e+6"));
+        assertEquals(1.23E6, loader.loadFromString("1.23e6"));
+        assertEquals(1.23E6, loader.loadFromString("1.23E6"));
+        assertEquals(-1.23E6, loader.loadFromString("-1.23e6"));
+        assertEquals(1000.25, loader.loadFromString("1000.25"));
+        assertEquals(9000.0, loader.loadFromString("9000.00"));
+        assertEquals(1.0, loader.loadFromString("1."));
     }
 
     @Test

@@ -28,7 +28,7 @@ import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD_SETTINGS;
  * <a href="https://yaml.org/spec/1.2/spec.html#id2774608">link</a>
  */
 @org.junit.jupiter.api.Tag("fast")
-public class WindowsTest {
+class WindowsTest {
 
     @Test
     @DisplayName("Check that Windows style line endings handled the same as Unix style ones")

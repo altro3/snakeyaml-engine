@@ -13,45 +13,39 @@
  */
 package org.snakeyaml.engine.usecases.json;
 
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.snakeyaml.engine.v2.util.TestUtils;
 
 import java.util.Map;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.util.TestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @org.junit.jupiter.api.Tag("fast")
-public class ParseJsonTest {
+class ParseJsonTest {
 
     /**
-     * <a href=
-     * "https://bitbucket.org/snakeyaml/snakeyaml/issues/1110/exception-during-parse-of-tab-idented-json">cf-app</a>
+     * <a href="https://bitbucket.org/snakeyaml/snakeyaml/issues/1110/exception-during-parse-of-tab-idented-json">cf-app</a>
      */
     @Test
     @DisplayName("Parse JSON with TABs")
-    public void testJsonWithTabs() {
+    void testJsonWithTabs() {
         String str = TestUtils.getResource("json/mtad.yaml");
-        LoadSettings options = LoadSettings.builder().build();
-        Load load = new Load(options);
-        Map<String, Object> obj = (Map<String, Object>) load.loadFromString(str);
+        @SuppressWarnings("unchecked")
+        var obj = (Map<String, Object>) DEFAULT_LOAD.loadFromString(str);
         assertEquals(4, obj.size());
         assertTrue(obj.containsKey("_schema-version"));
     }
 
     @Test
     @DisplayName("Parse JSON with TABs, small")
-    public void testJsonWithTabsSmall() {
+    void testJsonWithTabsSmall() {
         String str = TestUtils.getResource("json/leading-tab.yaml");
-        LoadSettings options = LoadSettings.builder().build();
-        Load load = new Load(options);
-        Map<String, Object> obj = (Map<String, Object>) load.loadFromString(str);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> obj = (Map<String, Object>) DEFAULT_LOAD.loadFromString(str);
         assertEquals(3, obj.size());
         assertTrue(obj.containsKey("modules"));
     }
 }
-

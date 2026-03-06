@@ -13,13 +13,6 @@
  */
 package org.snakeyaml.engine.usecases.references;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.Map;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -27,66 +20,77 @@ import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
+
 /**
- * https://en.wikipedia.org/wiki/Billion_laughs_attack#Variations
+ * <a href="https://en.wikipedia.org/wiki/Billion_laughs_attack#Variations">link</a>
  */
 @Tag("fast")
-public class BillionLaughsAttackTest {
+class BillionLaughsAttackTest {
 
-    public static final String data =
-        "a: &a [\"lol\",\"lol\",\"lol\",\"lol\",\"lol\",\"lol\",\"lol\",\"lol\",\"lol\"]\n"
-            + "b: &b [*a,*a,*a,*a,*a,*a,*a,*a,*a]\n" + "c: &c [*b,*b,*b,*b,*b,*b,*b,*b,*b]\n"
-            + "d: &d [*c,*c,*c,*c,*c,*c,*c,*c,*c]\n" + "e: &e [*d,*d,*d,*d,*d,*d,*d,*d,*d]\n"
-            + "f: &f [*e,*e,*e,*e,*e,*e,*e,*e,*e]\n" + "g: &g [*f,*f,*f,*f,*f,*f,*f,*f,*f]\n"
-            + "h: &h [*g,*g,*g,*g,*g,*g,*g,*g,*g]\n" + "i: &i [*h,*h,*h,*h,*h,*h,*h,*h,*h]";
+    static final String data = """
+        a: &a ["lol","lol","lol","lol","lol","lol","lol","lol","lol"]
+        b: &b [*a,*a,*a,*a,*a,*a,*a,*a,*a]
+        c: &c [*b,*b,*b,*b,*b,*b,*b,*b,*b]
+        d: &d [*c,*c,*c,*c,*c,*c,*c,*c,*c]
+        e: &e [*d,*d,*d,*d,*d,*d,*d,*d,*d]
+        f: &f [*e,*e,*e,*e,*e,*e,*e,*e,*e]
+        g: &g [*f,*f,*f,*f,*f,*f,*f,*f,*f]
+        h: &h [*g,*g,*g,*g,*g,*g,*g,*g,*g]
+        i: &i [*h,*h,*h,*h,*h,*h,*h,*h,*h]""";
 
-    public static final String scalarAliasesData =
-        "a: &a foo\n" + "b:  *a\n" + "c:  *a\n" + "d:  *a\n" + "e:  *a\n" + "f:  *a\n" + "g:  *a\n";
+    static final String scalarAliasesData = """
+        a: &a foo
+        b:  *a
+        c:  *a
+        d:  *a
+        e:  *a
+        f:  *a
+        g:  *a
+        """;
 
     @Test
     @DisplayName("Load many aliases if explicitly allowed")
-    public void billionLaughsAttackLoaded() {
-        LoadSettings settings = LoadSettings.builder().setMaxAliasesForCollections(72).build();
-        Load load = new Load(settings);
-        Map map = (Map) load.loadFromString(data);
+    void billionLaughsAttackLoaded() {
+        var load = new Load(LoadSettings.builder()
+            .setMaxAliasesForCollections(72)
+            .build());
+        var map = (Map<?, ?>) load.loadFromString(data);
         assertNotNull(map);
     }
 
     @Test
     @DisplayName("Billion_laughs_attack if data expanded")
-    public void billionLaughsAttackExpanded() {
-        LoadSettings settings = LoadSettings.builder().setMaxAliasesForCollections(100).build();
-        Load load = new Load(settings);
-        Map map = (Map) load.loadFromString(data);
+    void billionLaughsAttackExpanded() {
+        var load = new Load(LoadSettings.builder()
+            .setMaxAliasesForCollections(100)
+            .build());
+        var map = (Map<?, ?>) load.loadFromString(data);
         assertNotNull(map);
-        try {
-            map.toString();
-            fail("Expected overflow");
-        } catch (Throwable e) {
-            assertTrue(e.getMessage().contains("heap"));
-        }
+        var e = assertThrows(Throwable.class, map::toString);
+        assertTrue(e.getMessage().contains("heap"));
     }
 
     @Test
     @DisplayName("Prevent Billion_laughs_attack by default")
-    public void billionLaughsAttackWithRestrictedAliases() {
-        LoadSettings settings = LoadSettings.builder().build();
-        Load load = new Load(settings);
-        try {
-            load.loadFromString(data);
-            fail();
-        } catch (YamlEngineException e) {
-            assertEquals("Number of aliases for non-scalar nodes exceeds the specified max=50",
-                e.getMessage());
-        }
+    void billionLaughsAttackWithRestrictedAliases() {
+        var e = assertThrows(YamlEngineException.class, () -> DEFAULT_LOAD.loadFromString(data));
+        assertEquals("Number of aliases for non-scalar nodes exceeds the specified max=50", e.getMessage());
     }
 
     @Test
     @DisplayName("Number of aliases for scalar nodes is not restricted")
-    public void doNotRestrictScalarAliases() {
+    void doNotRestrictScalarAliases() {
         // smaller than number of aliases for scalars
-        LoadSettings settings = LoadSettings.builder().setMaxAliasesForCollections(5).build();
-        Load load = new Load(settings);
+        var load = new Load(LoadSettings.builder()
+            .setMaxAliasesForCollections(5)
+            .build());
         load.loadFromString(scalarAliasesData);
     }
 }

@@ -22,7 +22,6 @@ import org.snakeyaml.engine.v2.api.lowlevel.Compose;
 import org.snakeyaml.engine.v2.api.lowlevel.Present;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -30,9 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class EmitSuiteTest {
 
     private final List<SuiteData> all = SuiteUtils.getAll().stream()
-        .filter(data -> !SuiteUtils.deviationsWithSuccess.contains(data.getName()))
-        .filter(data -> !SuiteUtils.deviationsWithError.contains(data.getName()))
-        .collect(Collectors.toList());
+        .filter(data -> !SuiteUtils.deviationsWithSuccess.contains(data.getName())
+            && !SuiteUtils.deviationsWithError.contains(data.getName()))
+        .toList();
 
     @Test
     @DisplayName("Emit test suite")
@@ -40,8 +39,7 @@ class EmitSuiteTest {
         for (SuiteData data : all) {
             ParseResult result = SuiteUtils.parseData(data);
             if (data.hasError()) {
-                assertNotNull(result.error(), "Expected error, but got none in file " + data.getName()
-                    + ", " + data.getLabel() + "\n" + result.events());
+                assertNotNull(result.error(), "Expected error, but got none in file " + data.getName() + ", " + data.getLabel() + "\n" + result.events());
             } else {
                 var emit = new Present(DumpSettings.builder().build());
                 // emit without errors

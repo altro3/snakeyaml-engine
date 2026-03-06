@@ -13,11 +13,6 @@
  */
 package org.snakeyaml.engine.issues.issue544;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Present;
@@ -30,55 +25,59 @@ import org.snakeyaml.engine.v2.nodes.NodeTuple;
 import org.snakeyaml.engine.v2.nodes.ScalarNode;
 import org.snakeyaml.engine.v2.nodes.Tag;
 
-public class DoubleQuoteTest {
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP_SETTINGS;
+
+class DoubleQuoteTest {
+
+    @Test
+    void testSubstitution() {
+        assertEquals("""
+            double_quoted: "\\U0001f510This process is simple and secure."
+            single_quoted: "\\U0001f510This process is simple and secure."
+            """, emit(DumpSettings.builder()
+            .setUseUnicodeEncoding(false)
+            .build()));
+    }
+
+    @Test
+    void testUnicode() {
+        assertEquals("""
+            double_quoted: "🔐This process is simple and secure."
+            single_quoted: '🔐This process is simple and secure.'
+            """, emit(DumpSettings.builder()
+            .setUseUnicodeEncoding(true)
+            .build()));
+    }
+
+    @Test
+    void testDefault() {
+        assertEquals("""
+            double_quoted: "🔐This process is simple and secure."
+            single_quoted: '🔐This process is simple and secure.'
+            """, emit(DEFAULT_DUMP_SETTINGS));
+    }
 
     private MappingNode create() {
         String content = "🔐This process is simple and secure.";
 
-        ScalarNode doubleQuotedKey = new ScalarNode(Tag.STR, "double_quoted", ScalarStyle.PLAIN);
-        ScalarNode doubleQuotedValue = new ScalarNode(Tag.STR, content, ScalarStyle.DOUBLE_QUOTED);
-        NodeTuple doubleQuotedTuple = new NodeTuple(doubleQuotedKey, doubleQuotedValue);
+        var doubleQuotedKey = new ScalarNode(Tag.STR, "double_quoted", ScalarStyle.PLAIN);
+        var doubleQuotedValue = new ScalarNode(Tag.STR, content, ScalarStyle.DOUBLE_QUOTED);
+        var doubleQuotedTuple = new NodeTuple(doubleQuotedKey, doubleQuotedValue);
 
-        ScalarNode singleQuotedKey = new ScalarNode(Tag.STR, "single_quoted", ScalarStyle.PLAIN);
-        ScalarNode singleQuotedValue = new ScalarNode(Tag.STR, content, ScalarStyle.SINGLE_QUOTED);
-        NodeTuple singleQuotedTuple = new NodeTuple(singleQuotedKey, singleQuotedValue);
+        var singleQuotedKey = new ScalarNode(Tag.STR, "single_quoted", ScalarStyle.PLAIN);
+        var singleQuotedValue = new ScalarNode(Tag.STR, content, ScalarStyle.SINGLE_QUOTED);
+        var singleQuotedTuple = new NodeTuple(singleQuotedKey, singleQuotedValue);
 
-        List<NodeTuple> nodeTuples = new ArrayList<>();
-        nodeTuples.add(doubleQuotedTuple);
-        nodeTuples.add(singleQuotedTuple);
+        var nodeTuples = List.of(doubleQuotedTuple, singleQuotedTuple);
 
-        MappingNode mappingNode = new MappingNode(Tag.MAP, nodeTuples, FlowStyle.BLOCK);
-        return mappingNode;
+        return new MappingNode(Tag.MAP, nodeTuples, FlowStyle.BLOCK);
     }
 
     private String emit(DumpSettings settings) {
-        Serialize serialize = new Serialize(settings);
-        Iterable<Event> eventsIter = serialize.serializeOne(create());
-        Present emit = new Present(settings);
-        return emit.emitToString(eventsIter.iterator());
-    }
-
-    @Test
-    public void testSubstitution() {
-        DumpSettings settings = DumpSettings.builder().setUseUnicodeEncoding(false).build();
-        String expectedOutput = "double_quoted: \"\\U0001f510This process is simple and secure.\"\n"
-            + "single_quoted: \"\\U0001f510This process is simple and secure.\"\n";
-        assertEquals(expectedOutput, emit(settings));
-    }
-
-    @Test
-    public void testUnicode() {
-        DumpSettings settings = DumpSettings.builder().setUseUnicodeEncoding(true).build();
-        String expectedOutput = "double_quoted: \"🔐This process is simple and secure.\"\n"
-            + "single_quoted: '🔐This process is simple and secure.'\n";
-        assertEquals(expectedOutput, emit(settings));
-    }
-
-    @Test
-    public void testDefault() {
-        DumpSettings settings = DumpSettings.builder().build();
-        String expectedOutput = "double_quoted: \"🔐This process is simple and secure.\"\n"
-            + "single_quoted: '🔐This process is simple and secure.'\n";
-        assertEquals(expectedOutput, emit(settings));
+        Iterable<Event> eventsIter = new Serialize(settings).serializeOne(create());
+        return new Present(settings).emitToString(eventsIter.iterator());
     }
 }

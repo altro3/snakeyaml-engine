@@ -60,11 +60,10 @@ class ComposeSuiteTest {
         Exception error = null;
         var list = new ArrayList<Node>();
         try {
-            var settings = LoadSettings.builder()
+            Iterable<Node> iterable = new Compose(LoadSettings.builder()
                 .setLabel(data.getLabel())
                 .setAllowNonScalarKeys(true)
-                .build();
-            Iterable<Node> iterable = new Compose(settings).composeAllFromString(data.getInput());
+                .build()).composeAllFromString(data.getInput());
             iterable.forEach(list::add);
         } catch (YamlEngineException e) {
             error = e;
@@ -76,10 +75,10 @@ class ComposeSuiteTest {
     @DisplayName("Compose: run one test")
     void runOne() {
         var data = SuiteUtils.getOne("C4HZ");
-        var settings = LoadSettings.builder()
+        Node node = new Compose(LoadSettings.builder()
             .setLabel(data.getLabel())
-            .build();
-        Node node = new Compose(settings).composeString(data.getInput());
+            .build())
+            .composeString(data.getInput());
         assertNotNull(node);
         // System.out.println(node);
     }
@@ -95,8 +94,7 @@ class ComposeSuiteTest {
                 .setExplicitStart(true)
                 .setExplicitEnd(true)
                 .build();
-            var serialize = new Serialize(settings);
-            List<Event> events = serialize.serializeAll(nodes);
+            List<Event> events = new Serialize(settings).serializeAll(nodes);
             assertEquals(data.getEvents().size(), events.size(), data.getName() + " -> " + data.getLabel() + "\n" + data.getInput());
             for (int i = 0; i < events.size(); i++) {
                 Event event = events.get(i);

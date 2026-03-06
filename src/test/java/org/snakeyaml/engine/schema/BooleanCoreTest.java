@@ -13,8 +13,6 @@
  */
 package org.snakeyaml.engine.schema;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
@@ -22,6 +20,8 @@ import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.schema.CoreSchema;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @org.junit.jupiter.api.Tag("fast")
 public class BooleanCoreTest {
@@ -51,7 +51,9 @@ public class BooleanCoreTest {
 
     @Test
     void dumpBoolean() {
-        Dump dumper = new Dump(DumpSettings.builder().setSchema(new CoreSchema()).build());
+        var dumper = new Dump(DumpSettings.builder()
+            .setSchema(new CoreSchema())
+            .build());
         assertEquals("true\n", dumper.dumpToString(Boolean.TRUE));
         assertEquals("false\n", dumper.dumpToString(Boolean.FALSE));
     }

@@ -21,11 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.exceptions.Mark;
 
 @org.junit.jupiter.api.Tag("fast")
-public class InheritedMarkTest extends InheritedImportTest {
+class InheritedMarkTest extends InheritedImportTest {
 
     @Test
     @DisplayName("Marks")
-    public void testMarks() {
+    void testMarks() {
         String content = getResource("test_mark.marks");
         String[] inputs = content.split("---\n");
         for (int i = 1; i < inputs.length; i++) {
@@ -42,11 +42,10 @@ public class InheritedMarkTest extends InheritedImportTest {
                 }
                 index += 1;
             }
-            Mark mark = new Mark("testMarks", index, line, column, input.toCharArray(), index);
+            var mark = new Mark("testMarks", index, line, column, input.toCharArray(), index);
             String snippet = mark.createSnippet(2, 79);
-            assertTrue(snippet.indexOf("\n") > -1, "Must only have one '\n'.");
-            assertEquals(snippet.indexOf("\n"), snippet.lastIndexOf("\n"),
-                "Must only have only one '\n'.");
+            assertTrue(snippet.contains("\n"), "Must only have one '\n'.");
+            assertEquals(snippet.indexOf("\n"), snippet.lastIndexOf("\n"), "Must only have only one '\n'.");
             String[] lines = snippet.split("\n");
             String data = lines[0];
             String pointer = lines[1];

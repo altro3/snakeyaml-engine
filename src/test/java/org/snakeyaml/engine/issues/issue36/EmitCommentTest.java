@@ -35,12 +35,14 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @org.junit.jupiter.api.Tag("fast")
-public class EmitCommentTest {
+class EmitCommentTest {
 
     @Test
     @DisplayName("Issue 36: comment with scalar should not be ignored")
     void emitCommentWithEvent() {
-        var settings = DumpSettings.builder().setDumpComments(true).build();
+        var settings = DumpSettings.builder()
+            .setDumpComments(true)
+            .build();
         var writer = new StreamToStringWriter();
         new Emitter(settings, writer)
             .emit(new StreamStartEvent())
@@ -59,7 +61,9 @@ public class EmitCommentTest {
     @Test
     @DisplayName("Issue 36: only comment should not be ignored")
     void emitComment() {
-        var settings = DumpSettings.builder().setDumpComments(true).build();
+        var settings = DumpSettings.builder()
+            .setDumpComments(true)
+            .build();
         var writer = new StreamToStringWriter();
         new Emitter(settings, writer)
             .emit(new StreamStartEvent())

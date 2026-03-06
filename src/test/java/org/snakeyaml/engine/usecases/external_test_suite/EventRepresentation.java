@@ -39,7 +39,6 @@ public class EventRepresentation {
         return event.toString();
     }
 
-
     public boolean isSameAs(String eventData) {
 
         var splitted = eventData.split(" ");

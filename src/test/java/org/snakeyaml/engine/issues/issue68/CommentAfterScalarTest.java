@@ -13,41 +13,40 @@
  */
 package org.snakeyaml.engine.issues.issue68;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Compose;
 import org.snakeyaml.engine.v2.nodes.Node;
 
-@org.junit.jupiter.api.Tag("fast")
-public class CommentAfterScalarTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-    private final LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
+@org.junit.jupiter.api.Tag("fast")
+class CommentAfterScalarTest {
+
+    private final Compose compose = new Compose(LoadSettings.builder()
+        .setParseComments(true)
+        .build());
 
     @Test
     @DisplayName("Respect inline comment for '!!str # comment'")
     void testInLineCommentForScalarNode() {
-        var compose = new Compose(loadSettings);
         Node node = compose.composeString("!!str # comment");
         assertNotNull(node);
         assertEquals(1, node.getInLineComments().size());
-        assertEquals(" comment", node.getInLineComments().stream().findFirst().get().value());
+        assertEquals(" comment", node.getInLineComments().get(0).value());
     }
 
     @Test
     @DisplayName("Respect inline and block comments for '!!str # comment\n# block comment1'")
     void testInLineCommentForScalarNode2() {
-        var compose = new Compose(loadSettings);
         Node node = compose.composeString("!!str # comment\n# block comment1\n# block comment2");
         assertNotNull(node);
         assertEquals(1, node.getInLineComments().size());
-        assertEquals(" comment", node.getInLineComments().stream().findFirst().get().value());
+        assertEquals(" comment", node.getInLineComments().get(0).value());
         assertEquals(2, node.getBlockComments().size());
-        assertEquals(" block comment1", node.getBlockComments().stream().findFirst().get().value());
-        assertEquals(" block comment2",
-            node.getBlockComments().stream().skip(1).findFirst().get().value());
+        assertEquals(" block comment1", node.getBlockComments().get(0).value());
+        assertEquals(" block comment2", node.getBlockComments().get(1).value());
     }
 }

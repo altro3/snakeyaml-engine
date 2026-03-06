@@ -13,8 +13,6 @@
  */
 package org.snakeyaml.engine.schema;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -22,10 +20,14 @@ import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.schema.FailsafeSchema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @org.junit.jupiter.api.Tag("fast")
 public class FailsafeTest {
 
-    Load loader = new Load(LoadSettings.builder().setSchema(new FailsafeSchema()).build());
+    Load loader = new Load(LoadSettings.builder()
+        .setSchema(new FailsafeSchema())
+        .build());
 
     @Test
     void parseString() {
@@ -44,7 +46,7 @@ public class FailsafeTest {
         assertEquals("!!bool 'false'\n", dumper.dumpToString(Boolean.FALSE));
         assertEquals("!!null 'null'\n", dumper.dumpToString(null));
         assertEquals("!!int '25'\n", dumper.dumpToString(25));
-        assertEquals("!!int '17'\n", dumper.dumpToString(Integer.valueOf(17)));
-        assertEquals("!!float '17.4'\n", dumper.dumpToString(Double.valueOf(17.4)));
+        assertEquals("!!int '17'\n", dumper.dumpToString(17));
+        assertEquals("!!float '17.4'\n", dumper.dumpToString(17.4));
     }
 }

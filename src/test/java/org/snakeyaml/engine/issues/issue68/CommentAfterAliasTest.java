@@ -13,13 +13,13 @@
  */
 package org.snakeyaml.engine.issues.issue68;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.api.lowlevel.Compose;
 import org.snakeyaml.engine.v2.nodes.Node;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Issue 68: Comments are not parsed correctly when they follow an alias
@@ -27,12 +27,13 @@ import org.snakeyaml.engine.v2.nodes.Node;
 @org.junit.jupiter.api.Tag("fast")
 class CommentAfterAliasTest {
 
-    private final LoadSettings loadSettings = LoadSettings.builder().setParseComments(true).build();
+    private final Compose compose = new Compose(LoadSettings.builder()
+        .setParseComments(true)
+        .build());
 
     @Test
     @DisplayName("Issue 68: inline")
     void testCommentAfterAlias3() {
-        var compose = new Compose(loadSettings);
         String input = "field_with_alias: &alias_name # inline comment 1\n  555";
         Node node = compose.composeString(input);
         assertNotNull(node);
@@ -41,7 +42,6 @@ class CommentAfterAliasTest {
     @Test
     @DisplayName("Issue 68: block comment and flat after")
     void testCommentAfterAlias1() {
-        var compose = new Compose(loadSettings);
         String input = "field_with_alias: &alias_name\n# separate line comment following the alias\n    555";
         Node node = compose.composeString(input);
         assertNotNull(node);
@@ -50,7 +50,6 @@ class CommentAfterAliasTest {
     @Test
     @DisplayName("Issue 68: block comment and nested after")
     void testCommentAfterAlias() {
-        var compose = new Compose(loadSettings);
         String input = "field_with_alias: &alias_name\n# separate line comment following the alias\n    nested_field: nested_value";
         Node node = compose.composeString(input);
         assertNotNull(node);
@@ -59,7 +58,6 @@ class CommentAfterAliasTest {
     @Test
     @DisplayName("Issue 68: tag with inline comment")
     void testCommentAfterTag() {
-        var compose = new Compose(loadSettings);
         String input = "key: !!str # comment\n  value";
         Node node = compose.composeString(input);
         assertNotNull(node);
@@ -68,7 +66,6 @@ class CommentAfterAliasTest {
     @Test
     @DisplayName("Issue 68: anchor and tag with comment")
     void testCommentAfterAnchorAndTag() {
-        var compose = new Compose(loadSettings);
         String input = "key: &anchor !!str # comment\n  value";
         Node node = compose.composeString(input);
         assertNotNull(node);

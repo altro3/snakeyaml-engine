@@ -13,29 +13,24 @@
  */
 package org.snakeyaml.engine.schema;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-import org.junit.jupiter.api.Test;
-import org.snakeyaml.engine.v2.api.Dump;
-import org.snakeyaml.engine.v2.api.DumpSettings;
-import org.snakeyaml.engine.v2.api.Load;
-import org.snakeyaml.engine.v2.api.LoadSettings;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_DUMP;
+import static org.snakeyaml.engine.util.TestUtil.DEFAULT_LOAD;
 
 @org.junit.jupiter.api.Tag("fast")
 public class NullJsonTest {
 
-    Load loader = new Load(LoadSettings.builder().build());
-
     @Test
     void parseNull() {
-        assertNull(loader.loadFromString("null"));
-        assertEquals("null", loader.loadFromString("! null"));
+        assertNull(DEFAULT_LOAD.loadFromString("null"));
+        assertEquals("null", DEFAULT_LOAD.loadFromString("! null"));
     }
 
     @Test
     void dumpNull() {
-        Dump dumper = new Dump(DumpSettings.builder().build());
-        assertEquals("null\n", dumper.dumpToString(null));
+        assertEquals("null\n", DEFAULT_DUMP.dumpToString(null));
     }
 }
